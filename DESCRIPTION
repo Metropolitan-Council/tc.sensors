@@ -21,6 +21,10 @@ Imports:
     jsonlite,
     tibble,
     dplyr,
+    purrr,
+    tidyr,
     magrittr
-Suggests: knitr, rmarkdown
+Suggests: 
+    knitr,
+    rmarkdown
 VignetteBuilder: knitr

@@ -96,13 +96,14 @@ pull_sensor <- function(sensor, pull_date) {
 #' @importFrom magrittr %>%
 #' @importFrom dplyr transmute
 #' @importFrom tibble enframe
+#' @importFrom utils download.file
 #'
 #' @export
 pull_sensor_ids <- function() {
 
   url <- "http://data.dot.state.mn.us/iris_xml/metro_config.xml.gz"
   tmp <- tempfile()
-  download.file(url,tmp)
+  utils::download.file(url,tmp)
   metro_config <- read_xml(gzfile(tmp))
 
   enframe(trimws(xml_attr(xml_find_all(metro_config, "//detector"), "name"))) %>%
@@ -130,13 +131,14 @@ pull_sensor_ids <- function() {
 #' @importFrom purrr map2
 #' @importFrom magrittr %>%
 #' @importFrom data.table fwrite
+#' @importFrom utils download.file
 #'
 #' @export
 pull_configuration <- function(return_opt = c("within_dir", "in_memory")) {
 
   url <- "http://data.dot.state.mn.us/iris_xml/metro_config.xml.gz"
   tmp <- tempfile()
-  download.file(url,tmp)
+  utils::download.file(url,tmp)
   metro_config <- read_xml(gzfile(tmp))
 
   # ------------------

@@ -7,7 +7,8 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-```{r}
+```{r, eval = FALSE}
+library(tc.sensors)
 library(doParallel)
 library(foreach)
 library(tictoc) # If you want to benchmark - but you shouldn't have to; I already did (:
@@ -30,14 +31,14 @@ foreach(j = sensor_ids[[1]][633:714]) %dopar% {
   }
   
   loops_df <- data.table::rbindlist(loops_ls)
-  data.table::fwrite(loops_df, paste0("N:\\MTS\\Working\\Planning\\MnDOT_Loop_detectors\\Volume-Occupancy\\2019\\Sensor ", j, ".csv"))
+  # data.table::fwrite(loops_df, paste0("N:\\MTS\\Working\\Planning\\MnDOT_Loop_detectors\\Volume-Occupancy\\2019\\Sensor ", j, ".csv"))
 }
 toc()
 stopCluster(cl)
 
 ```
 
-```{r}
+```{r, eval=FALSE}
 # If you want to save to an Access DB
 library(RODBC)
 

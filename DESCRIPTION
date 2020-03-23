@@ -27,4 +27,6 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown
+Remotes:
+    cvarrichio/rowr
 VignetteBuilder: knitr

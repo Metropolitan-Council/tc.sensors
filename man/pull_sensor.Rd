@@ -4,32 +4,36 @@
 \alias{pull_sensor}
 \title{Pull sensor volume and occupancy}
 \usage{
-pull_sensor(sensor, pull_date, date_fmt = c("ymd", "dmy", "mdy"))
+pull_sensor(sensor, pull_date)
 }
 \arguments{
-\item{sensor}{an object of class integer or string which indicates the sensor ID.  See documentation for `pull_sensor_ids` to obtain metro sensor IDs.unction}
+\item{sensor}{an object of class integer or string which indicates the sensor ID.
+See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.}
 
-\item{pull_date}{an object of class integer or string which indicates the date of data to pull.  Can be in mdy, ymd, or dmy format, but format must be specified in the date_fmt argument.  A vector of dates is accepted when used in tandem with the `purrr::pmap()` function.}
-
-\item{date_fmt}{an object of class string which indicates the format of the `pull_date` argument.}
+\item{pull_date}{an object of class string which indicates the date of data to pull.  Needs to by in "\%Y-\%m-\%d" format.}
 }
 \value{
-dataframe containing variables volume, occupancy, sensor, date, time.  Note that occupancy *can* be missing while volume data exists and vice versa.  It is unknown how a loop could be monitoring volume and not occupancy. Also note that if you assign the output of pull_loops, the result is returned in-memory, and there must be sufficient space in-memory to do so.
+dataframe containing variables volume, occupancy, sensor, date, time.
+  Note that occupancy *can* be missing while volume data exists and vice versa.
+  It is unknown how a loop could be monitoring volume and not occupancy.
+  Also note that if you assign the output of pull_loops, the result is returned in-memory, and there must be sufficient space in-memory to do so.
 }
 \description{
-Create a tidy dataframe, containing volume and occupancy, for a single date and sensor.  Use `pull_sensor_ids` to obtain metro sensor IDs.
+Create a tidy dataframe, containing volume and occupancy, for a single date and sensor.
+  Use \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
 }
 \examples{
+\dontrun{
   # Simple example
-  loop_data <- pull_sensor(5474, "20190101", "ymd")
-  date_range <- c(20190101:20190201)
-  loop_data <- pmap(list(8564, date_range, "ymd"), pull_sensor)
+  loop_data <- pull_sensor(5474, "2018-10-14")
+  date_range <- seq(as.Date("2019/01/01"), as.Date("2019/01/02"), by = "days")
+  loop_data <- pmap(list(8564, date_range), pull_sensor)
   loops_full <- rbindlist(loop_data)
 
   # Parallel mapping example; takes longer if only pulling one or two days because libraries have to be copied to each core
   library(parallel)
   cl <- makeCluster(detectCores() - 1) # Leaving one core unused
-  params <- list(8564, date_range, "ymd")
+  params <- list(8564, date_range)
 
   clusterSetRNGStream(cl, 1)
   loop_data <- params \%>\%
@@ -37,5 +41,5 @@ Create a tidy dataframe, containing volume and occupancy, for a single date and 
   stopCluster(cl)
 
   loops_full <- rbindlist(loop_data)
-
+}
 }

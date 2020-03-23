@@ -15,3 +15,12 @@ dataframe containing 20 variables, including detector_field and lat/lons, for ea
 \description{
 Read MnDOT JSON feed and wrangle into a tidy dataframe containing 20 variables related to sensor configuration.  Useful for mapping (contains lat/lons) and calculating performance measures (contains detector_field).
 }
+\examples{
+\dontrun{
+config <- pull_configuration("in-memory") # Assign to an object
+pull_configuration("within_dir") # No assignment necessary
+}
+
+
+
+}

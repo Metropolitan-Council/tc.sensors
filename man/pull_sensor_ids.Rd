@@ -13,6 +13,7 @@ dataframe containing variable "detector"
 Create a tidy dataframe containing sensor IDs for MnDOT metro district, mainly to be used with pull_sensor
 }
 \examples{
-sensors <- sensor_pull()
-
+\dontrun{
+  sensors <- sensor_pull()
+}
 }

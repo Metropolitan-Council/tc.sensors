@@ -1,16 +1,21 @@
 #' Pull sensor volume and occupancy
 #'
-#' Create a tidy dataframe, containing volume and occupancy, for a single date and sensor.  Use `pull_sensor_ids` to obtain metro sensor IDs.
 #'
-#' @param pull_date an object of class string which indicates the date of data to pull.  Needs to by in "%Y-%m-%d" format.
-#' @param sensor an object of class integer or string which indicates the sensor ID.  See documentation for `pull_sensor_ids` to obtain metro sensor IDs.
+#' @description Create a tidy dataframe, containing volume and occupancy, for a single date and sensor.
+#'   Use \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
 #'
-#' @return dataframe containing variables volume, occupancy, sensor, date, time.  Note that occupancy *can* be missing while volume data exists and vice versa.  It is unknown how a loop could be monitoring volume and not occupancy. Also note that if you assign the output of pull_loops, the result is returned in-memory, and there must be sufficient space in-memory to do so.
+#' @param pull_date an object of class string which indicates the date of data to pull.  Needs to by in "\%Y-\%m-\%d" format.
+#' @param sensor an object of class integer or string which indicates the sensor ID.
+#'   See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
 #'
-#' @examples
+#' @return dataframe containing variables volume, occupancy, sensor, date, time.
+#'   Note that occupancy *can* be missing while volume data exists and vice versa.
+#'   It is unknown how a loop could be monitoring volume and not occupancy.
+#'   Also note that if you assign the output of pull_loops, the result is returned in-memory, and there must be sufficient space in-memory to do so.
+#'
+#' @examples \dontrun{
 #'   # Simple example
 #'   loop_data <- pull_sensor(5474, "2018-10-14")
-
 #:   # Mapping example
 #'   date_range <- seq(as.Date("2019/01/01"), as.Date("2019/01/02"), by = "days")
 #'   loop_data <- pmap(list(8564, date_range), pull_sensor)
@@ -27,15 +32,13 @@
 #'   stopCluster(cl)
 #'
 #'   loops_full <- rbindlist(loop_data)
-#'
+#'}
 #' @importFrom magrittr %>%
 #' @importFrom tibble enframe as_tibble
 #' @importFrom jsonlite fromJSON
 #' @importFrom rowr cbind.fill
 #'
 #' @export
-
-
 pull_sensor <- function(sensor, pull_date) {
 
   extension_pull <- function (ext, ...) {
@@ -86,17 +89,15 @@ pull_sensor <- function(sensor, pull_date) {
 #'
 #' @return dataframe containing variable "detector"
 #'
-#' @examples
-#' sensors <- sensor_pull()
-#'
+#' @examples \dontrun{
+#'   sensors <- sensor_pull()
+#'}
 #' @importFrom xml2 read_xml xml_find_all xml_attr
 #' @importFrom magrittr %>%
 #' @importFrom dplyr transmute
 #' @importFrom tibble enframe
 #'
 #' @export
-
-
 pull_sensor_ids <- function() {
 
   url <- "http://data.dot.state.mn.us/iris_xml/metro_config.xml.gz"
@@ -116,8 +117,12 @@ pull_sensor_ids <- function() {
 #' @return dataframe containing 20 variables, including detector_field and lat/lons, for each sensor in MnDOT's metro district
 #'
 #' @examples
+#' \dontrun{
 #' config <- pull_configuration("in-memory") # Assign to an object
-#' pull_configuration("within_dir) # No assignment necessary
+#' pull_configuration("within_dir") # No assignment necessary
+#'}
+#'
+#'
 #'
 #' @importFrom xml2 read_xml xml_find_all xml_attr xml_path
 #' @importFrom dplyr mutate select rename bind_rows bind_cols left_join
@@ -127,8 +132,6 @@ pull_sensor_ids <- function() {
 #' @importFrom data.table fwrite
 #'
 #' @export
-
-
 pull_configuration <- function(return_opt = c("within_dir", "in_memory")) {
 
   url <- "http://data.dot.state.mn.us/iris_xml/metro_config.xml.gz"

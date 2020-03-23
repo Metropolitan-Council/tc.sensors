@@ -1,4 +1,5 @@
 # tc.sensors
+![check-package](https://github.com/Metropolitan-Council/tc.sensors/workflows/check-package/badge.svg)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/60-percent-of-the-time-works-every-time.svg)](https://forthebadge.com)
 
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues) [![HitCount](http://hits.dwyl.io/sullivannicole/tcsensors.svg)](http://hits.dwyl.io/sullivannicole/tcsensors) [![Website MnDOT JSON](https://img.shields.io/website-up-down-green-red/http/shields.io.svg)](http://data.dot.state.mn.us:8080/trafdat/metro/2018/20181021/5474.c30.json)
@@ -19,4 +20,5 @@ To use this package, clone this repo (open the terminal and navigate to the dire
 To access documentation and for help on how to use the package, run `?<FUNCTION-NAME>` (e.g. `?pull_sensor`, `?pull_configuration`, `?pull_sensor_ids`).  Access vignettes in the vignettes file to see examples of end-to-end workflows for pulling and storing data locally en masse.  Check back for a vignette (to be added in the near future!) for calculating speeds, reference speeds, delay, and VMT from the resulting files.
 
 ## Contributor/Maintainer
-* Nicole Sullivan (nicole.sullivan@metc.state.mn.us)
+* Liz Roten (liz.roten@metc.state.mn.us)
+* *formerly* Nicole Sullivan (nicole.sullivan@metc.state.mn.us)

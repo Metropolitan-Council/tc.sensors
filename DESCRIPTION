@@ -27,7 +27,8 @@ Imports:
     magrittr
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 Remotes:
     cvarrichio/rowr
 VignetteBuilder: knitr

@@ -10,13 +10,13 @@ Description: Code in this repo processes data collected from Minnesota Departmen
     Occupancy and volume data can be used to calculate speed and delay.
 License: MIT + file LICENSE
 Encoding: UTF-8
+Date: 2020
 LazyData: true
 BugReports: https://github.com/Metropolitan-Council/tc.sensors/issues
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
 RoxygenNote: 7.1.0
 Imports: 
     data.table,
-    lubridate,
     rowr,
     xml2,
     jsonlite,
@@ -28,7 +28,10 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    tictoc (>= 1.0),
+    doParallel (>= 1.0.15),
+    foreach (>= 1.5.0)
 Remotes:
     cvarrichio/rowr
 VignetteBuilder: knitr

@@ -1,17 +1,19 @@
-#' Pull sensor volume and occupancy
+#' @title Pull sensor volume and occupancy
 #'
 #'
 #' @description Create a tidy dataframe, containing volume and occupancy, for a single date and sensor.
 #'   Use \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
 #'
-#' @param pull_date an object of class string which indicates the date of data to pull.  Needs to by in "\%Y-\%m-\%d" format.
+#' @param pull_date an object of class string which indicates the date of data to pull.
+#'   Needs to by in "YYYY-MM-DD" format.
 #' @param sensor an object of class integer or string which indicates the sensor ID.
 #'   See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
 #'
 #' @return dataframe containing variables volume, occupancy, sensor, date, time.
 #'   Note that occupancy *can* be missing while volume data exists and vice versa.
 #'   It is unknown how a loop could be monitoring volume and not occupancy.
-#'   Also note that if you assign the output of pull_loops, the result is returned in-memory, and there must be sufficient space in-memory to do so.
+#'   Also note that if you assign the output of pull_loops, the result is returned in-memory,
+#'   and there must be sufficient space in-memory to do so.
 #'
 #' @examples
 #' \dontrun{

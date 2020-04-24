@@ -1,15 +1,17 @@
-#' Pull metro sensor configuration
+#' @title Pull metro sensor configuration
 #'
-#' Read MnDOT JSON feed and wrangle into a tidy dataframe containing 20 variables related to sensor configuration.
+#' @description Read MnDOT JSON feed and wrangle into a tidy dataframe containing 20 variables related to sensor configuration.
 #'   Useful for mapping (contains lat/lons) and calculating performance measures (contains detector_field).
 #'
 #' @param return_opt an object of class string which indicates how to return the data.
 #'    "within_dir" will return the data within the directory as a csv entitled
-#'    "Configuration of Metro Detectors <<date in format yyyy-mm-dd>>".
+#'    "Configuration of Metro Detectors YYYY-MM-DD".
 #'     "in-memory" will return the data in R, but requires assignment.
+#'
 #' @return dataframe containing 20 variables, including detector_field and lat/lons,
 #'   for each sensor in MnDOT's metro district
 #' @family loop sensor functions
+#'
 #' @examples
 #' \dontrun{
 #' config <- pull_configuration("in-memory") # Assign to an object

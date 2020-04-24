@@ -2,18 +2,19 @@ Package: tc.sensors
 Type: Package
 Title: Retrieve Loop Detector Data from the MnDOT JSON Feed
 Version: 0.1.0
-Author: Nicole Sullivan
-Maintainer: Nicole Sullivan <nicole.sullivan@metc.state.mn.us>
-Description: More about what it does (maybe more than one line)
-    Code in this repo processes data collected from Minnesota Department of Transportation (MnDOT) loop detectors installed
+Authors@R: c(person("Metropolitan Council", role=c("cph")),
+             person('Liz', 'Roten', email = 'liz.roten@metc.state.mn.us', role = c('cre', 'aut')),
+             person('Nicole', 'Sullivan', email = 'nicole.sullivan@metc.state.mn.us', role = c('aut')))
+Description: Code in this repo processes data collected from Minnesota Department of Transportation (MnDOT) loop detectors installed
     on the Minnesota Freeway system in 30-second interval measurements of occupancy and volume, data which are pushed daily to a public JSON feed.
     Occupancy and volume data can be used to calculate speed and delay.
-License: None
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+BugReports: https://github.com/Metropolitan-Council/tc.sensors/issues
+Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
 RoxygenNote: 7.1.0
 Imports: 
-    tidyverse,
     data.table,
     lubridate,
     rowr,

@@ -4,13 +4,13 @@
 \alias{pull_configuration}
 \title{Pull metro sensor configuration}
 \usage{
-pull_configuration(return_opt = c("within_dir", "in_memory"))
+pull_configuration(return_opt = "in_memory")
 }
 \arguments{
 \item{return_opt}{an object of class string which indicates how to return the data.
-"within_dir" will return the data within the directory as a csv entitled
+\code{"within_dir"} will return the data within the directory as a csv entitled
 "Configuration of Metro Detectors YYYY-MM-DD".
-"in-memory" will return the data in R, but requires assignment.}
+\code{"in-memory"} will return the data in R, but requires assignment.}
 }
 \value{
 dataframe containing 20 variables, including detector_field and lat/lons,

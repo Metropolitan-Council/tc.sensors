@@ -10,7 +10,6 @@
 #' sensors <- sensor_pull()
 #' }
 #' @importFrom xml2 read_xml xml_find_all xml_attr
-#' @importFrom magrittr %>%
 #' @importFrom dplyr transmute
 #' @importFrom tibble enframe
 #' @importFrom utils download.file
@@ -20,8 +19,8 @@ pull_sensor_ids <- function() {
   url <- "http://data.dot.state.mn.us/iris_xml/metro_config.xml.gz"
   tmp <- tempfile()
   utils::download.file(url, tmp)
-  metro_config <- read_xml(gzfile(tmp))
+  metro_config <- xml2::read_xml(gzfile(tmp))
 
-  enframe(trimws(xml_attr(xml_find_all(metro_config, "//detector"), "name"))) %>%
-    transmute(detector = value)
+  tibble::enframe(trimws(xml2::xml_attr(xml2::xml_find_all(metro_config, "//detector"), "name"))) %>%
+    dplyr::transmute(detector = value)
 }

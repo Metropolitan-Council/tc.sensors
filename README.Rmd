@@ -24,7 +24,13 @@ remotes::install_github("Metropolitan-Council/tc.sensors")
 
 To access documentation and for help on how to use the package, run `?<FUNCTION-NAME>` (e.g. `?pull_sensor`, `?pull_configuration`, `?pull_sensor_ids`).  Access vignettes in the vignettes file to see examples of end-to-end workflows for pulling and storing data locally en masse.  Check back for a vignettes for calculating speeds, reference speeds, delay, and VMT from the resulting files.
 
-## Contributors
+## Contributors  
+
+
 * **Maintainer** Liz Roten (liz.roten@metc.state.mn.us)  
 * Nicole Sullivan (nicole.sullivan@metc.state.mn.us)
 
+
+## Code of Conduct
+  
+  Please note that the tc.sensors project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.

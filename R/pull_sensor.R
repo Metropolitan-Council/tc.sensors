@@ -36,39 +36,26 @@
 #'
 #' loops_full <- rbindlist(loop_data)
 #' }
-#' @importFrom magrittr %>%
 #' @importFrom tibble enframe as_tibble
 #' @importFrom jsonlite fromJSON
-#' @importFrom rowr cbind.fill
+#' @importFrom dplyr bind_cols
 #'
 #' @family loop sensor functions
 #'
 #' @export
 pull_sensor <- function(sensor, pull_date) {
-  extension_pull <- function(ext, ...) {
-    pull_year <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%Y")
-    pull_month <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%m")
-    pull_day <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%d")
-
-    df_default <- as_tibble(NA, validate = F)
-
-    try(df_default <- enframe(fromJSON(paste0("http://data.dot.state.mn.us:8080/trafdat/metro/", pull_year, "/", pull_year, pull_month, pull_day, "/", sensor, ".", ext, "30.json"))) %>%
-      select(-name))
-
-    return(df_default)
-  }
-
+  browser()
   # exts <- c("v", "c")
   # loops_ls <- map(exts, extension_pull)
 
-  volume <- extension_pull("v")
-  occupancy <- extension_pull("c")
+  volume <- extension_pull("v", pull_date = pull_date, sensor = sensor)
+  occupancy <- extension_pull("c", pull_date = pull_date, sensor = sensor)
 
-  loop_uneven <- rowr::cbind.fill(volume, occupancy, fill = NA)
+  loop_uneven <- dplyr::bind_cols(volume, occupancy)
   names(loop_uneven) <- c("volume", "occupancy")
 
   loop_date_sensor <- loop_uneven %>%
-    mutate(
+    dplyr::mutate(
       date = pull_date,
       sensor = sensor
     )
@@ -77,16 +64,55 @@ pull_sensor <- function(sensor, pull_date) {
   if (nrow(loop_date_sensor) == 1) {
     # Return essentially empty dataframe if both volume and occupancy are missing for entire day
     loop_date_sensor %>%
-      mutate(
+      dplyr::mutate(
         hour = NA,
         min = NA
       )
   } else {
     # Add hour and minutes if either volume or occupancy (or both) are available
-    bind_cols(
+    dplyr::bind_cols(
       loop_date_sensor,
-      as_tibble(rep(0:23, each = 120)) %>% rename(hour = value),
-      as_tibble(rep(seq(from = 0, to = 59.5, by = 0.5), 24)) %>% rename(min = value)
+      tibble::as_tibble(rep(0:23, each = 120)) %>% rename(hour = value),
+      tibble::as_tibble(rep(seq(from = 0, to = 59.5, by = 0.5), 24)) %>% rename(min = value)
     )
   }
+}
+
+
+
+#' Pull extension
+#'
+#' @param ext either \code{"v"} for volume or \code{"c"} for occupancy
+#' @inheritParams pull_sensor
+#' @keywords internal
+#'
+#' @return a tibble with
+#'
+#' @export
+extension_pull <- function(ext, sensor, pull_date) {
+  # browser()
+  pull_year <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%Y")
+  pull_month <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%m")
+  pull_day <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%d")
+
+  df_default <- tibble::as_tibble(NA)
+
+  try(df_default <- tibble::enframe(jsonlite::fromJSON(
+    txt = paste0(
+      "http://data.dot.state.mn.us:8080/trafdat/metro/",
+      pull_year,
+      "/",
+      pull_year,
+      pull_month,
+      pull_day,
+      "/",
+      sensor,
+      ".",
+      ext,
+      "30.json"
+    )
+  )) %>%
+    dplyr::select(-name))
+
+  return(df_default)
 }

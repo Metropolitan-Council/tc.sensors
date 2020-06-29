@@ -1,8 +1,8 @@
 ---
-title: "Multiple sensors in parallel, one years' worth each"
+title: "Pull multiple sensors using parallel processing"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Put the title of your vignette here}
+  %\VignetteIndexEntry{Pull multiple sensors using parallel processing}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---

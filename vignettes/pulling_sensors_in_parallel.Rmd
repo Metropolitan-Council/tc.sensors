@@ -7,6 +7,8 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+## Pull data for select sensors for all 2019  
+
 ```{r, eval = FALSE}
 library(tc.sensors)
 library(doParallel)
@@ -39,9 +41,9 @@ toc()
 stopCluster(cl)
 
 ```
+## Save to Microsoft Access Database  
 
 ```{r, eval=FALSE}
-# If you want to save to an Access DB
 library(RODBC)
 
 test_conn <- odbcConnectAccess2007("../LoopDBTest.accdb")

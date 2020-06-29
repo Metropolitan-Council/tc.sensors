@@ -36,4 +36,12 @@ speeds, delay, and VMT from the resulting files.
 ## Contributors
 
   - **Maintainer** Liz Roten (<liz.roten@metc.state.mn.us>)  
-  - Nicole Sullivan (<nicole.sullivan@metc.state.mn.us>)
+  - Nicole Sullivan
+    [github.com/sullivannicole](https://github.com/sullivannicole)
+
+## Code of Conduct
+
+Please note that the `{tc.sensors}` project is released with a
+[Contributor Code of
+Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.

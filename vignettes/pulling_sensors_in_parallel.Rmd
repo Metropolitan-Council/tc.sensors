@@ -11,6 +11,8 @@ vignette: >
 library(tc.sensors)
 library(doParallel)
 library(foreach)
+library(dplyr)
+library(magrittr)
 library(tictoc) # If you want to benchmark - but you shouldn't have to; I already did (:
 
 sensor_config <- pull_configuration()
@@ -31,7 +33,7 @@ foreach(j = sensor_ids[[1]][633:714]) %dopar% {
   }
   
   loops_df <- data.table::rbindlist(loops_ls)
-  # data.table::fwrite(loops_df, paste0("N:\\MTS\\Working\\Planning\\MnDOT_Loop_detectors\\Volume-Occupancy\\2019\\Sensor ", j, ".csv"))
+  data.table::fwrite(loops_df, paste0("../../MnDOT_Loop_Detectors/Volume-Occupancy/2019/Sensor ", j, ".csv"))
 }
 toc()
 stopCluster(cl)
@@ -42,7 +44,7 @@ stopCluster(cl)
 # If you want to save to an Access DB
 library(RODBC)
 
-test_conn <- odbcConnectAccess2007("C:\\Users\sullivN\\Documents\\LoopDBTest.accdb")
+test_conn <- odbcConnectAccess2007("../LoopDBTest.accdb")
 sqlTables(test_conn, tableType = "TABLE")$TABLE_NAME # Check available tables
 
 sqlSave(channel = test_conn,

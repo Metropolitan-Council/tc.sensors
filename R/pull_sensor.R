@@ -86,7 +86,7 @@ pull_sensor <- function(sensor, pull_date) {
 #' @inheritParams pull_sensor
 #' @keywords internal
 #'
-#' @return a tibble with
+#' @return a tibble
 #'
 #' @export
 extension_pull <- function(ext, sensor, pull_date) {

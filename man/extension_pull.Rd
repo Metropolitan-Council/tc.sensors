@@ -7,7 +7,7 @@
 extension_pull(ext, sensor, pull_date)
 }
 \arguments{
-\item{ext}{which extension}
+\item{ext}{either \code{"v"} for volume or \code{"c"} for occupancy}
 
 \item{sensor}{an object of class integer or string which indicates the sensor ID.
 See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.}
@@ -16,7 +16,7 @@ See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.}
 Needs to by in "YYYY-MM-DD" format.}
 }
 \value{
-
+a tibble
 }
 \description{
 Pull extension

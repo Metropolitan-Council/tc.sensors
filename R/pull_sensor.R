@@ -44,7 +44,7 @@
 #'
 #' @export
 pull_sensor <- function(sensor, pull_date) {
-  browser()
+  # browser()
   # exts <- c("v", "c")
   # loops_ls <- map(exts, extension_pull)
 

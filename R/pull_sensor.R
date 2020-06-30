@@ -25,7 +25,8 @@
 #' loop_data <- pmap(list(8564, date_range), pull_sensor)
 #' loops_full <- rbindlist(loop_data)
 #'
-#' # Parallel mapping example; takes longer if only pulling one or two days because libraries have to be copied to each core
+#' # Parallel mapping example;
+#' ## takes longer if only pulling 1-2 days because libraries are copied to each core
 #' library(parallel)
 #' cl <- makeCluster(detectCores() - 1) # Leaving one core unused
 #' params <- list(8564, date_range)

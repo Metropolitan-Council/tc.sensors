@@ -105,6 +105,38 @@
 <a href="#documentation" class="anchor"></a>Documentation</h2>
 <p>To access documentation and for help on how to use the package, run <code>?&lt;FUNCTION-NAME&gt;</code> (e.g. <code><a href="reference/pull_sensor.html">?pull_sensor</a></code>, <code><a href="reference/pull_configuration.html">?pull_configuration</a></code>, <code><a href="reference/pull_sensor_ids.html">?pull_sensor_ids</a></code>). Access vignettes in the vignettes file to see examples of end-to-end workflows for pulling and storing data locally en masse. Check back for a vignettes for calculating speeds, reference speeds, delay, and VMT from the resulting files.</p>
 </div>
+<div id="relevant-definitions" class="section level2">
+<h2 class="hasAnchor">
+<a href="#relevant-definitions" class="anchor"></a>Relevant definitions</h2>
+<ul>
+<li>
+<strong>Volume</strong> The number of vehicles that pass through a detector in a given time period.<br>
+</li>
+<li>
+<strong>Occupancy</strong> The percentage of time a detector’s field is occupied by a vehicle.<br>
+</li>
+<li>
+<strong>Flow</strong> The number of vehicles that pass through a detector per hour (<code>Volume * Samples per Hour</code>).<br>
+</li>
+<li>
+<strong>Headway</strong> The number of seconds between each vehicle (<code>Seconds_per_Hour / Flow</code>).<br>
+</li>
+<li>
+<strong>Density</strong> The number of vehicles per mile (<code>Flow / Speed</code>). See <a href="http://data.dot.state.mn.us/datatools/Density.html">full calculation method</a> for additional context.<br>
+</li>
+<li>
+<strong>Speed</strong> The average speed of the vehicles that pass in a sampling period (<code>Flow / Density</code>).<br>
+</li>
+<li>
+<strong>Lost/Spare Capacity</strong> The average flow that a roadway is losing, either due to low traffic or high congestion, throughout the sampling period.
+<ul>
+<li><code>Flow &gt; 1800: 0</code></li>
+<li><code>Density &gt; 43: Lost Capacity: Flow - 1800</code></li>
+<li><code>Density &gt;= 43: Lost Capacity: 1800 - Flow</code></li>
+</ul>
+</li>
+</ul>
+</div>
 <div id="contributors" class="section level2">
 <h2 class="hasAnchor">
 <a href="#contributors" class="anchor"></a>Contributors</h2>

@@ -96,6 +96,9 @@ Use pull_sensor_ids to obtain metro sensor IDs." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/calculate_speed_delay.html">Calculate Speed and Delay</a>
+    </li>
+    <li>
       <a href="../articles/pulling_sensors_in_parallel.html">Pull multiple sensors using parallel processing</a>
     </li>
   </ul>
@@ -131,7 +134,7 @@ Use pull_sensor_ids to obtain metro sensor IDs." />
 Use <code>pull_sensor_ids</code> to obtain metro sensor IDs.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pull_sensor</span>(<span class='kw'>sensor</span>, <span class='kw'>pull_date</span>)</pre>
+    <pre class="usage"><span class='fu'>pull_sensor</span>(<span class='kw'>sensor</span>, <span class='kw'>pull_date</span>, .quiet = <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,6 +148,10 @@ See documentation for <code>pull_sensor_ids</code> to obtain metro sensor IDs.</
       <th>pull_date</th>
       <td><p>an object of class string which indicates the date of data to pull.
 Needs to by in "YYYY-MM-DD" format.</p></td>
+    </tr>
+    <tr>
+      <th>.quiet</th>
+      <td><p>boolean, whether to hide messages. Default is TRUE</p></td>
     </tr>
     </table>
 

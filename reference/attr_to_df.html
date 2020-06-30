@@ -95,6 +95,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/calculate_speed_delay.html">Calculate Speed and Delay</a>
+    </li>
+    <li>
       <a href="../articles/pulling_sensors_in_parallel.html">Pull multiple sensors using parallel processing</a>
     </li>
   </ul>
@@ -129,7 +132,7 @@
     <p>Make data frame for category and attributes</p>
     </div>
 
-    <pre class="usage"><span class='fu'>attr_to_df</span>(<span class='kw'>category</span>, <span class='kw'>attr_ls</span>)</pre>
+    <pre class="usage"><span class='fu'>attr_to_df</span>(<span class='kw'>category</span>, <span class='kw'>attr_ls</span>, <span class='kw'>metro_config</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -141,6 +144,10 @@
     <tr>
       <th>attr_ls</th>
       <td><p>list of attributes corresponding to the given category</p></td>
+    </tr>
+    <tr>
+      <th>metro_config</th>
+      <td><p>sensor configuration</p></td>
     </tr>
     </table>
 

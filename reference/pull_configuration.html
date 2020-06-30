@@ -96,6 +96,9 @@ Useful for mapping (contains lat/lons) and calculating performance measures (con
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/calculate_speed_delay.html">Calculate Speed and Delay</a>
+    </li>
+    <li>
       <a href="../articles/pulling_sensors_in_parallel.html">Pull multiple sensors using parallel processing</a>
     </li>
   </ul>
@@ -131,7 +134,7 @@ Useful for mapping (contains lat/lons) and calculating performance measures (con
 Useful for mapping (contains lat/lons) and calculating performance measures (contains detector_field).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pull_configuration</span>(return_opt = <span class='st'>"in_memory"</span>)</pre>
+    <pre class="usage"><span class='fu'>pull_configuration</span>(return_opt = <span class='st'>"in_memory"</span>, .quiet = <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -142,6 +145,10 @@ Useful for mapping (contains lat/lons) and calculating performance measures (con
 <code>"within_dir"</code> will return the data within the directory as a csv entitled
 "Configuration of Metro Detectors YYYY-MM-DD".
 <code>"in-memory"</code> will return the data in R, but requires assignment.</p></td>
+    </tr>
+    <tr>
+      <th>.quiet</th>
+      <td><p>boolean, whether to hide messages. Default is TRUE</p></td>
     </tr>
     </table>
 

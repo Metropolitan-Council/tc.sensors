@@ -8,6 +8,7 @@
 #'   Needs to by in "YYYY-MM-DD" format.
 #' @param sensor an object of class integer or string which indicates the sensor ID.
 #'   See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
+#' @inheritParams pull_configuration
 #'
 #' @return dataframe containing variables volume, occupancy, sensor, date, time.
 #'   Note that occupancy *can* be missing while volume data exists and vice versa.
@@ -39,6 +40,7 @@
 #' @importFrom tibble enframe as_tibble
 #' @importFrom jsonlite fromJSON
 #' @importFrom dplyr bind_cols rename
+#' @importFrom rlang .data
 #'
 #' @family loop sensor functions
 #'
@@ -74,10 +76,10 @@ pull_sensor <- function(sensor, pull_date, .quiet = TRUE) {
       loop_date_sensor,
 
       tibble::as_tibble(rep(0:23, each = 120)) %>%
-        dplyr::rename(hour = value),
+        dplyr::rename(hour = .data$value),
 
       tibble::as_tibble(rep(seq(from = 0, to = 59.5, by = 0.5), 24)) %>%
-        dplyr::rename(min = value)
+        dplyr::rename(min = .data$value)
     )
   }
 }
@@ -87,6 +89,7 @@ pull_sensor <- function(sensor, pull_date, .quiet = TRUE) {
 #' Pull extension
 #'
 #' @param ext either \code{"v"} for volume or \code{"c"} for occupancy
+#' @param quiet boolean, whether to hide messages. Default is TRUE
 #' @inheritParams pull_sensor
 #' @keywords internal
 #'
@@ -101,23 +104,24 @@ extension_pull <- function(ext, sensor, pull_date, quiet = TRUE) {
 
   df_default <- tibble::as_tibble(NA)
 
-  try(df_default <- tibble::enframe(jsonlite::fromJSON(
-    txt = paste0(
-      "http://data.dot.state.mn.us:8080/trafdat/metro/",
-      pull_year,
-      "/",
-      pull_year,
-      pull_month,
-      pull_day,
-      "/",
-      sensor,
-      ".",
-      ext,
-      "30.json"
-    )
-  )) %>%
-    dplyr::select(-name),
-  silent = quiet
+  try(df_default <- tibble::enframe(
+    jsonlite::fromJSON(
+      txt = paste0(
+        "http://data.dot.state.mn.us:8080/trafdat/metro/",
+        pull_year,
+        "/",
+        pull_year,
+        pull_month,
+        pull_day,
+        "/",
+        sensor,
+        ".",
+        ext,
+        "30.json"
+      )
+    )) %>%
+      dplyr::select(.data$name),
+    silent = quiet
   )
 
   return(df_default)

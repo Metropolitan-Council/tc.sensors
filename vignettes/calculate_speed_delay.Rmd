@@ -1,0 +1,19 @@
+---
+title: "Calculate Speed and Delay"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{calculate_speed_delay}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(tc.sensors)
+```

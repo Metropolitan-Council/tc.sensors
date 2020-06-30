@@ -38,18 +38,18 @@
 #' }
 #' @importFrom tibble enframe as_tibble
 #' @importFrom jsonlite fromJSON
-#' @importFrom dplyr bind_cols
+#' @importFrom dplyr bind_cols rename
 #'
 #' @family loop sensor functions
 #'
 #' @export
-pull_sensor <- function(sensor, pull_date) {
+pull_sensor <- function(sensor, pull_date, .quiet = TRUE) {
   # browser()
   # exts <- c("v", "c")
   # loops_ls <- map(exts, extension_pull)
 
-  volume <- extension_pull("v", pull_date = pull_date, sensor = sensor)
-  occupancy <- extension_pull("c", pull_date = pull_date, sensor = sensor)
+  volume <- extension_pull("v", pull_date = pull_date, sensor = sensor, quiet = .quiet)
+  occupancy <- extension_pull("c", pull_date = pull_date, sensor = sensor, quiet = .quiet)
 
   loop_uneven <- dplyr::bind_cols(volume, occupancy)
   names(loop_uneven) <- c("volume", "occupancy")
@@ -71,9 +71,14 @@ pull_sensor <- function(sensor, pull_date) {
   } else {
     # Add hour and minutes if either volume or occupancy (or both) are available
     dplyr::bind_cols(
+
       loop_date_sensor,
-      tibble::as_tibble(rep(0:23, each = 120)) %>% rename(hour = value),
-      tibble::as_tibble(rep(seq(from = 0, to = 59.5, by = 0.5), 24)) %>% rename(min = value)
+
+      tibble::as_tibble(rep(0:23, each = 120)) %>%
+        dplyr::rename(hour = value),
+
+      tibble::as_tibble(rep(seq(from = 0, to = 59.5, by = 0.5), 24)) %>%
+        dplyr::rename(min = value)
     )
   }
 }
@@ -89,7 +94,7 @@ pull_sensor <- function(sensor, pull_date) {
 #' @return a tibble
 #'
 #' @export
-extension_pull <- function(ext, sensor, pull_date) {
+extension_pull <- function(ext, sensor, pull_date, quiet = TRUE) {
   # browser()
   pull_year <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%Y")
   pull_month <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%m")
@@ -112,7 +117,8 @@ extension_pull <- function(ext, sensor, pull_date) {
       "30.json"
     )
   )) %>%
-    dplyr::select(-name))
+    dplyr::select(-name),
+  silent = quiet)
 
   return(df_default)
 }

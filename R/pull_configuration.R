@@ -27,10 +27,10 @@
 #' @importFrom utils download.file
 #'
 #' @export
-pull_configuration <- function(return_opt = "in_memory") {
+pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
   url <- "http://data.dot.state.mn.us/iris_xml/metro_config.xml.gz"
   tmp <- tempfile()
-  utils::download.file(url, tmp)
+  utils::download.file(url, tmp, quiet = .quiet)
   metro_config <- xml2::read_xml(gzfile(tmp))
 
   # ------------------
@@ -107,7 +107,7 @@ pull_configuration <- function(return_opt = "in_memory") {
   attr_all_ls <- list(d_attr_ls, rn_attr_ls, c_attr_ls)
   categories <- list("detector", "r_node", "corridor")
 
-  attributes_full <- purrr::map2(categories, attr_all_ls, attr_to_df)
+  attributes_full <- purrr::map2(categories, attr_all_ls, attr_to_df, metro_config)
 
   # Bind paths to attributes
   d_paths_attr <- dplyr::bind_cols(detector_paths, attributes_full[[1]])
@@ -168,7 +168,7 @@ pull_configuration <- function(return_opt = "in_memory") {
 #'
 #' @importFrom xml2 xml_attr xml_find_all
 #'
-attr_clean <- function(category, attribute, metro_config = metro_config) {
+attr_clean <- function(category, attribute, metro_config) {
   trimws(
     xml2::xml_attr(
       xml2::xml_find_all(
@@ -192,8 +192,8 @@ attr_clean <- function(category, attribute, metro_config = metro_config) {
 #' @importFrom purrr map2
 #' @importFrom dplyr bind_rows
 #'
-attr_to_df <- function(category, attr_ls) {
-  attributes_ls <- purrr::map2(category, attr_ls, attr_clean)
+attr_to_df <- function(category, attr_ls, metro_config) {
+  attributes_ls <- purrr::map2(category, attr_ls, attr_clean, metro_config)
   names(attributes_ls) <- paste(category, attr_ls, sep = "_")
   dplyr::bind_rows(attributes_ls)
 }

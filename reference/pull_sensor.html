@@ -177,7 +177,8 @@ and there must be sufficient space in-memory to do so.</p>
 <span class='kw'>loop_data</span> <span class='op'>&lt;-</span> <span class='fu'>pmap</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='fl'>8564</span>, <span class='kw'>date_range</span>), <span class='kw'>pull_sensor</span>)
 <span class='kw'>loops_full</span> <span class='op'>&lt;-</span> <span class='fu'>rbindlist</span>(<span class='kw'>loop_data</span>)
 
-<span class='co'># Parallel mapping example; takes longer if only pulling one or two days because libraries have to be copied to each core</span>
+<span class='co'># Parallel mapping example;</span>
+<span class='co'>## takes longer if only pulling 1-2 days because libraries are copied to each core</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'>parallel</span>)
 <span class='kw'>cl</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/parallel/makeCluster.html'>makeCluster</a></span>(<span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span>() <span class='op'>-</span> <span class='fl'>1</span>) <span class='co'># Leaving one core unused</span>
 <span class='kw'>params</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='fl'>8564</span>, <span class='kw'>date_range</span>)

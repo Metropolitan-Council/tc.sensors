@@ -71,7 +71,6 @@ pull_sensor <- function(sensor, pull_date, .quiet = TRUE) {
   } else {
     # Add hour and minutes if either volume or occupancy (or both) are available
     dplyr::bind_cols(
-
       loop_date_sensor,
 
       tibble::as_tibble(rep(0:23, each = 120)) %>%
@@ -118,7 +117,8 @@ extension_pull <- function(ext, sensor, pull_date, quiet = TRUE) {
     )
   )) %>%
     dplyr::select(-name),
-  silent = quiet)
+  silent = quiet
+  )
 
   return(df_default)
 }

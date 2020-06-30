@@ -1,5 +1,5 @@
 testthat::skip_if_offline()
-testthat::test_that("Pull sensor pulls", {
+testthat::test_that("Test that data can be pulled from a random sensor id for yesterday's date", {
   config <- pull_configuration()
 
 

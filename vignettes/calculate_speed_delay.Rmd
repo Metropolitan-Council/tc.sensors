@@ -2,7 +2,7 @@
 title: "Calculate Speed and Delay"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{calculate_speed_delay}
+  %\VignetteIndexEntry{Calculate Speed and Delay}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

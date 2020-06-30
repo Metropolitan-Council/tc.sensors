@@ -35,6 +35,9 @@ speeds, delay, and VMT from the resulting files.
 
 ## Relevant definitions
 
+Definitions come from MnDOT Data Extract
+[documentation](http://data.dot.state.mn.us/datatools/dataextract.html)
+
   - **Volume** The number of vehicles that pass through a detector in a
     given time period.  
   - **Occupancy** The percentage of time a detector’s field is occupied
@@ -68,3 +71,11 @@ Please note that the `{tc.sensors}` project is released with a
 [Contributor Code of
 Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.
+
+<a href="https://metrocouncil.org" target="_blank"><img src="man/figures/main-logo.png" style="margin-left: 50%;margin-right: 50%;">
+
+<div>
+
+</div>
+
+</a>

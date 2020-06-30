@@ -119,9 +119,10 @@ extension_pull <- function(ext, sensor, pull_date, quiet = TRUE) {
         ext,
         "30.json"
       )
-    )) %>%
-      dplyr::select(.data$name),
-    silent = quiet
+    )
+  ) %>%
+    dplyr::select(.data$name),
+  silent = quiet
   )
 
   return(df_default)

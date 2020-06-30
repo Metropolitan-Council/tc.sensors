@@ -52,8 +52,10 @@ pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
       "detector"
     ), sep = "/") %>%
     tidyr::unite(rnode_path, .data$front,
-                 .data$tms_config, .data$device,
-                 .data$rnode, sep = "/") %>%
+      .data$tms_config, .data$device,
+      .data$rnode,
+      sep = "/"
+    ) %>%
     dplyr::mutate(rnode_path = trimws(.data$rnode_path)) %>%
     dplyr::mutate(corridor_path = .data$rnode_path) %>%
     tidyr::separate(.data$corridor_path, into = c(
@@ -61,7 +63,9 @@ pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
       "device", "rnode"
     ), sep = "/") %>%
     tidyr::unite(corridor_path, .data$front,
-                 .data$tms_config, .data$device, sep = "/") %>%
+      .data$tms_config, .data$device,
+      sep = "/"
+    ) %>%
     dplyr::mutate(corridor_path = trimws(.data$corridor_path)) %>%
     dplyr::select(-.data$name) %>%
     dplyr::rename(detector_path = .data$value)
@@ -112,8 +116,10 @@ pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
   attr_all_ls <- list(d_attr_ls, rn_attr_ls, c_attr_ls)
   categories <- list("detector", "r_node", "corridor")
 
-  attributes_full <- purrr::map2(categories, attr_all_ls,
-                                 attr_to_df, metro_config)
+  attributes_full <- purrr::map2(
+    categories, attr_all_ls,
+    attr_to_df, metro_config
+  )
 
   # Bind paths to attributes
   d_paths_attr <- dplyr::bind_cols(detector_paths, attributes_full[[1]])
@@ -126,20 +132,28 @@ pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
     by = c("rnode_path")
   )
   configuration <- dplyr::left_join(detector_rnodes_full,
-                                    corr_paths_attrs, by = c("corridor_path"))
+    corr_paths_attrs,
+    by = c("corridor_path")
+  )
 
   config_tidy <- configuration %>%
-    dplyr::select(-.data$rnode, -.data$rnode_path,
-                  -.data$detector, -.data$detector_path,
-                  -.data$corridor_path) %>%
+    dplyr::select(
+      -.data$rnode, -.data$rnode_path,
+      -.data$detector, -.data$detector_path,
+      -.data$corridor_path
+    ) %>%
     dplyr::mutate(date = Sys.Date())
 
   if (return_opt == "in_memory") {
     return(config_tidy)
   } else if (return_opt == "within_dir") {
-    data.table::fwrite(config_tidy,
-                       paste0("Configuration of Metro Detectors ",
-                                           Sys.Date(), ".csv"))
+    data.table::fwrite(
+      config_tidy,
+      paste0(
+        "Configuration of Metro Detectors ",
+        Sys.Date(), ".csv"
+      )
+    )
   }
 
   config_tidy

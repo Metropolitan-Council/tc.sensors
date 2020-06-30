@@ -4,7 +4,7 @@
 \alias{pull_sensor}
 \title{Pull sensor volume and occupancy}
 \usage{
-pull_sensor(sensor, pull_date)
+pull_sensor(sensor, pull_date, .quiet = TRUE)
 }
 \arguments{
 \item{sensor}{an object of class integer or string which indicates the sensor ID.
@@ -12,6 +12,8 @@ See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.}
 
 \item{pull_date}{an object of class string which indicates the date of data to pull.
 Needs to by in "YYYY-MM-DD" format.}
+
+\item{.quiet}{boolean, whether to hide messages. Default is TRUE}
 }
 \value{
 dataframe containing variables volume, occupancy, sensor, date, time.

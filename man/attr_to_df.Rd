@@ -4,12 +4,14 @@
 \alias{attr_to_df}
 \title{Make data frame for category and attributes}
 \usage{
-attr_to_df(category, attr_ls)
+attr_to_df(category, attr_ls, metro_config)
 }
 \arguments{
 \item{category}{string, one of "detector", "r_node", or "corridor"}
 
 \item{attr_ls}{list of attributes corresponding to the given category}
+
+\item{metro_config}{sensor configuration}
 }
 \value{
 a data frame of clean attributes for the given category

@@ -4,7 +4,10 @@
 \alias{pull_sensor_ids}
 \title{Function to pull all sensor IDs in the Twin Cities metro}
 \usage{
-pull_sensor_ids()
+pull_sensor_ids(.quiet = TRUE)
+}
+\arguments{
+\item{.quiet}{boolean, whether to hide messages. Default is TRUE}
 }
 \value{
 dataframe containing variable "detector"

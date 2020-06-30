@@ -4,7 +4,7 @@
 \alias{attr_clean}
 \title{Clean node and detector attributes}
 \usage{
-attr_clean(category, attribute, metro_config = metro_config)
+attr_clean(category, attribute, metro_config)
 }
 \arguments{
 \item{category}{string, one of "detector", "r_node", or "corridor"}

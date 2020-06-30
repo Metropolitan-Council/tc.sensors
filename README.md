@@ -33,6 +33,29 @@ examples of end-to-end workflows for pulling and storing data locally en
 masse. Check back for a vignettes for calculating speeds, reference
 speeds, delay, and VMT from the resulting files.
 
+## Relevant definitions
+
+  - **Volume** The number of vehicles that pass through a detector in a
+    given time period.  
+  - **Occupancy** The percentage of time a detector’s field is occupied
+    by a vehicle.  
+  - **Flow** The number of vehicles that pass through a detector per
+    hour (`Volume * Samples per Hour`).  
+  - **Headway** The number of seconds between each vehicle
+    (`Seconds_per_Hour / Flow`).  
+  - **Density** The number of vehicles per mile (`Flow / Speed`). See
+    [full calculation
+    method](http://data.dot.state.mn.us/datatools/Density.html) for
+    additional context.  
+  - **Speed** The average speed of the vehicles that pass in a sampling
+    period (`Flow / Density`).  
+  - **Lost/Spare Capacity** The average flow that a roadway is losing,
+    either due to low traffic or high congestion, throughout the
+    sampling period.
+      - `Flow > 1800: 0`
+      - `Density > 43: Lost Capacity: Flow - 1800`
+      - `Density >= 43: Lost Capacity: 1800 - Flow`
+
 ## Contributors
 
   - **Maintainer** Liz Roten (<liz.roten@metc.state.mn.us>)  

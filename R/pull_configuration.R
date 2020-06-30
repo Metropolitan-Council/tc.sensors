@@ -77,15 +77,6 @@ pull_configuration <- function(return_opt = "in_memory") {
   # ATTRIBUTES (rnodes & detectors)
   # ------------------
 
-  attr_clean <- function(category, attribute) {
-    trimws(
-      xml2::xml_attr(
-        xml2::xml_find_all(
-          metro_config, paste0("//", category)
-        ), attribute
-      )
-    )
-  }
 
   d_attr_ls <- list(
     "name",
@@ -112,11 +103,6 @@ pull_configuration <- function(return_opt = "in_memory") {
 
   c_attr_ls <- list("route", "dir")
 
-  attr_to_df <- function(category, attr_ls) {
-    attributes_ls <- purrr::map2(category, attr_ls, attr_clean)
-    names(attributes_ls) <- paste(category, attr_ls, sep = "_")
-    dplyr::bind_rows(attributes_ls)
-  }
 
   attr_all_ls <- list(d_attr_ls, rn_attr_ls, c_attr_ls)
   categories <- list("detector", "r_node", "corridor")
@@ -134,7 +120,6 @@ pull_configuration <- function(return_opt = "in_memory") {
   )
   configuration <- dplyr::left_join(detector_rnodes_full, corr_paths_attrs, by = c("corridor_path"))
 
-
   config_tidy <- configuration %>%
     dplyr::select(-rnode, -rnode_path, -detector, -detector_path, -corridor_path) %>%
     dplyr::mutate(date = Sys.Date())
@@ -146,4 +131,69 @@ pull_configuration <- function(return_opt = "in_memory") {
   }
 
   config_tidy
+}
+
+#' Clean node and detector attributes
+#'
+#' @param category string, one of "detector", "r_node", or "corridor"
+#' @param attribute string. Options vary for each category.
+#'   Detector attributes
+#'     - "name"
+#'     - "label"
+#'     - "category"
+#'     - "lane"
+#'     - "field"
+#'     - "abandoned"
+#'   Node attributes
+#'     - "name"
+#'     - "n_type"
+#'     - "transition"
+#'     - "label"
+#'     - "lon"
+#'     - "lat"
+#'     - "lanes"
+#'     - "shift"
+#'     - "s_limit"
+#'     - "station_id"
+#'     - "attach_side"
+#'   Corridor attributes
+#'     - "route"
+#'     - "dir"
+#' @param metro_config sensor configuration
+#'
+#'
+#' @return formatted configuration
+#' @export
+#' @keywords internal
+#'
+#' @importFrom xml2 xml_attr xml_find_all
+#'
+attr_clean <- function(category, attribute, metro_config = metro_config) {
+  trimws(
+    xml2::xml_attr(
+      xml2::xml_find_all(
+        metro_config, paste0("//", category)
+      ), attribute
+    )
+  )
+}
+
+
+#' Make data frame for category and attributes
+#'
+#' @inheritParams attr_clean
+#' @param attr_ls list of attributes corresponding to the given category
+#'
+#' @return a data frame of clean attributes for the given category
+#' @export
+#'
+#' @keywords internal
+#'
+#' @importFrom purrr map2
+#' @importFrom dplyr bind_rows
+#'
+attr_to_df <- function(category, attr_ls) {
+  attributes_ls <- purrr::map2(category, attr_ls, attr_clean)
+  names(attributes_ls) <- paste(category, attr_ls, sep = "_")
+  dplyr::bind_rows(attributes_ls)
 }

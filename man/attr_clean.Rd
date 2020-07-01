@@ -7,9 +7,9 @@
 attr_clean(category, attribute, metro_config)
 }
 \arguments{
-\item{category}{string, one of "detector", "r_node", or "corridor"}
+\item{category}{character, one of "detector", "r_node", or "corridor"}
 
-\item{attribute}{string. Options vary for each category.
+\item{attribute}{character. Options vary for each category.
 Detector attributes
 - "name"
 - "label"

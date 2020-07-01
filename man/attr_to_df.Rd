@@ -7,7 +7,7 @@
 attr_to_df(category, attr_ls, metro_config)
 }
 \arguments{
-\item{category}{string, one of "detector", "r_node", or "corridor"}
+\item{category}{character, one of "detector", "r_node", or "corridor"}
 
 \item{attr_ls}{list of attributes corresponding to the given category}
 

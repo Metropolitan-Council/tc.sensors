@@ -7,7 +7,7 @@
 pull_configuration(return_opt = "in_memory", .quiet = TRUE)
 }
 \arguments{
-\item{return_opt}{an object of class string which indicates how to return the data.
+\item{return_opt}{character, indicate how to return the data.
 \code{"within_dir"} will return the data within the directory as a csv entitled
 "Configuration of Metro Detectors YYYY-MM-DD".
 \code{"in-memory"} will return the data in R, but requires assignment.}
@@ -17,10 +17,53 @@ pull_configuration(return_opt = "in_memory", .quiet = TRUE)
 \value{
 dataframe containing 20 variables, including detector_field and lat/lons,
 for each sensor in MnDOT's metro district
+\itemize{
+\item \code{detector_name} character, the detector's unique identifier in numbers
+\item \code{detector_label} character, the detector's label including abbreviations of the roads associated with the roadway node.
+\item \code{detector_category} character, the detector lane type in code. \href{https://github.com/mnit-rtmc/iris/blob/5b3dcbbcd6d177b2a1d37576bdd06b7d33a6facd/src/us/mn/state/dot/tms/LaneType.java}{Source}
+\itemize{
+\item "" Mainline
+\item "A" Auxiliary, mainline auxiliary (ends within a mile)
+\item "B" Bypass, ramp meter bypass
+\item "CD" Collector/Distributor
+\item "D" Shoulder, mainline shoulder
+\item "G" Green, ramp meter displayed green count
+\item "H" High-Occupancy Vehicle
+\item "HT" High-Occupancy Vehicle or Toll
+\item "M" Merge, Freeway on-ramp (counts all merging traffic)
+\item "O" Omnibus, bus only
+\item "P" Passage, ramp meter passage
+\item "PK" Parking, parking space presence detector
+\item "Q" Queue, ramp metering queue
+\item "R" Reversible mainline
+\item "V" Velocity, mainline speed loop
+\item "X" Exit, freeway exit ramp
+}
+\item \code{detector_lane} character, the detector's lane. Lanes are numbered from right-to-left, starting with the right lane as 1.
+\item \code{detector_field} character, the detector's field length in feet
+\item \code{detector_abandoned} character, whether the detector is no longer in use.
+\item \code{r_node_name} character, abbreviated roadway node name.
+\item \code{r_node_n_type} character, one of "Station", "Exit", "Entrance", or "Intersection"
+\item \code{r_node_transition} character, how the entrance or exit nodes connect with linked nodes
+\item \code{r_node_label} character, unique road name, including affixes such as “St” or “Rd” or stall number
+\item \code{r_node_lon} character, the roadway node longitude
+\item \code{r_node_lat} character, the roadway node latitude
+\item \code{r_node_lanes} character, for an entrance or exit ramp, this is the number of lanes entering or exiting the corridor. Otherwise, it is the number of lanes on the corridor.
+\item \code{r_node_shift} character,  the difference (number of lanes) between the corridor reference lane and the attach side of the roadway node.
+\item \code{r_node_s_limit} character, the posted speed limit in miles per hour
+\item \code{r_node_station_id} character, A unique identifier for the detectors associated with a station roadway node
+\item \code{r_node_attach_side} character, whether the r_node is attached to the left side of the road. This can be used to create left entrance or exit ramps.
+\item \code{corridor_route} character, the corridor route name. All roadway nodes with the same road and direction-of-travel are grouped into corridors.
+\item \code{corridor_dir} character, the corridor route direction. One of "EB", "NB", "SB", or "WB"
+\item \code{date}date, the date the configuration was accessed
+}
 }
 \description{
 Read MnDOT JSON feed and wrangle into a tidy dataframe containing 20 variables related to sensor configuration.
 Useful for mapping (contains lat/lons) and calculating performance measures (contains detector_field).
+}
+\details{
+Additional documentation on the IRIS system can be found on MNIT \href{https://mnit-rtmc.github.io/iris/index.html}{documentation page}.
 }
 \examples{
 \dontrun{

@@ -4,15 +4,17 @@
 \alias{extension_pull}
 \title{Pull extension}
 \usage{
-extension_pull(ext, sensor, pull_date, quiet = TRUE)
+extension_pull(ext, ext_name, sensor, pull_date, quiet = TRUE)
 }
 \arguments{
-\item{ext}{either \code{"v"} for volume or \code{"c"} for occupancy}
+\item{ext}{string, either \code{"v"} for volume or \code{"c"} for occupancy}
 
-\item{sensor}{an object of class integer or string which indicates the sensor ID.
+\item{ext_name}{string, either \code{"volume"} or \code{"occupancy"}}
+
+\item{sensor}{character, the sensor ID.
 See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.}
 
-\item{pull_date}{an object of class string which indicates the date of data to pull.
+\item{pull_date}{character, the date of data to pull.
 Needs to by in "YYYY-MM-DD" format.}
 
 \item{quiet}{boolean, whether to hide messages. Default is TRUE}

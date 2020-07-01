@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make data frame for category and attributes — attr_to_df • tc.sensors</title>
+<title>Scrub sensor level data — scrub_sensor • tc.sensors</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Make data frame for category and attributes — attr_to_df" />
-<meta property="og:description" content="Make data frame for category and attributes" />
+<meta property="og:title" content="Scrub sensor level data — scrub_sensor" />
+<meta property="og:description" content="Scrub sensor level data" />
 
 
 
@@ -126,37 +126,35 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make data frame for category and attributes</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Metropolitan-Council/tc.sensors/blob/master/R/pull_configuration.R'><code>R/pull_configuration.R</code></a></small>
-    <div class="hidden name"><code>attr_to_df.Rd</code></div>
+    <h1>Scrub sensor level data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Metropolitan-Council/tc.sensors/blob/master/R/scrub.R'><code>R/scrub.R</code></a></small>
+    <div class="hidden name"><code>scrub_sensor.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make data frame for category and attributes</p>
+    <p>Scrub sensor level data</p>
     </div>
 
-    <pre class="usage"><span class='fu'>attr_to_df</span>(<span class='kw'>category</span>, <span class='kw'>attr_ls</span>, <span class='kw'>metro_config</span>)</pre>
+    <pre class="usage"><span class='fu'>scrub_sensor</span>(<span class='kw'>sensor_data</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>category</th>
-      <td><p>character, one of "detector", "r_node", or "corridor"</p></td>
+      <th>sensor_data</th>
+      <td><p>data frame returned from <code>pull_sensor()</code></p></td>
     </tr>
     <tr>
-      <th>attr_ls</th>
-      <td><p>list of attributes corresponding to the given category</p></td>
-    </tr>
-    <tr>
-      <th>metro_config</th>
-      <td><p>sensor configuration</p></td>
+      <th>level</th>
+      <td><p>string, options are "raw", "fifteen", "hour"</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a data frame of clean attributes for the given category</p>
+    
+
+
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

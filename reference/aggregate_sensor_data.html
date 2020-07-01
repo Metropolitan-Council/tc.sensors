@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make data frame for category and attributes — attr_to_df • tc.sensors</title>
+<title>Aggregate raw sensor data to a chosen level — aggregate_sensor_data • tc.sensors</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Make data frame for category and attributes — attr_to_df" />
-<meta property="og:description" content="Make data frame for category and attributes" />
+<meta property="og:title" content="Aggregate raw sensor data to a chosen level — aggregate_sensor_data" />
+<meta property="og:description" content="Aggregate raw sensor data to a chosen level" />
 
 
 
@@ -126,37 +126,41 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make data frame for category and attributes</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Metropolitan-Council/tc.sensors/blob/master/R/pull_configuration.R'><code>R/pull_configuration.R</code></a></small>
-    <div class="hidden name"><code>attr_to_df.Rd</code></div>
+    <h1>Aggregate raw sensor data to a chosen level</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Metropolitan-Council/tc.sensors/blob/master/R/aggregate_sensor_data.R'><code>R/aggregate_sensor_data.R</code></a></small>
+    <div class="hidden name"><code>aggregate_sensor_data.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make data frame for category and attributes</p>
+    <p>Aggregate raw sensor data to a chosen level</p>
     </div>
 
-    <pre class="usage"><span class='fu'>attr_to_df</span>(<span class='kw'>category</span>, <span class='kw'>attr_ls</span>, <span class='kw'>metro_config</span>)</pre>
+    <pre class="usage"><span class='fu'>aggregate_sensor_data</span>(
+  <span class='kw'>sensor_data</span>,
+  <span class='kw'>config</span>,
+  <span class='kw'>interval_length</span>,
+  calculations = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"volume.sum"</span>, <span class='st'>"occupancy.sum"</span>)
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>category</th>
-      <td><p>character, one of "detector", "r_node", or "corridor"</p></td>
+      <th>sensor_data</th>
+      <td><p>data frame for single sensor returned from <code>pull_sensor()</code></p></td>
     </tr>
     <tr>
-      <th>attr_ls</th>
-      <td><p>list of attributes corresponding to the given category</p></td>
-    </tr>
-    <tr>
-      <th>metro_config</th>
-      <td><p>sensor configuration</p></td>
+      <th>intverval_length</th>
+      <td><p>numeric, the interval length in hours. Default is <code>1</code>.
+<code>0.25</code> indicates 15 minutes.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a data frame of clean attributes for the given category</p>
+    
+
+
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

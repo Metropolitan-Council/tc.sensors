@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Pull sensor volume and occupancy — pull_sensor" />
-<meta property="og:description" content="Create a tidy dataframe, containing volume and occupancy, for a single date and sensor.
+<meta property="og:description" content="Create a tidy data frame, containing volume and occupancy, for a single date and sensor.
 Use pull_sensor_ids to obtain metro sensor IDs." />
 
 
@@ -101,6 +101,9 @@ Use pull_sensor_ids to obtain metro sensor IDs." />
     <li>
       <a href="../articles/pulling_sensors_in_parallel.html">Pull multiple sensors using parallel processing</a>
     </li>
+    <li>
+      <a href="../articles/tc_sensors.html">tc.sensors</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -130,7 +133,7 @@ Use pull_sensor_ids to obtain metro sensor IDs." />
     </div>
 
     <div class="ref-description">
-    <p>Create a tidy dataframe, containing volume and occupancy, for a single date and sensor.
+    <p>Create a tidy data frame, containing volume and occupancy, for a single date and sensor.
 Use <code>pull_sensor_ids</code> to obtain metro sensor IDs.</p>
     </div>
 
@@ -141,12 +144,12 @@ Use <code>pull_sensor_ids</code> to obtain metro sensor IDs.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>sensor</th>
-      <td><p>an object of class integer or string which indicates the sensor ID.
+      <td><p>character, the sensor ID.
 See documentation for <code>pull_sensor_ids</code> to obtain metro sensor IDs.</p></td>
     </tr>
     <tr>
       <th>pull_date</th>
-      <td><p>an object of class string which indicates the date of data to pull.
+      <td><p>character, the date of data to pull.
 Needs to by in "YYYY-MM-DD" format.</p></td>
     </tr>
     <tr>
@@ -157,11 +160,29 @@ Needs to by in "YYYY-MM-DD" format.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>dataframe containing variables volume, occupancy, sensor, date, time.
-Note that occupancy <em>can</em> be missing while volume data exists and vice versa.
+    <p>data frame containing variables volume, occupancy, sensor, date, time.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    
+<h3>Output</h3>
+<pre>A complete year's worth of data for volume or occupancy for one sensor
+ usually results in a file that is around ~30-31KB.
+
+Approximate time to pull one sensor's and one extension's
+ (v or c for volume or occupancy, respectively) data across
+  a year on a Mac is 1.33 minutes.
+
+Also note that if you assign `pull_sensor()`'s output, the result is returned in-memory,
+and there must be sufficient space in-memory to do so.
+</pre>
+
+
+<h3>Missing data</h3>
+<pre>Occupancy *can* be missing while volume data exists and vice versa.
 It is unknown how a loop could be monitoring volume and not occupancy.
-Also note that if you assign the output of pull_loops, the result is returned in-memory,
-and there must be sufficient space in-memory to do so.</p>
+</pre>
+
+
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other loop sensor functions: 

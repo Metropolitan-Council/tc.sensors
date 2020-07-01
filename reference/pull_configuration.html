@@ -101,6 +101,9 @@ Useful for mapping (contains lat/lons) and calculating performance measures (con
     <li>
       <a href="../articles/pulling_sensors_in_parallel.html">Pull multiple sensors using parallel processing</a>
     </li>
+    <li>
+      <a href="../articles/tc_sensors.html">tc.sensors</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -141,7 +144,7 @@ Useful for mapping (contains lat/lons) and calculating performance measures (con
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>return_opt</th>
-      <td><p>an object of class string which indicates how to return the data.
+      <td><p>character, indicate how to return the data.
 <code>"within_dir"</code> will return the data within the directory as a csv entitled
 "Configuration of Metro Detectors YYYY-MM-DD".
 <code>"in-memory"</code> will return the data in R, but requires assignment.</p></td>
@@ -155,7 +158,49 @@ Useful for mapping (contains lat/lons) and calculating performance measures (con
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>dataframe containing 20 variables, including detector_field and lat/lons,
-for each sensor in MnDOT's metro district</p>
+for each sensor in MnDOT's metro district</p><ul>
+<li><p><code>detector_name</code> character, the detector's unique identifier in numbers</p></li>
+<li><p><code>detector_label</code> character, the detector's label including abbreviations of the roads associated with the roadway node.</p></li>
+<li><p><code>detector_category</code> character, the detector lane type in code. <a href='https://github.com/mnit-rtmc/iris/blob/5b3dcbbcd6d177b2a1d37576bdd06b7d33a6facd/src/us/mn/state/dot/tms/LaneType.java'>Source</a></p><ul>
+<li><p>"" Mainline</p></li>
+<li><p>"A" Auxiliary, mainline auxiliary (ends within a mile)</p></li>
+<li><p>"B" Bypass, ramp meter bypass</p></li>
+<li><p>"CD" Collector/Distributor</p></li>
+<li><p>"D" Shoulder, mainline shoulder</p></li>
+<li><p>"G" Green, ramp meter displayed green count</p></li>
+<li><p>"H" High-Occupancy Vehicle</p></li>
+<li><p>"HT" High-Occupancy Vehicle or Toll</p></li>
+<li><p>"M" Merge, Freeway on-ramp (counts all merging traffic)</p></li>
+<li><p>"O" Omnibus, bus only</p></li>
+<li><p>"P" Passage, ramp meter passage</p></li>
+<li><p>"PK" Parking, parking space presence detector</p></li>
+<li><p>"Q" Queue, ramp metering queue</p></li>
+<li><p>"R" Reversible mainline</p></li>
+<li><p>"V" Velocity, mainline speed loop</p></li>
+<li><p>"X" Exit, freeway exit ramp</p></li>
+</ul></li>
+<li><p><code>detector_lane</code> character, the detector's lane. Lanes are numbered from right-to-left, starting with the right lane as 1.</p></li>
+<li><p><code>detector_field</code> character, the detector's field length in feet</p></li>
+<li><p><code>detector_abandoned</code> character, whether the detector is no longer in use.</p></li>
+<li><p><code>r_node_name</code> character, abbreviated roadway node name.</p></li>
+<li><p><code>r_node_n_type</code> character, one of "Station", "Exit", "Entrance", or "Intersection"</p></li>
+<li><p><code>r_node_transition</code> character, how the entrance or exit nodes connect with linked nodes</p></li>
+<li><p><code>r_node_label</code> character, unique road name, including affixes such as “St” or “Rd” or stall number</p></li>
+<li><p><code>r_node_lon</code> character, the roadway node longitude</p></li>
+<li><p><code>r_node_lat</code> character, the roadway node latitude</p></li>
+<li><p><code>r_node_lanes</code> character, for an entrance or exit ramp, this is the number of lanes entering or exiting the corridor. Otherwise, it is the number of lanes on the corridor.</p></li>
+<li><p><code>r_node_shift</code> character,  the difference (number of lanes) between the corridor reference lane and the attach side of the roadway node.</p></li>
+<li><p><code>r_node_s_limit</code> character, the posted speed limit in miles per hour</p></li>
+<li><p><code>r_node_station_id</code> character, A unique identifier for the detectors associated with a station roadway node</p></li>
+<li><p><code>r_node_attach_side</code> character, whether the r_node is attached to the left side of the road. This can be used to create left entrance or exit ramps.</p></li>
+<li><p><code>corridor_route</code> character, the corridor route name. All roadway nodes with the same road and direction-of-travel are grouped into corridors.</p></li>
+<li><p><code>corridor_dir</code> character, the corridor route direction. One of "EB", "NB", "SB", or "WB"</p></li>
+<li><p><code>date</code>date, the date the configuration was accessed</p></li>
+</ul>
+
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Additional documentation on the IRIS system can be found on MNIT <a href='https://mnit-rtmc.github.io/iris/index.html'>documentation page</a>.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other loop sensor functions: 

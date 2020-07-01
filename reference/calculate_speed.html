@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make data frame for category and attributes — attr_to_df • tc.sensors</title>
+<title>Calculate speed in miles per hour at different temporal aggregation levels — calculate_speed • tc.sensors</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Make data frame for category and attributes — attr_to_df" />
-<meta property="og:description" content="Make data frame for category and attributes" />
+<meta property="og:title" content="Calculate speed in miles per hour at different temporal aggregation levels — calculate_speed" />
+<meta property="og:description" content="Calculate speed in miles per hour at different temporal aggregation levels" />
 
 
 
@@ -126,37 +126,45 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make data frame for category and attributes</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Metropolitan-Council/tc.sensors/blob/master/R/pull_configuration.R'><code>R/pull_configuration.R</code></a></small>
-    <div class="hidden name"><code>attr_to_df.Rd</code></div>
+    <h1>Calculate speed in miles per hour at different temporal aggregation levels</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Metropolitan-Council/tc.sensors/blob/master/R/calculate.R'><code>R/calculate.R</code></a></small>
+    <div class="hidden name"><code>calculate_speed.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make data frame for category and attributes</p>
+    <p>Calculate speed in miles per hour at different temporal aggregation levels</p>
     </div>
 
-    <pre class="usage"><span class='fu'>attr_to_df</span>(<span class='kw'>category</span>, <span class='kw'>attr_ls</span>, <span class='kw'>metro_config</span>)</pre>
+    <pre class="usage"><span class='fu'>calculate_speed</span>(<span class='kw'>sensor_data</span>, <span class='kw'>configuration</span>, interval_length = <span class='fl'>1</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>category</th>
-      <td><p>character, one of "detector", "r_node", or "corridor"</p></td>
+      <th>sensor_data</th>
+      <td><p>a data table of sensor data at 30 second intervals</p></td>
     </tr>
     <tr>
-      <th>attr_ls</th>
-      <td><p>list of attributes corresponding to the given category</p></td>
-    </tr>
-    <tr>
-      <th>metro_config</th>
-      <td><p>sensor configuration</p></td>
+      <th>intverval_length</th>
+      <td><p>numeric, the interval length in hours. Default is <code>1</code>.
+<code>0.25</code> indicates 15 minutes.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a data frame of clean attributes for the given category</p>
+    
+
+
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>There are 60 scans per second, which means there are 60*60 = 1,800 scans per
+30-second interval. The occupancy value in the 30-second interval data
+represents the number of scans that were occupied of the 1,800 scans in that
+interval.</p>
+<p>With 60 scans per second, 60 seconds per minute there are 3,600 scans per minute.
+With 3,600 scans per minute, 60 minutes per hour there are 216,000 scans per hour.
+To find the number of scans in 15 minutes, we can multiply 0.25 * 216000 = 54,000 scans.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

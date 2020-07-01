@@ -99,6 +99,9 @@
     <li>
       <a href="../articles/pulling_sensors_in_parallel.html">Pull multiple sensors using parallel processing</a>
     </li>
+    <li>
+      <a href="../articles/tc_sensors.html">tc.sensors</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -148,6 +151,31 @@
       <tr>
         
         <td>
+          <p><code><a href="aggregate_sensor_data.html">aggregate_sensor_data()</a></code> </p>
+        </td>
+        <td><p>Aggregate raw sensor data to a chosen level</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="calculate_speed.html">calculate_speed()</a></code> </p>
+        </td>
+        <td><p>Calculate speed in miles per hour at different temporal aggregation levels</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="flag_impossible.html">flag_impossible()</a></code> </p>
+        </td>
+        <td><p>Flag impossible values at given aggregation level</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_day_type.html">get_day_type()</a></code> </p>
+        </td>
+        <td><p>Append a column with a given date's day type (weekday or weekend),
+day of week, and day category (holiday, weekend, or weekday)</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="pull_configuration.html">pull_configuration()</a></code> </p>
         </td>
         <td><p>Pull metro sensor configuration</p></td>
@@ -162,7 +190,15 @@
         <td>
           <p><code><a href="pull_sensor_ids.html">pull_sensor_ids()</a></code> </p>
         </td>
-        <td><p>Function to pull all sensor IDs in the Twin Cities metro</p></td>
+        <td><p>Function to pull all sensor IDs in the Twin Cities metro
+
+Create a tidy dataframe containing sensor IDs for MnDOT metro district, mainly to be used with pull_sensor</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="scrub_sensor.html">scrub_sensor()</a></code> </p>
+        </td>
+        <td><p>Scrub sensor level data</p></td>
       </tr>
     </tbody>
     </table>

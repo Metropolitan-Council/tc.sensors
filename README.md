@@ -59,6 +59,15 @@ Definitions come from MnDOT Data Extract
       - `Density > 43: Lost Capacity: Flow - 1800`
       - `Density >= 43: Lost Capacity: 1800 - Flow`
 
+## Associated repositories and projects
+
+  - **[loop-sensor-trends](https://github.com/Metropolitan-Council/loop-sensor-trends)**
+    Data analysis and interactive R Shiny app for examining changes in
+    regional traffic levels in response to the COVID-19 pandemic.  
+  - **[Twin-Cities-Loop-Detectors](https://github.com/sullivannicole/Twin-Cities-Loop-Detectors)**
+    A pre-cursor to `{tc.sensors}`. Contains extensive documentation and
+    code samples that will be integrated into this package.
+
 ## Contributors
 
   - **Maintainer** Liz Roten (<liz.roten@metc.state.mn.us>)  

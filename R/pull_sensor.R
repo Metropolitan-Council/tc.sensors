@@ -51,11 +51,10 @@ pull_sensor <- function(sensor, pull_date, .quiet = TRUE) {
   # exts <- c("v", "c")
   # loops_ls <- map(exts, extension_pull)
 
-  volume <- extension_pull("v", pull_date = pull_date, sensor = sensor, quiet = .quiet)
-  occupancy <- extension_pull("c", pull_date = pull_date, sensor = sensor, quiet = .quiet)
+  volume <- extension_pull("v", "volume", pull_date = pull_date, sensor = sensor, quiet = .quiet)
+  occupancy <- extension_pull("c", "occupancy", pull_date = pull_date, sensor = sensor, quiet = .quiet)
 
   loop_uneven <- dplyr::bind_cols(volume, occupancy)
-  names(loop_uneven) <- c("volume", "occupancy")
 
   loop_date_sensor <- loop_uneven %>%
     dplyr::mutate(
@@ -97,7 +96,7 @@ pull_sensor <- function(sensor, pull_date, .quiet = TRUE) {
 #' @return a tibble
 #'
 #' @export
-extension_pull <- function(ext, sensor, pull_date, quiet = TRUE) {
+extension_pull <- function(ext, ext_name, sensor, pull_date, quiet = TRUE) {
   # browser()
   pull_year <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%Y")
   pull_month <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%m")
@@ -122,9 +121,10 @@ extension_pull <- function(ext, sensor, pull_date, quiet = TRUE) {
       )
     )
   ) %>%
-    dplyr::select(.data$name),
+    dplyr::select(.data$value),
   silent = quiet
   )
+  names(df_default) <- ext_name
 
   return(df_default)
 }

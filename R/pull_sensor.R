@@ -1,20 +1,35 @@
 #' @title Pull sensor volume and occupancy
 #'
 #'
-#' @description Create a tidy dataframe, containing volume and occupancy, for a single date and sensor.
+#' @description Create a tidy data frame, containing volume and occupancy, for a single date and sensor.
 #'   Use \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
 #'
-#' @param pull_date an object of class string which indicates the date of data to pull.
+#' @param pull_date character, the date of data to pull.
 #'   Needs to by in "YYYY-MM-DD" format.
-#' @param sensor an object of class integer or string which indicates the sensor ID.
+#' @param sensor character, the sensor ID.
 #'   See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
 #' @inheritParams pull_configuration
 #'
-#' @return dataframe containing variables volume, occupancy, sensor, date, time.
-#'   Note that occupancy *can* be missing while volume data exists and vice versa.
-#'   It is unknown how a loop could be monitoring volume and not occupancy.
-#'   Also note that if you assign the output of pull_loops, the result is returned in-memory,
-#'   and there must be sufficient space in-memory to do so.
+#' @return data frame containing variables volume, occupancy, sensor, date, time.
+#'
+#' @details
+#'   ## Output
+#'
+#'     A complete year's worth of data for volume or occupancy for one sensor
+#'      usually results in a file that is around ~30-31KB.
+#'
+#'     Approximate time to pull one sensor's and one extension's
+#'      (v or c for volume or occupancy, respectively) data across
+#'       a year on a Mac is 1.33 minutes.
+#'
+#'     Also note that if you assign `pull_sensor()`'s output, the result is returned in-memory,
+#'     and there must be sufficient space in-memory to do so.
+#'
+#'   ## Missing data
+#'
+#'     Occupancy *can* be missing while volume data exists and vice versa.
+#'     It is unknown how a loop could be monitoring volume and not occupancy.
+
 #'
 #' @examples
 #' \dontrun{
@@ -88,7 +103,8 @@ pull_sensor <- function(sensor, pull_date, .quiet = TRUE) {
 
 #' Pull extension
 #'
-#' @param ext either \code{"v"} for volume or \code{"c"} for occupancy
+#' @param ext string, either \code{"v"} for volume or \code{"c"} for occupancy
+#' @param ext_name string, either \code{"volume"} or \code{"occupancy"}
 #' @param quiet boolean, whether to hide messages. Default is TRUE
 #' @inheritParams pull_sensor
 #' @keywords internal

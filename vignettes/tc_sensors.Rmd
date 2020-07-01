@@ -28,7 +28,8 @@ Raw data is accessed at the sensor level. Sensors are generally spaced in half m
 
 ### Volume  
 
-Volume represents the number of vehicles 
+Volume represents the number of vehicles that pass through a detector in a given time period. Flow represents the number of vehicles that pass through a detector per hour (`Volume * Samples per Hour`).  
+
 
 ### Occupancy  
 
@@ -45,7 +46,12 @@ Note that a variable is created containing the percentage of nulls/impossible va
 
 ## Calculations  
 
-Calculations for speed, flow, headway, density and lost/spare capacity must be conducted for a given time aggregation. Common time intervals include 10, 15, and 30 minutes, hourly
+Calculations for speed, flow, headway, density and lost/spare capacity must be conducted for a given time aggregation. Common time intervals include 10, 15, and 30 minutes, hourly, peak traffic periods, and daily. 
+
+### Density  
+
+The number of vehicles per mile (`Flow / Speed`). See [full calculation method](http://data.dot.state.mn.us/datatools/Density.html) for additional context.  
+
 
 ### Speed  
 
@@ -58,6 +64,16 @@ or
 
 $$\frac{Flow}{Density} $$
 
-The 'Vehicles Per Hour' variable is calculated by summing all the vehicles over the 15-minute interval, and then multiplying that by four.  The 'Vehicle Length' variable is a static field in the sensor configuration dataset.  The 'Occupancy Percentage' variable is calculated by summing all the occupancy values over the 15-minute interval, and then dividing by 54,000 (1,800 scans in 30 seconds*30 periods in 15-minute interval).
+'Vehicles Per Hour' is calculated by summing all the vehicles over the 15-minute interval, and then multiplying that by four.  'Vehicle Length'  is a static field in the sensor configuration dataset. 'Occupancy Percentage' is calculated by summing all the occupancy values over the 15-minute interval, and then dividing by 54,000 (1,800 scans in 30 seconds*30 periods in 15-minute interval).
+
+
+### Lost or Spare Capacity  
+
+The average flow that a roadway is losing, either due to low traffic or high congestion, throughout the sampling period.  
+
 
 ### Vehicle Miles Traveled (VMT)
+
+## Additional documentation  
+
+The Regional Traffic Management Center (RTMC) maintains the Intelligent Roadway Information System (IRIS) with an [open-source repository on GitHub](https://github.com/mnit-rtmc/iris). IRIS [documentation](https://mnit-rtmc.github.io/iris/index.html) is served from the GitHub repo, as well. 

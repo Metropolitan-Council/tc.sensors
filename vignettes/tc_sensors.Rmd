@@ -1,0 +1,63 @@
+---
+title: "tc.sensors"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{tc.sensors}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(tc.sensors)
+```
+
+## Introduction  
+
+`{tc.sensors}` is an R package for processing data collected from Minnesota Department of Transportation (MnDOT) loop detectors installed on the Minnesota Freeway system in 30-second interval measurements of occupancy and volume, data which are pushed daily to a public JSON feed.  Occupancy and volume data can be used to calculate speed and delay.
+
+## Primary terms and definitions  
+
+Raw data is accessed at the sensor level. Sensors are generally spaced in half mile intervals along a corridor. 
+
+### Volume  
+
+Volume represents the number of vehicles 
+
+### Occupancy  
+
+The term 'occupancy' does not here refer to the occupants of a vehicle but rather the occupancy of the sensor, or how long the sensor was 'occupied'.  In a 30-second time period, 1800 scans are produced (60 per second), and each scan is binary:  either the sensor is occupied or not.  Therefore, a sensor occupied for 1 second within the 30-second time period would have a value of 60.  Raw occupancy values can be converted to percentages:
+
+$$\frac{Occupancy}{1800}*100% $$
+The resulting percentage is the percentage of time in that 30 seconds that the sensor was 'occupied'.
+
+### Interpolating null values
+
+Where nulls exist (vs. a zero measurement), it is assumed the connection was disrupted and no measurement was taken.  For 15-minute intervals where other values exist, the nulls are interpolated with the **average** of the other values within the interval.  Impossible values are also interpolated with the mean of the interval.  Impossible values are raw occupancy values greater than 1800 (given that only 1800 scans are taken in a 30-second period).  If an entire interval contains only nulls, it is converted to 'NA' and no values within the interval are interpolated.
+
+Note that a variable is created containing the percentage of nulls/impossible values in that interval; therefore, one can choose to exclude intervals with interpolation rates above a certain threshold of choice (eg if more than, say, 30% of the data is missing).
+
+## Calculations  
+
+Calculations for speed, flow, headway, density and lost/spare capacity must be conducted for a given time aggregation. Common time intervals include 10, 15, and 30 minutes, hourly
+
+### Speed  
+
+Speed is calculated 
+
+$$\frac{Vehicles Per Hour*Vehicle Length}{5280*Occupancy Percentage} $$
+
+
+or
+
+$$\frac{Flow}{Density} $$
+
+The 'Vehicles Per Hour' variable is calculated by summing all the vehicles over the 15-minute interval, and then multiplying that by four.  The 'Vehicle Length' variable is a static field in the sensor configuration dataset.  The 'Occupancy Percentage' variable is calculated by summing all the occupancy values over the 15-minute interval, and then dividing by 54,000 (1,800 scans in 30 seconds*30 periods in 15-minute interval).
+
+### Vehicle Miles Traveled (VMT)

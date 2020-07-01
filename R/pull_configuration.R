@@ -3,7 +3,7 @@
 #' @description Read MnDOT JSON feed and wrangle into a tidy dataframe containing 20 variables related to sensor configuration.
 #'   Useful for mapping (contains lat/lons) and calculating performance measures (contains detector_field).
 #'
-#' @param return_opt an object of class string which indicates how to return the data.
+#' @param return_opt character, indicate how to return the data.
 #'    \code{"within_dir"} will return the data within the directory as a csv entitled
 #'    "Configuration of Metro Detectors YYYY-MM-DD".
 #'     \code{"in-memory"} will return the data in R, but requires assignment.
@@ -11,6 +11,46 @@
 #'
 #' @return dataframe containing 20 variables, including detector_field and lat/lons,
 #'   for each sensor in MnDOT's metro district
+#'   - `detector_name` character, the detector's unique identifier in numbers
+#'   - `detector_label` character, the detector's label including abbreviations of the roads associated with the roadway node.
+#'   - `detector_category` character, the detector lane type in code. [Source](https://github.com/mnit-rtmc/iris/blob/5b3dcbbcd6d177b2a1d37576bdd06b7d33a6facd/src/us/mn/state/dot/tms/LaneType.java)
+#'     - "" Mainline
+#'     - "A" Auxiliary, mainline auxiliary (ends within a mile)
+#'     - "B" Bypass, ramp meter bypass
+#'     - "CD" Collector/Distributor
+#'     - "D" Shoulder, mainline shoulder
+#'     - "G" Green, ramp meter displayed green count
+#'     - "H" High-Occupancy Vehicle
+#'     - "HT" High-Occupancy Vehicle or Toll
+#'     - "M" Merge, Freeway on-ramp (counts all merging traffic)
+#'     - "O" Omnibus, bus only
+#'     - "P" Passage, ramp meter passage
+#'     - "PK" Parking, parking space presence detector
+#'     - "Q" Queue, ramp metering queue
+#'     - "R" Reversible mainline
+#'     - "V" Velocity, mainline speed loop
+#'     - "X" Exit, freeway exit ramp
+#'   - `detector_lane` character, the detector's lane. Lanes are numbered from right-to-left, starting with the right lane as 1.
+#'   - `detector_field` character, the detector's field length in feet
+#'   - `detector_abandoned` character, whether the detector is no longer in use.
+#'   - `r_node_name` character, abbreviated roadway node name.
+#'   - `r_node_n_type` character, one of "Station", "Exit", "Entrance", or "Intersection"
+#'   - `r_node_transition` character, how the entrance or exit nodes connect with linked nodes
+#'   - `r_node_label` character, unique road name, including affixes such as “St” or “Rd” or stall number
+#'   - `r_node_lon` character, the roadway node longitude
+#'   - `r_node_lat` character, the roadway node latitude
+#'   - `r_node_lanes` character, for an entrance or exit ramp, this is the number of lanes entering or exiting the corridor. Otherwise, it is the number of lanes on the corridor.
+#'   - `r_node_shift` character,  the difference (number of lanes) between the corridor reference lane and the attach side of the roadway node.
+#'   - `r_node_s_limit` character, the posted speed limit in miles per hour
+#'   - `r_node_station_id` character, A unique identifier for the detectors associated with a station roadway node
+#'   - `r_node_attach_side` character, whether the r_node is attached to the left side of the road. This can be used to create left entrance or exit ramps.
+#'   - `corridor_route` character, the corridor route name. All roadway nodes with the same road and direction-of-travel are grouped into corridors.
+#'   - `corridor_dir` character, the corridor route direction. One of "EB", "NB", "SB", or "WB"
+#'   - `date`date, the date the configuration was accessed
+#'
+#' @details Additional documentation on the IRIS system can be found on MNIT [documentation page](https://mnit-rtmc.github.io/iris/index.html).
+#'
+#'
 #' @family loop sensor functions
 #'
 #' @examples
@@ -161,8 +201,8 @@ pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
 
 #' Clean node and detector attributes
 #'
-#' @param category string, one of "detector", "r_node", or "corridor"
-#' @param attribute string. Options vary for each category.
+#' @param category character, one of "detector", "r_node", or "corridor"
+#' @param attribute character. Options vary for each category.
 #'   Detector attributes
 #'     - "name"
 #'     - "label"

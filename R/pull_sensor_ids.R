@@ -1,4 +1,4 @@
-#' Function to pull all sensor IDs in the Twin Cities metro
+#' @title Function to pull all sensor IDs in the Twin Cities metro
 #'
 #' Create a tidy dataframe containing sensor IDs for MnDOT metro district, mainly to be used with pull_sensor
 #'

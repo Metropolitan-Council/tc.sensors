@@ -9,7 +9,25 @@
 #'
 #' @import data.table
 #'
-aggregate_sensor_data <- function(sensor_data, config, interval_length, calculations = c("volume.sum", "occupancy.sum")) {
+aggregate_sensor_data <- function(sensor_data, config, interval_length) {
+
+  if(interval_length > 24){
+    stop("Interval cannot exceed 24 hours.")
+
+    if(length(unique(sensor_data$date)) <= 1){
+      stop("For intervals greater than 24 hours, you must have data for more than one date")
+    }
+  }
+
+  if(nrow(sensor_data) != 2880 * length(unique(sensor_data$date))){
+    stop("For multiple dates, you must have at least 2,880 rows for each date you want covered.")
+  }
+
+
+  if(length(unique(sensor_data$sensor)) > 1){
+    stop("More than one sensor is in this dataset.")
+  }
+
   sensor_data <- data.table::as.data.table(sensor_data)
   # browser()
 

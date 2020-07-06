@@ -24,12 +24,12 @@ test_that("fifteen minute aggregation works", {
     )
   }
 
-  agg <- aggregate_sensor_data(sensor_results, interval_length = 0.25, config = config_sample)
+    # test aggregation at 15 minutes----------------------------------------------
   testthat::expect_equal(dim(agg)[[1]], 96)
   testthat::expect_equal(sum(sensor_results$volume), sum(agg$volume.sum))
   testthat::expect_equal(sum(sensor_results$occupancy), sum(agg$occupancy.sum))
 
-  agg_hour <- aggregate_sensor_data(sensor_results, interval_length = 1, config = config_sample)
+    # test aggregation at 1 hour--------------------------------------------------
   testthat::expect_equal(dim(agg_hour)[[1]], 24)
   testthat::expect_equal(sum(sensor_results$volume, na.rm = T), sum(agg_hour$volume.sum))
   testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg_hour$occupancy.sum))

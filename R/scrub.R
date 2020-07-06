@@ -44,7 +44,22 @@ flag_impossible <- function(sensor_data) {
 #'   - `day_category` one of "Weekday", "Weekend", or "Holiday"
 #'
 #' @export
+#' @import data.table
+#' @importFrom tis isHoliday
+#' @importFrom dplyr case_when
 #'
 get_day_type <- function(sensor_data) {
+
+
+  sensor_data[, `:=`(c("day_of_week", "day_type", "holiday", "day_category"),
+          {
+            day_of_week <- weekdays(date)
+            day_type <- dplyr::case_when(day_of_week %in% c("Saturday",
+                                                            "Sunday") ~ "Weekend", TRUE ~ "Weekday")
+            holiday <- tis::isHoliday(date)
+            day_category <- dplyr::case_when(holiday == TRUE ~ "Holiday",
+                                             TRUE ~ day_type)
+            .(day_of_week, day_type, holiday, day_category)
+          })][, holiday := NULL]
 
 }

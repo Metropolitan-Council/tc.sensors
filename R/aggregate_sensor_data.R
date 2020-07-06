@@ -32,46 +32,28 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length, calculat
     ][
       ,
       start_datetime := as.POSIXct(paste(date, hour, start_min),
-        format = "%Y-%m-%d %H %M"
+                                   format = "%Y-%m-%d %H %M"
       )
-    ][, start_datetime := as.character(start_datetime)][, hour := NULL][, date := NULL][, start_min := NULL]
+    ][, occupancy.pct := (occupancy.sum / interval_scans)][, speed := ifelse(volume.sum != 0,
+                                                                             ((volume.sum * as.numeric(config[, "detector_field"][[1]])) / (5280 * occupancy.pct)) / interval_length, 0
+    )][, start_datetime := as.character(start_datetime)][, hour := NULL][, date := NULL][, start_min := NULL]
   } else {
-    sensor_data[, date := data.table::as.IDate(date)][, year := data.table::year(date)]
+    bins <- seq(0, 24, interval_length)
+    sensor_data[, date := data.table::as.IDate(date)][, year := data.table::year(date)][, interval_bin := findInterval(sensor_data$hour, bins)]
     data.table::setorder(sensor_data, date)
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
       list(
-        nulls = sum(is.na(x)),
         sum = sum(x, na.rm = T),
-        mean = mean(x, na.rm = T)
+        mean = mean(x, na.rm = T),
+        pct.null = round(100 * sum(is.na(x)) / length(x))
       )
     }))),
-    by = .(date, hour, sensor),
+    by = .(date, interval_bin, sensor),
     .SDcols = c("volume", "occupancy")
-    ]
-
-    if (interval_length == 24) {
-      # browser()
-
-
-      sensor_data_agg <- sensor_data_agg[, as.list(unlist(lapply(
-        .SD,
-        function(x) {
-          list(
-            sum = sum(x),
-            mean = mean(x)
-          )
-        }
-      ))),
-      by = .(date, sensor),
-      .SDcols = calculations
-      ]
-
-      sensor_data_agg[, c("volume.sum.mean", "occupancy.sum.mean") := NULL]
-      setnames(sensor_data_agg, old = "volume.sum.sum", new = "volume.sum")
-      setnames(sensor_data_agg, old = "occupancy.sum.sum", new = "occupancy.sum")
-      # setnames(sensor_data_agg, old = 'speed.mean', new = 'speed')
-    }
+    ][, occupancy.pct := (occupancy.sum / interval_scans)][, speed := ifelse(volume.sum != 0,
+                                                                             ((volume.sum * as.numeric(config[, "detector_field"][[1]])) / (5280 * occupancy.pct)) / interval_length, 0
+    )]
   }
   return(sensor_data_agg)
 }

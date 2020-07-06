@@ -4,12 +4,7 @@
 \alias{aggregate_sensor_data}
 \title{Aggregate raw sensor data to a chosen level}
 \usage{
-aggregate_sensor_data(
-  sensor_data,
-  config,
-  interval_length,
-  calculations = c("volume.sum", "occupancy.sum")
-)
+aggregate_sensor_data(sensor_data, config, interval_length)
 }
 \arguments{
 \item{sensor_data}{data frame for single sensor returned from \code{pull_sensor()}}
@@ -18,8 +13,29 @@ aggregate_sensor_data(
 \code{0.25} indicates 15 minutes.}
 }
 \value{
-
+a data.table with values for volume, occupancy, and speed
+\itemize{
+\item \code{date} IDate, the given date
+\item \code{interval_bin} numeric, the observations interval bin
+\item \verb{\{measure\}.pct_null} numeric, the percentage of observations with null
+values for the given measure
+\item \verb{\{measure\}.sum} numeric, the measure's total over the given interval
+\item \verb{\{measure\}.mean} numeric, the measure's mean over the given interval
+\item \code{speed} numeric, the mean traffic speed over the given interval
+}
 }
 \description{
 Aggregate raw sensor data to a chosen level
+}
+\details{
+\subsection{Calculating speed}{\preformatted{There are 60 scans per second, which means there are 60*60 = 1,800 scans per
+30-second interval. The occupancy value in the 30-second interval data
+represents the number of scans that were occupied of the 1,800 scans in that
+interval.
+
+With 60 scans per second, 60 seconds per minute there are 3,600 scans per minute.
+With 3,600 scans per minute, 60 minutes per hour there are 216,000 scans per hour.
+To find the number of scans in 15 minutes, we can multiply 0.25 * 216000 = 54,000 scans.
+}
+}
 }

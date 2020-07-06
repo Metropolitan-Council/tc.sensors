@@ -33,9 +33,11 @@ test_that("fifteen minute aggregation works", {
   testthat::expect_equal(dim(agg_hour)[[1]], 24)
   testthat::expect_equal(sum(sensor_results$volume, na.rm = T), sum(agg_hour$volume.sum))
   testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg_hour$occupancy.sum))
+  testthat::expect_lt(mean(agg$speed) - mean(agg_hour$speed), 1)
 
   agg_day <- aggregate_sensor_data(sensor_results, interval_length = 24, config = config_sample)
   testthat::expect_equal(dim(agg_day)[[1]], 1)
   testthat::expect_equal(sum(sensor_results$volume, na.rm = T), sum(agg_day$volume.sum))
   testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg_day$occupancy.sum))
+  testthat::expect_lt(mean(agg$speed) - agg_day$speed, 1)
 })

@@ -1,4 +1,4 @@
-testthat::try_again(2, {
+testthat::try_again(3, {
   test_that("Weather data functions as expected", {
     testthat::skip_if_offline()
     config <- pull_configuration()

@@ -1,5 +1,5 @@
 
-testthat::try_again(2, {
+testthat::try_again(3, {
   test_that("Aggregation functions as expected", {
     testthat::skip_if_offline()
     config <- pull_configuration()
@@ -15,7 +15,7 @@ testthat::try_again(2, {
       pull_date = yesterday
     )
 
-    if (nrow(sensor_results) < 2880) {
+    if (nrow(sensor_results) != 2880) {
       config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
         dplyr::sample_n(1)
 

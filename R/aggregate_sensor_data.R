@@ -3,6 +3,7 @@
 #' @param sensor_data data frame for single sensor returned from `pull_sensor()`
 #' @param interval_length numeric, the interval length in hours. Default is `1`.
 #'   `0.25` indicates 15 minutes.
+#' @param config data.table, a configuration file for the given sensor
 #'
 #' @return a data.table with values for volume, occupancy, and speed
 #'   - `date` IDate, the given date

@@ -10,10 +10,69 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
 ```{r setup}
 library(tc.sensors)
+library(parallel)
 ```
+
+## Aggregate hourly speed  
+
+First, we will pull the data for three random sensors from January 1 to January 15, 2019. 
+
+```{r}
+library(tc.sensors)
+library(doParallel)
+library(foreach)
+library(dplyr)
+library(magrittr)
+library(tictoc) # If you want to benchmark - but you shouldn't have to; I already did (:
+
+sensor_config <- pull_configuration() %>% 
+  dplyr::filter(detector_abandoned != F) %>% 
+  dplyr::sample_n(3)
+
+cores <- detectCores()
+cl <- makeCluster(cores)
+registerDoParallel(cl)
+tic() # Start the timer
+
+
+sensor_data <-
+  foreach(j = sensor_config$detector_name) %dopar% {
+  date_range <- seq(as.Date("2019/03/01"), as.Date("2019/03/31"), by = "days")
+  n <- length(date_range)
+  loops_ls <- vector("list", n)
+  
+  for (i in 1:n) {
+    loops_ls[[i]] <- tc.sensors::pull_sensor(j, date_range[[i]])
+  }
+  
+  loops_df <- data.table::rbindlist(loops_ls)
+}
+
+toc()
+stopCluster(cl)
+
+```
+
+
+```{r}
+agg_hour <- aggregate_sensor_data(sensor_data[[1]], config = sensor_config,
+                                  interval_length = 1) %>% 
+  add_day_type() %>%  # append day types
+  add_weather(save_raw = FALSE,
+              interval_length = 1)
+
+agg_period <- aggregate_sensor_data(sensor_data[[1]], config = sensor_config,
+                                    interval_length = 6) %>% 
+  add_day_type() %>% 
+  add_weather(save_raw = FALSE,
+              interval_length = 6)
+
+```
+

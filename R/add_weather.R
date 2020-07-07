@@ -30,6 +30,26 @@
 #' @importFrom tis day
 #'
 #' @examples
+#'
+#' \dontrun{
+#'
+#' library(tc.sensors)
+#' library(dplyr)
+#' config <- pull_configuration()
+#'
+#' config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
+#'   dplyr::sample_n(1)
+#' yesterday <- as.Date(Sys.Date() - 365)
+#'
+#' sensor_results <- pull_sensor(
+#'   sensor = config_sample$detector_name[[1]],
+#'   pull_date = yesterday )
+#'
+#' aggregate_sensor_data(sensor_results,
+#'   interval_length = 1,
+#'   config = config_sample) %>%
+#' add_weather()
+#' }
 add_weather <- function(sensor_data,
                         save_raw = FALSE,
                         save_location = ".",
@@ -46,7 +66,6 @@ add_weather <- function(sensor_data,
 
   min_date <- min(sensor_data$date)
   max_date <- max(sensor_data$date) + 1
-
 
   request <- paste0(
     "http://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?",

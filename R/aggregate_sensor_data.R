@@ -29,22 +29,40 @@
 #'
 #' @import data.table
 #'
+#' @examples
+#' \dontrun{
+#'
+#' library(tc.sensors)
+#' library(dplyr)
+#' config <- pull_configuration()
+#'
+#' config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
+#'   dplyr::sample_n(1)
+#' yesterday <- as.Date(Sys.Date() - 365)
+#'
+#' sensor_results <- pull_sensor(
+#'   sensor = config_sample$detector_name[[1]],
+#'   pull_date = yesterday )
+#'
+#' aggregate_sensor_data(sensor_results,
+#'   interval_length = 1,
+#'   config = config_sample)
+#'}
 aggregate_sensor_data <- function(sensor_data, config, interval_length) {
-
-  if(interval_length > 24){
+  if (interval_length > 24) {
     stop("Interval cannot exceed 24 hours.")
 
-    if(length(unique(sensor_data$date)) <= 1){
+    if (length(unique(sensor_data$date)) <= 1) {
       stop("For intervals greater than 24 hours, you must have data for more than one date")
     }
   }
 
-  if(nrow(sensor_data) != 2880 * length(unique(sensor_data$date))){
+  if (nrow(sensor_data) != 2880 * length(unique(sensor_data$date))) {
     stop("For multiple dates, you must have at least 2,880 rows for each date you want covered.")
   }
 
 
-  if(length(unique(sensor_data$sensor)) > 1){
+  if (length(unique(sensor_data$sensor)) > 1) {
     stop("More than one sensor is in this dataset.")
   }
 
@@ -79,19 +97,15 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length) {
     ][
       ,
       start_datetime := as.POSIXct(paste(date, hour, start_min),
-                                   format = "%Y-%m-%d %H %M"
+        format = "%Y-%m-%d %H %M"
       )
-    ][, occupancy.pct := (occupancy.sum / interval_scans)
-    ][, speed := ifelse(volume.sum != 0,
-                        ((volume.sum * as.numeric(config[, "detector_field"][[1]]))
-                         / (5280 * occupancy.pct)) / interval_length, 0
-    )][, start_datetime := as.character(start_datetime)
-    ][, hour := NULL][, date := NULL][, start_min := NULL]
+    ][, occupancy.pct := (occupancy.sum / interval_scans)][, speed := ifelse(volume.sum != 0,
+      ((volume.sum * as.numeric(config[, "detector_field"][[1]]))
+      / (5280 * occupancy.pct)) / interval_length, 0
+    )][, start_datetime := as.character(start_datetime)][, hour := NULL][, date := NULL][, start_min := NULL]
   } else {
     bins <- seq(0, 24, interval_length)
-    sensor_data[, date := data.table::as.IDate(date)
-    ][, year := data.table::year(date)
-    ][, interval_bin := findInterval(sensor_data$hour, bins)]
+    sensor_data[, date := data.table::as.IDate(date)][, year := data.table::year(date)][, interval_bin := findInterval(sensor_data$hour, bins)]
     data.table::setorder(sensor_data, date)
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
@@ -103,10 +117,9 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length) {
     }))),
     by = .(date, interval_bin, sensor),
     .SDcols = c("volume", "occupancy")
-    ][, occupancy.pct := (occupancy.sum / interval_scans)
-    ][, speed := ifelse(volume.sum != 0,
-                        ((volume.sum * as.numeric(config[, "detector_field"][[1]])) /
-                           (5280 * occupancy.pct)) / interval_length, 0
+    ][, occupancy.pct := (occupancy.sum / interval_scans)][, speed := ifelse(volume.sum != 0,
+      ((volume.sum * as.numeric(config[, "detector_field"][[1]])) /
+        (5280 * occupancy.pct)) / interval_length, 0
     )]
   }
   return(sensor_data_agg)

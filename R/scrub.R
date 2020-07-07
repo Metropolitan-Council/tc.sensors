@@ -6,7 +6,7 @@
 #' @return
 #' @export
 #'
-scrub_sensor <- function(sensor_data) {
+scrub_sensor <- function(sensor_data, level) {
 
 }
 

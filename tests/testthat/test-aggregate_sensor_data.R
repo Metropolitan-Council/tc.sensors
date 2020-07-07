@@ -8,7 +8,7 @@ testthat::try_again(2, {
     config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
       dplyr::sample_n(1)
 
-    yesterday <- as.Date(Sys.Date() - 1)
+    yesterday <- as.Date(Sys.Date() - 3)
 
     sensor_results <- pull_sensor(
       sensor = config_sample$detector_name[[1]],

@@ -28,6 +28,7 @@
 #' @import data.table
 #' @importFrom curl has_internet
 #' @importFrom tis day
+#' @importFrom utils read.csv
 #'
 #' @examples
 #'
@@ -97,7 +98,7 @@ add_weather <- function(sensor_data,
   # jdict <- fromJSON(url(meta))
 
   message(paste("Downloading:", station, "for", min_date, "to", max_date - 1, sep = " "))
-  data <- data.table::data.table(read.csv(request, na.strings = "null"))
+  data <- data.table::data.table(utils::read.csv(request, na.strings = "null"))
 
   if (save_raw == TRUE) {
     curl::curl_download(request, destfile = paste0(

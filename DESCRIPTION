@@ -19,7 +19,7 @@ Description: Process data collected from Minnesota Department of
     Freeway system in 30-second interval measurements of occupancy and
     volume, data which are pushed daily to a public JSON feed.  Occupancy
     and volume data can be used to calculate speed and delay.
-License: MIT + file LICENSE
+License: GPL-3
 BugReports: 
     https://github.com/Metropolitan-Council/tc.sensors/issues
 Imports: 

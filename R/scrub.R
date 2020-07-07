@@ -38,7 +38,7 @@ flag_impossible <- function(sensor_data) {
 #'
 #' @inheritParams scrub_sensor
 #'
-#' @return The original data frame with additional columns
+#' @return The original data.table with additional columns
 #'   - `day_type` either "Weekday" or "Weekend"
 #'   - `day_of_week` one of "Monday", "Tuesday", etc.
 #'   - `day_category` one of "Weekday", "Weekend", or "Holiday"

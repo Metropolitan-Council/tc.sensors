@@ -11,7 +11,7 @@ add_day_type(sensor_data)
 \item{sensor_data}{data frame returned from \code{pull_sensor()}}
 }
 \value{
-The original data frame with additional columns
+The original data.table with additional columns
 \itemize{
 \item \code{day_type} either "Weekday" or "Weekend"
 \item \code{day_of_week} one of "Monday", "Tuesday", etc.

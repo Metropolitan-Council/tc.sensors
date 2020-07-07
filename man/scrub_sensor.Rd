@@ -4,7 +4,7 @@
 \alias{scrub_sensor}
 \title{Scrub sensor level data}
 \usage{
-scrub_sensor(sensor_data)
+scrub_sensor(sensor_data, level)
 }
 \arguments{
 \item{sensor_data}{data frame returned from \code{pull_sensor()}}

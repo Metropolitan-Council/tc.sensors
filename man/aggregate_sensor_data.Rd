@@ -9,7 +9,9 @@ aggregate_sensor_data(sensor_data, config, interval_length)
 \arguments{
 \item{sensor_data}{data frame for single sensor returned from \code{pull_sensor()}}
 
-\item{intverval_length}{numeric, the interval length in hours. Default is \code{1}.
+\item{config}{data.table, a configuration file for the given sensor}
+
+\item{interval_length}{numeric, the interval length in hours. Default is \code{1}.
 \code{0.25} indicates 15 minutes.}
 }
 \value{
@@ -37,5 +39,27 @@ With 60 scans per second, 60 seconds per minute there are 3,600 scans per minute
 With 3,600 scans per minute, 60 minutes per hour there are 216,000 scans per hour.
 To find the number of scans in 15 minutes, we can multiply 0.25 * 216000 = 54,000 scans.
 }
+}
+}
+\examples{
+\dontrun{
+
+library(tc.sensors)
+library(dplyr)
+config <- pull_configuration()
+
+config_sample <- dplyr::filter(config, config$detector_abandoned == "f") \%>\%
+  dplyr::sample_n(1)
+yesterday <- as.Date(Sys.Date() - 365)
+
+sensor_results <- pull_sensor(
+  sensor = config_sample$detector_name[[1]],
+  pull_date = yesterday
+)
+
+aggregate_sensor_data(sensor_results,
+  interval_length = 1,
+  config = config_sample
+)
 }
 }

@@ -1,7 +1,7 @@
 #' Aggregate raw sensor data to a chosen level
 #'
 #' @param sensor_data data frame for single sensor returned from `pull_sensor()`
-#' @param intverval_length numeric, the interval length in hours. Default is `1`.
+#' @param interval_length numeric, the interval length in hours. Default is `1`.
 #'   `0.25` indicates 15 minutes.
 #'
 #' @return a data.table with values for volume, occupancy, and speed

@@ -44,12 +44,14 @@
 #'
 #' sensor_results <- pull_sensor(
 #'   sensor = config_sample$detector_name[[1]],
-#'   pull_date = yesterday )
+#'   pull_date = yesterday
+#' )
 #'
 #' aggregate_sensor_data(sensor_results,
 #'   interval_length = 1,
-#'   config = config_sample) %>%
-#' add_weather()
+#'   config = config_sample
+#' ) %>%
+#'   add_weather()
 #' }
 add_weather <- function(sensor_data,
                         save_raw = FALSE,

@@ -43,12 +43,14 @@
 #'
 #' sensor_results <- pull_sensor(
 #'   sensor = config_sample$detector_name[[1]],
-#'   pull_date = yesterday )
+#'   pull_date = yesterday
+#' )
 #'
 #' aggregate_sensor_data(sensor_results,
 #'   interval_length = 1,
-#'   config = config_sample)
-#'}
+#'   config = config_sample
+#' )
+#' }
 aggregate_sensor_data <- function(sensor_data, config, interval_length) {
   if (interval_length > 24) {
     stop("Interval cannot exceed 24 hours.")

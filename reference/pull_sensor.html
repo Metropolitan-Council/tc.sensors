@@ -134,10 +134,10 @@ Use pull_sensor_ids to obtain metro sensor IDs." />
 
     <div class="ref-description">
     <p>Create a tidy data frame, containing volume and occupancy, for a single date and sensor.
-Use <code>pull_sensor_ids</code> to obtain metro sensor IDs.</p>
+Use <code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor_ids.html'>pull_sensor_ids</a></code> to obtain metro sensor IDs.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pull_sensor</span>(<span class='kw'>sensor</span>, <span class='kw'>pull_date</span>, .quiet = <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor.html'>pull_sensor</a></span>(<span class='kw'>sensor</span>, <span class='kw'>pull_date</span>, .quiet = <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,7 +145,7 @@ Use <code>pull_sensor_ids</code> to obtain metro sensor IDs.</p>
     <tr>
       <th>sensor</th>
       <td><p>character, the sensor ID.
-See documentation for <code>pull_sensor_ids</code> to obtain metro sensor IDs.</p></td>
+See documentation for <code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor_ids.html'>pull_sensor_ids</a></code> to obtain metro sensor IDs.</p></td>
     </tr>
     <tr>
       <th>pull_date</th>
@@ -186,13 +186,13 @@ It is unknown how a loop could be monitoring volume and not occupancy.
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other loop sensor functions: 
-<code>pull_configuration()</code>,
-<code>pull_sensor_ids()</code></p></div>
+<code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_configuration.html'>pull_configuration</a>()</code>,
+<code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor_ids.html'>pull_sensor_ids</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='co'># Simple example</span>
-<span class='kw'>loop_data</span> <span class='op'>&lt;-</span> <span class='fu'>pull_sensor</span>(<span class='fl'>5474</span>, <span class='st'>"2018-10-14"</span>)
+<span class='kw'>loop_data</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor.html'>pull_sensor</a></span>(<span class='fl'>5474</span>, <span class='st'>"2018-10-14"</span>)
 <span class='co'># :   # Mapping example</span>
 <span class='kw'>date_range</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span>(<span class='st'>"2019/01/01"</span>), <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span>(<span class='st'>"2019/01/02"</span>), by = <span class='st'>"days"</span>)
 <span class='kw'>loop_data</span> <span class='op'>&lt;-</span> <span class='fu'>pmap</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='fl'>8564</span>, <span class='kw'>date_range</span>), <span class='kw'>pull_sensor</span>)

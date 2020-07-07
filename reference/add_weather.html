@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Scrub sensor level data — scrub_sensor • tc.sensors</title>
+<title>Append weather data from Automated Surface Observing System (ASOS) via
+the Iowa State University API. — add_weather • tc.sensors</title>
 
 
 <!-- jquery -->
@@ -39,8 +40,10 @@
 
 
 
-<meta property="og:title" content="Scrub sensor level data — scrub_sensor" />
-<meta property="og:description" content="Scrub sensor level data" />
+<meta property="og:title" content="Append weather data from Automated Surface Observing System (ASOS) via
+the Iowa State University API. — add_weather" />
+<meta property="og:description" content="Access temperature, precipitation, wind speed, and visibility
+measures for a given ASOS station in Minnesota." />
 
 
 
@@ -126,36 +129,94 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Scrub sensor level data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Metropolitan-Council/tc.sensors/blob/master/R/scrub.R'><code>R/scrub.R</code></a></small>
-    <div class="hidden name"><code>scrub_sensor.Rd</code></div>
+    <h1>Append weather data from Automated Surface Observing System (ASOS) via
+the Iowa State University API.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Metropolitan-Council/tc.sensors/blob/master/R/add_weather.R'><code>R/add_weather.R</code></a></small>
+    <div class="hidden name"><code>add_weather.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Scrub sensor level data</p>
+    <p>Access temperature, precipitation, wind speed, and visibility
+measures for a given ASOS station in Minnesota.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/scrub_sensor.html'>scrub_sensor</a></span>(<span class='kw'>sensor_data</span>, <span class='kw'>level</span>)</pre>
+    <pre class="usage"><span class='fu'>add_weather</span>(
+  <span class='kw'>sensor_data</span>,
+  save_raw = <span class='fl'>FALSE</span>,
+  save_location = <span class='st'>"."</span>,
+  interval_length = <span class='fl'>1</span>,
+  station = <span class='st'>"MSP"</span>,
+  time_zone = <span class='st'>"America%2FChicago"</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>sensor_data</th>
-      <td><p>data frame returned from <code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor.html'>pull_sensor()</a></code></p></td>
+      <td><p>data.table, a data.table of aggregated sensor data.</p></td>
     </tr>
     <tr>
-      <th>level</th>
-      <td><p>string, options are "raw", "fifteen", "hour"</p></td>
+      <th>save_raw</th>
+      <td><p>boolean, whether to save the raw data. Default is <code>FALSE</code></p></td>
+    </tr>
+    <tr>
+      <th>save_location</th>
+      <td><p>character, relative path to save location</p></td>
+    </tr>
+    <tr>
+      <th>interval_length</th>
+      <td><p>nunmeric, interval length in hours. Default is <code>1</code>.</p></td>
+    </tr>
+    <tr>
+      <th>station</th>
+      <td><p>character, ASOS station code. Default is <code>"MSP"</code> for the Minneapolis/St. Paul airport</p></td>
+    </tr>
+    <tr>
+      <th>time_zone</th>
+      <td><p>character, time zone code. Default is <code>"America%2FChicago"</code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    
+    <p>the original data.table with columns added:</p><ul>
+<li><p><code>tmpf.mean</code> numeric, the mean temperature in Fahrenheit</p></li>
+<li><p><code>p01i.sum</code> numeric, the total precipitation in inches</p></li>
+<li><p><code>p01i.mean</code> numeric, the mean precipitation in inches</p></li>
+<li><p><code>sknt.mean</code> numeric, the mean wind speed in knots</p></li>
+<li><p><code>vsby.mean</code> numeric, the mean visibility distance in miles</p></li>
+</ul>
 
+<p>See <a href='http://mesonet.agron.iastate.edu/request/download.phtml?network=MN_ASOS'>Mesonet</a> for additional variables and descriptions.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
+    <p>For additional Minnesota station ID codes, see
+the <a href='http://mesonet.agron.iastate.edu/sites/networks.php?network=MN_ASOS'>Mesonet station directory</a>.</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='co'>if</span> (<span class='fl'>FALSE</span>) {
+
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'>tc.sensors</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'><a href='https://dplyr.tidyverse.org'>dplyr</a></span>)
+<span class='kw'>config</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/pull_configuration.html'>pull_configuration</a></span>()
+
+<span class='kw'>config_sample</span> <span class='op'>&lt;-</span> <span class='kw'>dplyr</span>::<span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span>(<span class='kw'>config</span>, <span class='kw'>config</span><span class='op'>$</span><span class='kw'>detector_abandoned</span> <span class='op'>==</span> <span class='st'>"f"</span>) <span class='op'>%&gt;%</span>
+  <span class='kw'>dplyr</span>::<span class='fu'><a href='https://dplyr.tidyverse.org/reference/sample_n.html'>sample_n</a></span>(<span class='fl'>1</span>)
+<span class='kw'>yesterday</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span>() <span class='op'>-</span> <span class='fl'>365</span>)
+
+<span class='kw'>sensor_results</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor.html'>pull_sensor</a></span>(
+  sensor = <span class='kw'>config_sample</span><span class='op'>$</span><span class='kw'>detector_name</span>[[<span class='fl'>1</span>]],
+  pull_date = <span class='kw'>yesterday</span>
+)
+
+<span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/aggregate_sensor_data.html'>aggregate_sensor_data</a></span>(<span class='kw'>sensor_results</span>,
+  interval_length = <span class='fl'>1</span>,
+  config = <span class='kw'>config_sample</span>
+) <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/add_weather.html'>add_weather</a></span>()
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

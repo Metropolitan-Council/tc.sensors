@@ -97,12 +97,67 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">tc.sensors</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">parallel</span>)
 </pre></div>
+<div id="aggregate-hourly-speed" class="section level2">
+<h2 class="hasAnchor">
+<a href="#aggregate-hourly-speed" class="anchor"></a>Aggregate hourly speed</h2>
+<p>First, we will pull the data for three random sensors from January 1 to January 15, 2019.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">tc.sensors</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">doParallel</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/RevolutionAnalytics/foreach">foreach</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://dplyr.tidyverse.org">dplyr</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">magrittr</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="http://github.com/collectivemedia/tictoc">tictoc</a></span>) <span class="co"># If you want to benchmark - but you shouldn't have to; I already did (:</span>
+
+<span class="kw">sensor_config</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_configuration.html">pull_configuration</a></span>() <span class="op">%&gt;%</span> 
+  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">detector_abandoned</span> != <span class="kw">F</span>) <span class="op">%&gt;%</span> 
+  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample_n.html">sample_n</a></span>(<span class="fl">3</span>)
+
+<span class="kw">cores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>()
+<span class="kw">cl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">makeCluster</a></span>(<span class="kw">cores</span>)
+<span class="fu"><a href="https://rdrr.io/pkg/doParallel/man/registerDoParallel.html">registerDoParallel</a></span>(<span class="kw">cl</span>)
+<span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">tic</a></span>() <span class="co"># Start the timer</span>
+
+
+<span class="kw">sensor_data</span> <span class="op">&lt;-</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/foreach/man/foreach.html">foreach</a></span>(j = <span class="kw">sensor_config</span><span class="op">$</span><span class="kw">detector_name</span>) <span class="op">%dopar%</span> {
+  <span class="kw">date_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span>(<span class="st">"2019/03/01"</span>), <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span>(<span class="st">"2019/03/31"</span>), by = <span class="st">"days"</span>)
+  <span class="kw">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="kw">date_range</span>)
+  <span class="kw">loops_ls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span>(<span class="st">"list"</span>, <span class="kw">n</span>)
+  
+  <span class="co">for</span> (<span class="kw">i</span> <span class="co">in</span> <span class="fl">1</span><span class="op">:</span><span class="kw">n</span>) {
+    <span class="kw">loops_ls</span>[[<span class="kw">i</span>]] <span class="op">&lt;-</span> <span class="kw">tc.sensors</span>::<span class="fu"><a href="../reference/pull_sensor.html">pull_sensor</a></span>(<span class="kw">j</span>, <span class="kw">date_range</span>[[<span class="kw">i</span>]])
+  }
+  
+  <span class="kw">loops_df</span> <span class="op">&lt;-</span> <span class="kw">data.table</span>::<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html">rbindlist</a></span>(<span class="kw">loops_ls</span>)
+}
+
+<span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">toc</a></span>()
+<span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">stopCluster</a></span>(<span class="kw">cl</span>)
+</pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="kw">agg_hour</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_sensor_data.html">aggregate_sensor_data</a></span>(<span class="kw">sensor_data</span>[[<span class="fl">1</span>]], config = <span class="kw">sensor_config</span>,
+                                  interval_length = <span class="fl">1</span>) <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="../reference/add_day_type.html">add_day_type</a></span>() <span class="op">%&gt;%</span>  <span class="co"># append day types</span>
+  <span class="fu"><a href="../reference/add_weather.html">add_weather</a></span>(save_raw = <span class="fl">FALSE</span>,
+              interval_length = <span class="fl">1</span>)
+
+<span class="kw">agg_period</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_sensor_data.html">aggregate_sensor_data</a></span>(<span class="kw">sensor_data</span>[[<span class="fl">1</span>]], config = <span class="kw">sensor_config</span>,
+                                    interval_length = <span class="fl">6</span>) <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="../reference/add_day_type.html">add_day_type</a></span>() <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="../reference/add_weather.html">add_weather</a></span>(save_raw = <span class="fl">FALSE</span>,
+              interval_length = <span class="fl">6</span>)
+</pre></div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 

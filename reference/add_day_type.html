@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Scrub sensor level data — scrub_sensor • tc.sensors</title>
+<title>Append a column with a given date's day type (weekday or weekend),
+day of week, and day category (holiday, weekend, or weekday) — add_day_type • tc.sensors</title>
 
 
 <!-- jquery -->
@@ -39,8 +40,10 @@
 
 
 
-<meta property="og:title" content="Scrub sensor level data — scrub_sensor" />
-<meta property="og:description" content="Scrub sensor level data" />
+<meta property="og:title" content="Append a column with a given date's day type (weekday or weekend),
+day of week, and day category (holiday, weekend, or weekday) — add_day_type" />
+<meta property="og:description" content="Append a column with a given date's day type (weekday or weekend),
+day of week, and day category (holiday, weekend, or weekday)" />
 
 
 
@@ -126,34 +129,35 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Scrub sensor level data</h1>
+    <h1>Append a column with a given date's day type (weekday or weekend),
+day of week, and day category (holiday, weekend, or weekday)</h1>
     <small class="dont-index">Source: <a href='https://github.com/Metropolitan-Council/tc.sensors/blob/master/R/scrub.R'><code>R/scrub.R</code></a></small>
-    <div class="hidden name"><code>scrub_sensor.Rd</code></div>
+    <div class="hidden name"><code>add_day_type.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Scrub sensor level data</p>
+    <p>Append a column with a given date's day type (weekday or weekend),
+day of week, and day category (holiday, weekend, or weekday)</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/scrub_sensor.html'>scrub_sensor</a></span>(<span class='kw'>sensor_data</span>, <span class='kw'>level</span>)</pre>
+    <pre class="usage"><span class='fu'>add_day_type</span>(<span class='kw'>sensor_data</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>sensor_data</th>
-      <td><p>data frame returned from <code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor.html'>pull_sensor()</a></code></p></td>
-    </tr>
-    <tr>
-      <th>level</th>
-      <td><p>string, options are "raw", "fifteen", "hour"</p></td>
+      <td><p>data frame returned from <code>pull_sensor()</code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    
-
+    <p>The original data.table with additional columns</p><ul>
+<li><p><code>day_type</code> either "Weekday" or "Weekend"</p></li>
+<li><p><code>day_of_week</code> one of "Monday", "Tuesday", etc.</p></li>
+<li><p><code>day_category</code> one of "Weekday", "Weekend", or "Holiday"</p></li>
+</ul>
 
 
   </div>

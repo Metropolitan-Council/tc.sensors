@@ -48,7 +48,7 @@ flag_impossible <- function(sensor_data) {
 #' @importFrom tis isHoliday
 #' @importFrom dplyr case_when
 #'
-get_day_type <- function(sensor_data) {
+add_day_type <- function(sensor_data) {
 
 
   sensor_data[, `:=`(c("day_of_week", "day_type", "holiday", "day_category"),

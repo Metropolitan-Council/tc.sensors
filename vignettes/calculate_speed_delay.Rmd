@@ -18,6 +18,12 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(tc.sensors)
 library(parallel)
+library(purrr)
+library(doParallel)
+library(foreach)
+library(dplyr)
+library(magrittr)
+library(tictoc) 
 ```
 
 ## Aggregate hourly speed  
@@ -25,16 +31,9 @@ library(parallel)
 First, we will pull the data for three random sensors from January 1 to January 15, 2019. 
 
 ```{r}
-library(tc.sensors)
-library(doParallel)
-library(foreach)
-library(dplyr)
-library(magrittr)
-library(tictoc) # If you want to benchmark - but you shouldn't have to; I already did (:
-
 sensor_config <- pull_configuration() %>% 
   dplyr::filter(detector_abandoned != F) %>% 
-  dplyr::sample_n(3)
+  dplyr::sample_n(1)
 
 cores <- detectCores()
 cl <- makeCluster(cores)
@@ -60,15 +59,23 @@ stopCluster(cl)
 
 ```
 
+Do some data cleaning.  
 
 ```{r}
-agg_hour <- aggregate_sensor_data(sensor_data[[1]], config = sensor_config,
-                                  interval_length = 1) %>% 
-  add_day_type() %>%  # append day types
-  add_weather(save_raw = FALSE,
-              interval_length = 1)
+clean_sensor_data <- purrr::map(sensor_data, replace_impossible, interval_length = NA) %>% # replace 
+  purrr::map(scrub_sensor, interval_length = NA)
+```
 
-agg_period <- aggregate_sensor_data(sensor_data[[1]], config = sensor_config,
+
+```{r}
+agg_hour <- purrr::map(clean_sensor_data, aggregate_sensor_data,
+                       config = sensor_config,
+                       interval_length = 1) %>% 
+  purrr::map(add_day_type) %>% 
+  purrr::map(add_weather)
+  
+
+agg_period <- aggregate_sensor_data(clean_sensor_data[[1]], config = sensor_config,
                                     interval_length = 6) %>% 
   add_day_type() %>% 
   add_weather(save_raw = FALSE,

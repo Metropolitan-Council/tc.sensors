@@ -5,13 +5,13 @@ test_that("Impossible values are replaced", {
 
   yesterday <- as.Date(Sys.Date() - 3)
 
-    config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
-      dplyr::sample_n(1)
+  config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
+    dplyr::sample_n(1)
 
-    sensor_results <- pull_sensor(
-      sensor = config_sample$detector_name[[1]],
-      pull_date = yesterday
-    )
+  sensor_results <- pull_sensor(
+    sensor = config_sample$detector_name[[1]],
+    pull_date = yesterday
+  )
 
   imp_rem <- replace_impossible(
     sensor_data = data.table::as.data.table(sensor_results),

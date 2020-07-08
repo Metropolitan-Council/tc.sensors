@@ -8,14 +8,14 @@ test_that("Weather data functions as expected", {
   yesterday <- as.Date(Sys.Date() - 3)
 
 
-    config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
-      dplyr::sample_n(1)
+  config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
+    dplyr::sample_n(1)
 
-    sensor_results <- pull_sensor(
-      sensor = config_sample$detector_name[[1]],
-      pull_date = yesterday,
-      fill_gaps = TRUE
-    )
+  sensor_results <- pull_sensor(
+    sensor = config_sample$detector_name[[1]],
+    pull_date = yesterday,
+    fill_gaps = TRUE
+  )
 
 
 

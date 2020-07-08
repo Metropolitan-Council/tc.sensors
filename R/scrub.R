@@ -6,7 +6,6 @@
 #' @export
 #'
 scrub_sensor <- function(sensor_data, interval_length = NA) {
-
   sensor_data[!duplicated(sensor_data, by = c("date", "hour", "min", "sensor"), fromLast = TRUE)]
 }
 
@@ -37,7 +36,7 @@ scrub_sensor <- function(sensor_data, interval_length = NA) {
 #'   person("Liz", "Roten"))
 #'
 replace_impossible <- function(sensor_data,
-                              interval_length = NA) {
+                               interval_length = NA) {
   if (length(unique(sensor_data$sensor)) > 1) {
     stop("More than one sensor is in this dataset.")
   }

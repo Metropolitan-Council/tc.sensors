@@ -4,7 +4,7 @@
 \alias{pull_sensor}
 \title{Pull sensor volume and occupancy}
 \usage{
-pull_sensor(sensor, pull_date, .quiet = TRUE)
+pull_sensor(sensor, pull_date, fill_gaps = TRUE, .quiet = TRUE)
 }
 \arguments{
 \item{sensor}{character, the sensor ID.
@@ -12,6 +12,9 @@ See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.}
 
 \item{pull_date}{character, the date of data to pull.
 Needs to by in "YYYY-MM-DD" format.}
+
+\item{fill_gaps}{boolean, whether to fill gaps in the time series with \code{NA}
+values. Default is \code{TRUE}}
 
 \item{.quiet}{boolean, whether to hide messages. Default is TRUE}
 }
@@ -44,12 +47,13 @@ It is unknown how a loop could be monitoring volume and not occupancy.
 \dontrun{
 # Simple example
 loop_data <- pull_sensor(5474, "2018-10-14")
-# :   # Mapping example
+
+# Mapping example
 date_range <- seq(as.Date("2019/01/01"), as.Date("2019/01/02"), by = "days")
 loop_data <- pmap(list(8564, date_range), pull_sensor)
 loops_full <- rbindlist(loop_data)
 
-# Parallel mapping example;
+# Parallel mapping example
 ## takes longer if only pulling 1-2 days because libraries are copied to each core
 library(parallel)
 cl <- makeCluster(detectCores() - 1) # Leaving one core unused

@@ -107,10 +107,12 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length) {
       start_datetime := as.POSIXct(paste(date, hour, start_min),
         format = "%Y-%m-%d %H %M"
       )
-    ][, occupancy.pct := (occupancy.sum / interval_scans)][, speed := ifelse(volume.sum != 0,
+    ][, start_time := data.table::as.ITime(start_datetime)][, occupancy.pct := (occupancy.sum / interval_scans)][, speed := ifelse(volume.sum != 0,
       ((volume.sum * as.numeric(config[, "detector_field"][[1]]))
       / (5280 * occupancy.pct)) / interval_length, 0
-    )][, start_datetime := as.character(start_datetime)][, hour := NULL][, date := NULL][, start_min := NULL]
+    )]
+
+
   } else {
     bins <- seq(0, 24, interval_length)
     sensor_data[, date := data.table::as.IDate(date)][, year := data.table::year(date)][, interval_bin := findInterval(sensor_data$hour, bins)]

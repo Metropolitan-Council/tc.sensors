@@ -76,8 +76,7 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length) {
   }
 
   sensor_data <- data.table::as.data.table(sensor_data)
-
-
+  config <- data.table::as.data.table(config)[detector_name == sensor_data$sensor[[1]]]
   # number of scans in the given interval length
   interval_scans <- interval_length * 216000
 

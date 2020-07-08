@@ -8,25 +8,16 @@ test_that("Weather data functions as expected", {
   yesterday <- as.Date(Sys.Date() - 3)
 
 
-  # Because some sensors may return NA values, we
-  # are going to re-sample until we have a full dataset
-  rep <- 0
-  repeat {
     config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
       dplyr::sample_n(1)
 
     sensor_results <- pull_sensor(
       sensor = config_sample$detector_name[[1]],
-      pull_date = yesterday
+      pull_date = yesterday,
+      fill_gaps = TRUE
     )
 
-    message("Sample ", rep)
-    rep <- rep + 1
 
-    if (nrow(sensor_results) == 2880) {
-      break
-    }
-  }
 
   # test aggregation at 15 minutes----------------------------------------------
 

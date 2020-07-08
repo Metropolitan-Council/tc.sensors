@@ -5,25 +5,15 @@ test_that("Aggregation functions as expected", {
 
   yesterday <- as.Date(Sys.Date() - 3)
 
-  # Because some sensors may return NA values, we
-  # are going to re-sample until we have a full dataset
-  rep <- 0
-  repeat {
     config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
       dplyr::sample_n(1)
 
     sensor_results <- pull_sensor(
       sensor = config_sample$detector_name[[1]],
-      pull_date = yesterday
+      pull_date = yesterday,
+      fill_gaps = TRUE
     )
 
-    message("Sample ", rep)
-    rep <- rep + 1
-
-    if (nrow(sensor_results) == 2880) {
-      break
-    }
-  }
 
   # test aggregation at 15 minutes----------------------------------------------
   agg <- aggregate_sensor_data(sensor_results,
@@ -31,8 +21,9 @@ test_that("Aggregation functions as expected", {
     config = config_sample
   )
   testthat::expect_equal(dim(agg)[[1]], 96)
-  testthat::expect_equal(sum(sensor_results$volume), sum(agg$volume.sum))
-  testthat::expect_equal(sum(sensor_results$occupancy), sum(agg$occupancy.sum))
+
+  testthat::expect_equivalent(sum(sensor_results$volume, na.rm = T), sum(agg$volume.sum))
+  testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg$occupancy.sum))
 
   # test aggregation at 1 hour--------------------------------------------------
   agg_hour <- aggregate_sensor_data(sensor_results,

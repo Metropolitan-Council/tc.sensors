@@ -1,8 +1,10 @@
 #' Aggregate raw sensor data to a chosen level
 #'
 #' @param sensor_data data frame for single sensor returned from `pull_sensor()`
-#' @param interval_length numeric, the interval length in hours. Default is `1`.
+#' @param interval_length numeric, the interval length in hours.
+#'   `NA` indicates no aggregation (30 second data)
 #'   `0.25` indicates 15 minutes.
+#'   Default is `1`.
 #' @param config data.table, a configuration file for the given sensor
 #'
 #' @return a data.table with values for volume, occupancy, and speed
@@ -52,6 +54,10 @@
 #' )
 #' }
 aggregate_sensor_data <- function(sensor_data, config, interval_length) {
+  if (is.na(interval_length)) {
+    stop("No aggregation to do!")
+  }
+
   if (interval_length > 24) {
     stop("Interval cannot exceed 24 hours.")
 

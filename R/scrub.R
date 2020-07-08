@@ -5,11 +5,9 @@
 #' @return
 #' @export
 #'
-scrub_sensor <- function(sensor_data, interval_length) {
-  if (interval_length == 1) {
-    ## delete duplicates at hourly level
-    sensor_data[!duplicated(sensor_data, by = c("date", "hour", "sensor"), fromLast = TRUE)]
-  }
+scrub_sensor <- function(sensor_data, interval_length = NA) {
+
+  sensor_data[!duplicated(sensor_data, by = c("date", "hour", "min", "sensor"), fromLast = TRUE)]
 }
 
 

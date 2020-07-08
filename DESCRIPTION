@@ -13,7 +13,12 @@ Authors@R:
       person(given = "Nicole",
              family = "Sullivan",
              role = "aut",
-             email = "nicole.sullivan@metc.state.mn.us"))
+             email = "nicole.sullivan@metc.state.mn.us"),
+      person(given = "Ashley",
+             family = "Asmus",
+             role = "ctb",
+             email = "ashley.asmus@metc.state.mn.us",
+             comment = c(ORCID = "0000-0001-5505-1372")))
 Description: Process data collected from Minnesota Department of
     Transportation (MnDOT) loop detectors installed on the Minnesota
     Freeway system in 30-second interval measurements of occupancy and
@@ -48,4 +53,4 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace",
     "collate"))
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

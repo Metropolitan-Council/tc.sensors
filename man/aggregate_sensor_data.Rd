@@ -11,8 +11,10 @@ aggregate_sensor_data(sensor_data, config, interval_length)
 
 \item{config}{data.table, a configuration file for the given sensor}
 
-\item{interval_length}{numeric, the interval length in hours. Default is \code{1}.
-\code{0.25} indicates 15 minutes.}
+\item{interval_length}{numeric, the interval length in hours.
+\code{NA} indicates no aggregation (30 second data)
+\code{0.25} indicates 15 minutes.
+Default is \code{1}.}
 }
 \value{
 a data.table with values for volume, occupancy, and speed

@@ -8,7 +8,7 @@ day of week, and day category (holiday, weekend, or weekday)}
 add_day_type(sensor_data)
 }
 \arguments{
-\item{sensor_data}{data frame returned from \code{pull_sensor()}}
+\item{sensor_data}{data frame for single sensor returned from \code{pull_sensor()}}
 }
 \value{
 The original data.table with additional columns

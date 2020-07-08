@@ -4,12 +4,15 @@
 \alias{scrub_sensor}
 \title{Scrub sensor level data}
 \usage{
-scrub_sensor(sensor_data, level)
+scrub_sensor(sensor_data, interval_length)
 }
 \arguments{
-\item{sensor_data}{data frame returned from \code{pull_sensor()}}
+\item{sensor_data}{data frame for single sensor returned from \code{pull_sensor()}}
 
-\item{level}{string, options are "raw", "fifteen", "hour"}
+\item{interval_length}{numeric, the interval length in hours.
+\code{NA} indicates no aggregation (30 second data)
+\code{0.25} indicates 15 minutes.
+Default is \code{1}.}
 }
 \value{
 

@@ -1,20 +1,17 @@
-testthat::try_again(3, {
-  test_that("Weather data functions as expected", {
-    testthat::skip_if_offline()
+
+testthat::skip_if_offline()
+
+test_that("Weather data functions as expected", {
     config <- pull_configuration()
 
 
-    config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
-      dplyr::sample_n(1)
+    yesterday <- as.Date(Sys.Date() - 3)
 
-    yesterday <- as.Date(Sys.Date() - 365)
 
-    sensor_results <- pull_sensor(
-      sensor = config_sample$detector_name[[1]],
-      pull_date = yesterday
-    )
-
-    if (nrow(sensor_results) < 2880) {
+    # Because some sensors may return NA values, we
+    # are going to re-sample until we have a full dataset
+    rep <- 0
+    repeat {
       config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
         dplyr::sample_n(1)
 
@@ -22,6 +19,13 @@ testthat::try_again(3, {
         sensor = config_sample$detector_name[[1]],
         pull_date = yesterday
       )
+
+      message("Sample ", rep)
+      rep <- rep + 1
+
+      if(nrow(sensor_results) == 2880){
+        break
+      }
     }
 
     # test aggregation at 15 minutes----------------------------------------------
@@ -55,4 +59,3 @@ testthat::try_again(3, {
 
     testthat::expect_equal(dim(agg_day_weather)[[1]], 1)
   })
-})

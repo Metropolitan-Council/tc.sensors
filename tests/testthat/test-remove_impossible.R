@@ -1,14 +1,10 @@
 testthat::skip_if_offline()
 
-test_that("Impossible values are removed", {
+test_that("Impossible values are replaced", {
   config <- pull_configuration()
 
   yesterday <- as.Date(Sys.Date() - 3)
 
-  # Because some sensors may return NA values, we
-  # are going to re-sample until we have a full dataset
-  rep <- 0
-  repeat {
     config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
       dplyr::sample_n(1)
 
@@ -17,28 +13,20 @@ test_that("Impossible values are removed", {
       pull_date = yesterday
     )
 
-    message("Sample ", rep)
-    rep <- rep + 1
-
-    if (nrow(sensor_results) == 2880) {
-      break
-    }
-  }
-
-  imp_rem <- remove_impossible(
+  imp_rem <- replace_impossible(
     sensor_data = data.table::as.data.table(sensor_results),
     interval_length = NA
   )
 
-  testthat::expect_true(max(imp_rem$volume) < 20)
-  testthat::expect_true(max(imp_rem$occupancy) < 1800)
+  testthat::expect_true(max(imp_rem$volume) < 20 | is.na(max(imp_rem$volume)))
+  testthat::expect_true(max(imp_rem$occupancy) < 1800 | is.na(max(imp_rem$occupancy)))
 
   # test aggregation at 15 minutes----------------------------------------------
   agg <- aggregate_sensor_data(sensor_results,
     interval_length = 0.25,
     config = config_sample
   ) %>%
-    remove_impossible(interval_length = 0.25)
+    replace_impossible(interval_length = 0.25)
 
   testthat::expect_true(max(agg$volume.sum) < 0.25 * 2300)
   testthat::expect_true(max(agg$occupancy.sum) < 0.25 * 216000)
@@ -50,7 +38,7 @@ test_that("Impossible values are removed", {
     interval_length = 1,
     config = config_sample
   ) %>%
-    remove_impossible(interval_length = 1)
+    replace_impossible(interval_length = 1)
 
   testthat::expect_true(max(agg_hour$volume.sum) < 2300)
   testthat::expect_true(max(agg_hour$occupancy.sum) < 216000)
@@ -60,19 +48,19 @@ test_that("Impossible values are removed", {
     interval_length = 24,
     config = config_sample
   ) %>%
-    remove_impossible(interval_length = 24)
+    replace_impossible(interval_length = 24)
 
   testthat::expect_true(max(agg_day$volume.sum) < 24 * 2300)
   testthat::expect_true(max(agg_day$occupancy.sum) < 24 * 216000)
 
 
   # test argument checks--------------------------------------------------------
-  testthat::expect_error(remove_impossible(sensor_results,
+  testthat::expect_error(replace_impossible(sensor_results,
     interval_length = 48
   ))
 
   testthat::expect_error(
-    remove_impossible(rbind(
+    replace_impossible(rbind(
       sensor_results,
       data.table::data.table(
         volume = 10,

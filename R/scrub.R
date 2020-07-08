@@ -38,7 +38,7 @@ scrub_sensor <- function(sensor_data, interval_length) {
 #' @author@R c(person("Ashley", "Asmus"),
 #'   person("Liz", "Roten"))
 #'
-remove_impossible <- function(sensor_data,
+replace_impossible <- function(sensor_data,
                               interval_length = NA) {
   if (length(unique(sensor_data$sensor)) > 1) {
     stop("More than one sensor is in this dataset.")

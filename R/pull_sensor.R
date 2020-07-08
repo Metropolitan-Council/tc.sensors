@@ -8,6 +8,8 @@
 #'   Needs to by in "YYYY-MM-DD" format.
 #' @param sensor character, the sensor ID.
 #'   See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
+#' @param fill_gaps boolean, whether to fill gaps in the time series with `NA`
+#'   values. Default is `TRUE`
 #' @inheritParams pull_configuration
 #'
 #' @return data frame containing variables volume, occupancy, sensor, date, time.
@@ -35,12 +37,13 @@
 #' \dontrun{
 #' # Simple example
 #' loop_data <- pull_sensor(5474, "2018-10-14")
-#' # :   # Mapping example
+#'
+#' # Mapping example
 #' date_range <- seq(as.Date("2019/01/01"), as.Date("2019/01/02"), by = "days")
 #' loop_data <- pmap(list(8564, date_range), pull_sensor)
 #' loops_full <- rbindlist(loop_data)
 #'
-#' # Parallel mapping example;
+#' # Parallel mapping example
 #' ## takes longer if only pulling 1-2 days because libraries are copied to each core
 #' library(parallel)
 #' cl <- makeCluster(detectCores() - 1) # Leaving one core unused
@@ -53,6 +56,7 @@
 #'
 #' loops_full <- rbindlist(loop_data)
 #' }
+#' @import data.table
 #' @importFrom tibble enframe as_tibble
 #' @importFrom jsonlite fromJSON
 #' @importFrom dplyr bind_cols rename
@@ -61,7 +65,9 @@
 #' @family loop sensor functions
 #'
 #' @export
-pull_sensor <- function(sensor, pull_date, .quiet = TRUE) {
+pull_sensor <- function(sensor, pull_date,
+                        fill_gaps = TRUE,
+                        .quiet = TRUE) {
   # browser()
   # exts <- c("v", "c")
   # loops_ls <- map(exts, extension_pull)
@@ -69,34 +75,41 @@ pull_sensor <- function(sensor, pull_date, .quiet = TRUE) {
   volume <- extension_pull("v", "volume", pull_date = pull_date, sensor = sensor, quiet = .quiet)
   occupancy <- extension_pull("c", "occupancy", pull_date = pull_date, sensor = sensor, quiet = .quiet)
 
-  loop_uneven <- dplyr::bind_cols(volume, occupancy)
+  loop_uneven <- data.table::as.data.table(dplyr::bind_cols(volume, occupancy))
 
-  loop_date_sensor <- loop_uneven %>%
-    dplyr::mutate(
-      date = pull_date,
-      sensor = sensor
-    )
+  loop_date_sensor <- loop_uneven[, `:=`(date = pull_date, sensor = sensor)]
 
   # Add time
   if (nrow(loop_date_sensor) == 1) {
-    # Return essentially empty dataframe if both volume and occupancy are missing for entire day
-    loop_date_sensor %>%
-      dplyr::mutate(
-        hour = NA,
-        min = NA
+    if (fill_gaps == TRUE) {
+      if (.quiet == FALSE) {
+        message("Filling gaps...")
+      }
+
+      loop_date_sensor <- data.table::as.data.table(
+        expand.grid(
+          volume = NA,
+          occupancy = NA,
+          date = pull_date,
+          sensor = sensor,
+          hour = 0:23,
+          min = seq(0, 59.5, 0.5)
+        )
       )
+    } else if (fill_gaps == FALSE) {
+      # Return essentially empty data.table if both volume and occupancy are missing for entire day
+      loop_date_sensor[, `:=`(hour = NA, min = NA)]
+    }
   } else {
     # Add hour and minutes if either volume or occupancy (or both) are available
-    dplyr::bind_cols(
-      loop_date_sensor,
 
-      tibble::as_tibble(rep(0:23, each = 120)) %>%
-        dplyr::rename(hour = .data$value),
-
-      tibble::as_tibble(rep(seq(from = 0, to = 59.5, by = 0.5), 24)) %>%
-        dplyr::rename(min = .data$value)
-    )
+    loop_date_sensor[, `:=`(
+      hour = rep(0:23, each = 120),
+      min = rep(seq(0, 59.5, by = 0.5), 24)
+    )]
   }
+
+  return(loop_date_sensor)
 }
 
 

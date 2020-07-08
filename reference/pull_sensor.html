@@ -137,7 +137,7 @@ Use pull_sensor_ids to obtain metro sensor IDs." />
 Use <code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor_ids.html'>pull_sensor_ids</a></code> to obtain metro sensor IDs.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor.html'>pull_sensor</a></span>(<span class='kw'>sensor</span>, <span class='kw'>pull_date</span>, .quiet = <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor.html'>pull_sensor</a></span>(<span class='kw'>sensor</span>, <span class='kw'>pull_date</span>, fill_gaps = <span class='fl'>TRUE</span>, .quiet = <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -151,6 +151,11 @@ See documentation for <code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sen
       <th>pull_date</th>
       <td><p>character, the date of data to pull.
 Needs to by in "YYYY-MM-DD" format.</p></td>
+    </tr>
+    <tr>
+      <th>fill_gaps</th>
+      <td><p>boolean, whether to fill gaps in the time series with <code>NA</code>
+values. Default is <code>TRUE</code></p></td>
     </tr>
     <tr>
       <th>.quiet</th>
@@ -193,12 +198,13 @@ It is unknown how a loop could be monitoring volume and not occupancy.
     <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='co'># Simple example</span>
 <span class='kw'>loop_data</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor.html'>pull_sensor</a></span>(<span class='fl'>5474</span>, <span class='st'>"2018-10-14"</span>)
-<span class='co'># :   # Mapping example</span>
+
+<span class='co'># Mapping example</span>
 <span class='kw'>date_range</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span>(<span class='st'>"2019/01/01"</span>), <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span>(<span class='st'>"2019/01/02"</span>), by = <span class='st'>"days"</span>)
 <span class='kw'>loop_data</span> <span class='op'>&lt;-</span> <span class='fu'>pmap</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='fl'>8564</span>, <span class='kw'>date_range</span>), <span class='kw'>pull_sensor</span>)
 <span class='kw'>loops_full</span> <span class='op'>&lt;-</span> <span class='fu'>rbindlist</span>(<span class='kw'>loop_data</span>)
 
-<span class='co'># Parallel mapping example;</span>
+<span class='co'># Parallel mapping example</span>
 <span class='co'>## takes longer if only pulling 1-2 days because libraries are copied to each core</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'>parallel</span>)
 <span class='kw'>cl</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/parallel/makeCluster.html'>makeCluster</a></span>(<span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span>() <span class='op'>-</span> <span class='fl'>1</span>) <span class='co'># Leaving one core unused</span>

@@ -1,22 +1,27 @@
 #' @title Scrub sensor level data
 #'
-#' @param sensor_data data frame returned from `pull_sensor()`
-#' @param level string, options are "raw", "fifteen", "hour"
+#' @inheritParams aggregate_sensor_data
 #'
 #' @return
 #' @export
 #'
-scrub_sensor <- function(sensor_data, level) {
-
+scrub_sensor <- function(sensor_data, interval_length) {
+  if (interval_length == 1) {
+    ## delete duplicates at hourly level
+    sensor_data[!duplicated(sensor_data, by = c("date", "hour", "sensor"), fromLast = TRUE)]
+  }
 }
 
 
-#' Flag impossible values at given aggregation level
+#' Replace impossible volume and occupancy values with `NA` at given interval
 #'
-#' @inheritParams scrub_sensor
+#' @inheritParams aggregate_sensor_data
 #'
-#' @return
+#' @return the original data.table with impossible volume and occupancy values
+#'   replaced with `NA`.
 #' @export
+#'
+#' @import data.table
 #'
 #' @details
 #'   # Flag criteria
@@ -27,16 +32,41 @@ scrub_sensor <- function(sensor_data, level) {
 #'       - total 30-second volume exceeds 20 cars
 #'       - total 30-second occupancy exceed 1,800
 #'
-flag_impossible <- function(sensor_data) {
+#'    To find impossible values at any given interval length, we can multiply the
+#'
+#'
+#' @author@R c(person("Ashley", "Asmus"),
+#'   person("Liz", "Roten"))
+#'
+remove_impossible <- function(sensor_data,
+                              interval_length = NA) {
+  if (length(unique(sensor_data$sensor)) > 1) {
+    stop("More than one sensor is in this dataset.")
+  }
 
 
+  if (is.na(interval_length)) {
+    if (nrow(sensor_data) != 2880 * length(unique(sensor_data$date))) {
+      stop("For multiple dates, you must have at least 2,880 rows for each date you want covered.")
+    }
+
+    sensor_data[, volume := ifelse(volume >= 20, NA, volume)][, occupancy := ifelse(occupancy >= 1800, NA, occupancy)]
+  } else {
+    if (interval_length > 24) {
+      stop("Interval cannot exceed 24 hours.")
+    }
+
+    sensor_data[, volume.sum := ifelse(volume.sum >= (interval_length * 2300), NA, volume.sum)][, occupancy.sum := ifelse(occupancy.sum >= (interval_length * 216000), NA, occupancy.sum)]
+  }
+
+  return(sensor_data)
   # 60 scans per second * 60 secs per min * 60 mins per hour = 216,000 scans per hour
 }
 
 #' Append a column with a given date's day type (weekday or weekend),
 #'   day of week, and day category (holiday, weekend, or weekday)
 #'
-#' @inheritParams scrub_sensor
+#' @inheritParams aggregate_sensor_data
 #'
 #' @return The original data.table with additional columns
 #'   - `day_type` either "Weekday" or "Weekend"

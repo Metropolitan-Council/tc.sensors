@@ -135,18 +135,21 @@
     <p>Scrub sensor level data</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/scrub_sensor.html'>scrub_sensor</a></span>(<span class='kw'>sensor_data</span>, <span class='kw'>level</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/scrub_sensor.html'>scrub_sensor</a></span>(<span class='kw'>sensor_data</span>, <span class='kw'>interval_length</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>sensor_data</th>
-      <td><p>data frame returned from <code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor.html'>pull_sensor()</a></code></p></td>
+      <td><p>data frame for single sensor returned from <code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor.html'>pull_sensor()</a></code></p></td>
     </tr>
     <tr>
-      <th>level</th>
-      <td><p>string, options are "raw", "fifteen", "hour"</p></td>
+      <th>interval_length</th>
+      <td><p>numeric, the interval length in hours.
+<code>NA</code> indicates no aggregation (30 second data)
+<code>0.25</code> indicates 15 minutes.
+Default is <code>1</code>.</p></td>
     </tr>
     </table>
 

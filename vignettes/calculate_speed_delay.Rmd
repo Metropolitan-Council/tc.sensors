@@ -1,6 +1,10 @@
 ---
 title: "Calculate Speed and Delay"
+author: Liz Roten
 output: rmarkdown::html_vignette
+bibliography: references.bib
+csl: apa-single-spaced.csl
+nocite: '@*'
 vignette: >
   %\VignetteIndexEntry{Calculate Speed and Delay}
   %\VignetteEngine{knitr::rmarkdown}
@@ -11,75 +15,142 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE
+  eval = FALSE,
+  warning = FALSE,
+  message = FALSE
 )
-```
 
-```{r setup}
-library(tc.sensors)
-library(parallel)
-library(purrr)
-library(doParallel)
-library(foreach)
-library(dplyr)
-library(magrittr)
-library(tictoc) 
+options(scipen = 9999)
 ```
 
 ## Aggregate hourly speed  
 
 First, we will pull the data for three random sensors from January 1 to January 15, 2019. 
 
-```{r}
+```{r, cache=TRUE}
+library(tc.sensors)
+library(tictoc)
+library(dplyr)
+library(furrr)
+
 sensor_config <- pull_configuration() %>% 
-  dplyr::filter(detector_abandoned != F) %>% 
-  dplyr::sample_n(1)
+  dplyr::filter(corridor_route == "T.H.610",
+                r_node_n_type == "Station",
+                detector_category == "") 
 
-cores <- detectCores()
-cl <- makeCluster(cores)
-registerDoParallel(cl)
+date_range <- seq(as.Date("2019/03/03"), as.Date("2019/03/16"), by = "days")
+
+plan(multiprocess)
+
 tic() # Start the timer
-
-
-sensor_data <-
-  foreach(j = sensor_config$detector_name) %dopar% {
-  date_range <- seq(as.Date("2019/03/01"), as.Date("2019/03/31"), by = "days")
-  n <- length(date_range)
-  loops_ls <- vector("list", n)
-  
-  for (i in 1:n) {
-    loops_ls[[i]] <- tc.sensors::pull_sensor(j, date_range[[i]])
-  }
-  
-  loops_df <- data.table::rbindlist(loops_ls)
-}
-
+sensor_data <- future_map(sensor_config$detector_name,
+                              .f = function(det_name){
+                                future_map_dfr(seq(1:length(date_range)), .f = function(x){
+                                  tc.sensors::pull_sensor(det_name, date_range[[x]])
+                                })
+                              })
 toc()
-stopCluster(cl)
+```
+
+## Review data  
+
+```{r}
+library(leaflet)
+library(htmltools)
+
+popup_text <- paste(
+  strong("Detector name "), sensor_config$detector_name, br(),
+  strong("Detector label "), sensor_config$detector_label, br(),
+  strong("Node name"), sensor_config$r_node_name, br(),
+  strong("Node label"), sensor_config$r_node_label, br(),
+  strong("Node type"), sensor_config$r_node_n_type, br(),
+  strong("Corridor route"), sensor_config$corridor_route, br()
+)
+
+
+pal <- colorFactor(palette = "viridis", 
+                   levels = unique(sensor_config$corridor_dir))
+leaflet() %>% 
+  addProviderTiles(provider = providers$CartoDB.Positron) %>% 
+  addCircleMarkers(lng = as.numeric(sensor_config$r_node_lon),
+                   lat = as.numeric(sensor_config$r_node_lat),
+                   color = pal(sensor_config$corridor_dir),
+                   radius = 4,
+                   popup = popup_text) %>% 
+  addLegend(position = "bottomright",
+            title = "Direction",
+            pal = pal,
+            values = sensor_config$corridor_dir) %>% 
+  addScaleBar(position = "bottomleft")
 
 ```
 
-Do some data cleaning.  
 
+Clean data
 ```{r}
-clean_sensor_data <- purrr::map(sensor_data, replace_impossible, interval_length = NA) %>% # replace 
-  purrr::map(scrub_sensor, interval_length = NA)
+library(purrr)
+clean_sensor_data <- purrr::map(sensor_data,
+                                scrub_sensor, 
+                                interval_length = NA) %>% # replace 
 ```
 
+## Calculate delay  
+
+*Delay* is the difference in the time it takes to traverse a given distance at the reference speed and the comparison speed. Reference speed is typically the speed during free-flow periods. Delay is highly dependent on the reference speed.  
+
+>The use of free-flow speeds as a benchmark is understandable since it can be seen as a replicable and readily useable “objective” figure. Problems arise, however, when the difference between free flow speeds and experienced speeds are labelled “delay”. Delay is the technically correct term for the difference but is often semantically misconstrued as referring to an attainable target for peak hour travel – e.g. “zero-delay”. It should be noted that, most dynamic cities cannot afford to deliver free-flow speeds at peak hours, nor would they want to live with a road network that could deliver these speeds at peak hours. Discourse based on delay as measured in reference to free-flow travel times can thus be biased towards an unattainable and likely undesirable congestion management goal (e.g. zero delay). In this case, the use of an outcome neutral indicators or indices is preferable.  - *@world_bank_cairo_2013, Annex 9*
+
+To calculate the amount of time (in hours) it takes to traverse a given distance, we need to know the distance length (in miles) and the speed (in miles per hour). 
+
+$Time = \frac{Distance}{Speed}$
+
+We can safely assume that the distance between sensors is 0.5 miles. 
 
 ```{r}
-agg_hour <- purrr::map(clean_sensor_data, aggregate_sensor_data,
+agg_ten <- purrr::map(clean_sensor_data, 
+                       aggregate_sensor_data,
+                       config = sensor_config,
+                       interval_length = 10/60) %>% 
+  purrr::map(replace_impossible, interval_length = 10/60) %>% 
+  purrr::map(add_day_type)
+
+agg_hour <- purrr::map(clean_sensor_data, 
+                       aggregate_sensor_data,
                        config = sensor_config,
                        interval_length = 1) %>% 
-  purrr::map(add_day_type) %>% 
-  purrr::map(add_weather)
-  
+  purrr::map_dfr(replace_impossible, interval_length = 1) %>% 
+    filter(speed < 100)
 
-agg_period <- aggregate_sensor_data(clean_sensor_data[[1]], config = sensor_config,
-                                    interval_length = 6) %>% 
-  add_day_type() %>% 
-  add_weather(save_raw = FALSE,
-              interval_length = 6)
 
+trav <- map(agg_ten, mutate,
+            travel_time = 0.5/speed,
+            travel_time_min = travel_time*60) %>% 
+  map_dfr(left_join, sensor_config,
+          by  = c("sensor" = "detector_name")) %>% 
+  filter(speed < 100)
+
+summary(trav$speed)
+summary(agg_hour$speed)
 ```
 
+```{r}
+library(ggplot2)
+
+ggplot(trav)+
+  geom_density(aes(x = speed
+                   # fill = day_type,
+                   # color = day_type
+                   )) +
+  facet_wrap(~day_of_week) +
+  theme_minimal()
+```
+
+
+
+## Relevant reports and references  
+
+<div id="refs"></div>
+
+<footer>
+*Last updated by Liz Roten, `r Sys.Date()`*
+</footer>

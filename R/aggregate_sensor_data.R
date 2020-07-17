@@ -88,10 +88,15 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length) {
   # 5,280 = number of feet per mile, used to convert length of car to miles
 
   if (interval_length < 1) {
-    interval_length_min <- 60 * interval_length
-    bins <- seq(0, 60, interval_length_min)
+    # browser()
+    interval_length_min <- interval_length * 60
+    interval_length_sec <- 60 * interval_length * 60
+    interval_length_obs <- interval_length_sec/30
 
-    sensor_data[, interval_min_bin := findInterval(sensor_data$min, bins)][, start_min := min(min), by = .(date, hour, interval_min_bin)]
+    bins <- seq(0, 60, interval_length*60)
+    field_length <- as.numeric(config[, "detector_field"][[1]])
+
+    sensor_data[, interval_min_bin := findInterval(sensor_data$min, bins)][, start_min := min(min), by = .(date, hour, interval_min_bin)][, occupancy.pct.raw := occupancy / 1800]
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
       list(
@@ -100,19 +105,18 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length) {
         pct.null = round(100 * sum(is.na(x)) / length(x))
       )
     }))),
-    by = .(date, hour, start_min, sensor),
+    by = .(date, hour, start_min, interval_min_bin, sensor),
     .SDcols = c("volume", "occupancy")
     ][
       ,
       start_datetime := as.POSIXct(paste(date, hour, start_min),
         format = "%Y-%m-%d %H %M"
       )
-    ][, start_time := data.table::as.ITime(start_datetime)][, occupancy.pct := (occupancy.sum / interval_scans)][, speed := ifelse(volume.sum != 0,
-      ((volume.sum * as.numeric(config[, "detector_field"][[1]]))
-      / (5280 * occupancy.pct)) / interval_length, 0
-    )]
-
-
+    ][, occupancy.pct := (occupancy.sum / interval_scans)][,
+                                                           speed := ifelse(volume.sum != 0 & occupancy.pct != 0,
+                                                                           (volume.sum *(60/interval_length_min) * field_length)
+                                                                            / (5280 * occupancy.pct), 0
+                                                           )][, start_datetime := as.character(start_datetime)]
   } else {
     bins <- seq(0, 24, interval_length)
     sensor_data[, date := data.table::as.IDate(date)][, year := data.table::year(date)][, interval_bin := findInterval(sensor_data$hour, bins)]

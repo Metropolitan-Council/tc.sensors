@@ -39,13 +39,13 @@ replace_impossible <- function(sensor_data,
     stop("More than one sensor is in this dataset.")
   }
 
-
   if (is.na(interval_length)) {
     if (nrow(sensor_data) != 2880 * length(unique(sensor_data$date))) {
       stop("For multiple dates, you must have at least 2,880 rows for each date you want covered.")
     }
 
     sensor_data[, volume := ifelse(volume >= 20, NA, volume)][, occupancy := ifelse(occupancy >= 1800, NA, occupancy)]
+
   } else {
     if (interval_length > 24) {
       stop("Interval cannot exceed 24 hours.")

@@ -1,5 +1,5 @@
 ---
-title: "Calculate Speed and Delay"
+title: "Calculate speed and delay"
 author: Liz Roten
 output: rmarkdown::html_vignette
 bibliography: references.bib
@@ -15,7 +15,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE,
+  eval = TRUE,
   warning = FALSE,
   message = FALSE
 )

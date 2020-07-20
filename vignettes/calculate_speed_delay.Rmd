@@ -36,6 +36,7 @@ library(purrr)
 library(furrr)
 library(cowplot)
 library(stringr)
+library(data.table)
 ```
 
 
@@ -83,7 +84,8 @@ agg_ten <- purrr::map(clean_sensor_data,
   aggregate_sensor_data,
   config = sensor_config,
   interval_length = 10 / 60,
-  occupancy_pct_threshold = 0.002
+  occupancy_pct_threshold = 0.002,
+  interpolate_missing = TRUE
 ) %>%
   purrr::map_dfr(add_day_type)
 
@@ -91,7 +93,8 @@ agg_hour <- purrr::map(clean_sensor_data,
   aggregate_sensor_data,
   config = sensor_config,
   interval_length = 1,
-  occupancy_pct_threshold = 0.002
+  occupancy_pct_threshold = 0.002,
+  interpolate_missing = TRUE
 ) %>%
   purrr::map_dfr(add_day_type)
 ```
@@ -222,6 +225,58 @@ plot_hour <- ggplot() +
 
 cowplot::plot_grid(plot_ten, plot_hour)
 ```
+
+Another option for handling NA values is imputation
+
+```{r}
+library(mice)
+```
+
+```{r}
+rf_imp <- mice(agg_hour, method = "rf", formulas = c(as.formula("speed ~ volume.sum + occupancy.sum + day_of_week * day_type")), maxit = 3)
+
+
+all_imps <- complete(rf_imp, "all", include = T) 
+  
+out <- map_dfr(seq(1,6), .f = function(x){
+ all_imps[[x]] %>% 
+    mutate(imp_n = x) %>% 
+    select(speed, day_type, imp_n)
+})
+```
+
+
+```{r}
+ggplot() +
+  geom_density(data = out,
+               aes(x = speed,
+                   group = imp_n),
+               color = "plum4",
+               fill = "plum4",
+               alpha = 0.2,
+               size = 1) +
+   geom_density(data = agg_hour,
+               aes(x = speed),
+               color = "gray58",
+               # fill = "gray58",
+               # alpha =0.5,
+               size = 1) +
+  facet_wrap(~day_type) +
+  theme_minimal()
+```
+
+```{r}
+ggplot() +
+geom_jitter(data =agg_hour,
+            aes(x = day_of_week,
+                y = speed),
+            color = "green") +
+  geom_jitter(data =  agg_hour, 
+              aes(x = day_of_week,
+                  y = speed_imputed)) + 
+  theme_minimal()
+```
+
 
 ## Delay  
 

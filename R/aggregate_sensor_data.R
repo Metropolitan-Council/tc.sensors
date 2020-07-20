@@ -8,6 +8,9 @@
 #' @param config data.table, a configuration file for the given sensor
 #' @param replace_impossible logical, whether to replace impossible values with `NA`.
 #'   Default is `TRUE` and *highly* recommended.
+#' @param interploate_missing logical, whether to interpolate missing volume and occupancy
+#'   values at the raw data level. Only applies if `replace_impossible` is `TRUE`. Note
+#'   that this option increases the function runtime.
 #' @param occupancy_pct_threshold numeric, the lowest possible occupancy percentage
 #'   to use when calculating speed. Default is `0.0020` or 0.2%. Increasing the threshold
 #'   results in more stable speed values, while lowering it may increase speed variability.
@@ -41,6 +44,13 @@
 #'     will be replaced with `NA`. It is impossible for more than twenty vehicles to pass over a sensor
 #'     in only 30 seconds, and the maximum number of scans in 30 seconds is 1,800 (60 scans/second * 30 seconds).
 #'
+#'     ### Interpolating missing values
+#'
+#'       `interpolate_missing` indicates whether to interpolate missing volume and occupancy values
+#'       at the raw data level. The interpolated value for a given observation is the mean of
+#'       the two observations on either side of the observation. This method preserves the variable's
+#'       overall distribution.
+#'
 #' @export
 #'
 #' @import data.table
@@ -68,6 +78,7 @@
 #' }
 aggregate_sensor_data <- function(sensor_data, config, interval_length,
                                   replace_impossible = TRUE,
+                                  interpolate_missing = FALSE,
                                   occupancy_pct_threshold = 0.0020) {
   # input checks ---------------------------------------------------------------
   if (is.na(interval_length)) {
@@ -104,6 +115,24 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length,
       sensor_data = sensor_data,
       interval_length = NA
     )
+
+    if (interpolate_missing == TRUE) {
+      sensor_data <- sensor_data[
+        , `:=`(volume.rollmean = data.table::shift(
+          data.table::frollapply(volume, 3, mean, align = "center", na.rm = T, hasNA = T)
+        )),
+        by = .(sensor)
+      ][
+        , volume := ifelse(is.na(volume), volume.rollmean, volume)
+      ][
+        , `:=`(occupancy.rollmean = data.table::shift(
+          data.table::frollapply(occupancy, 3, mean, align = "center", na.rm = T, hasNA = T)
+        )),
+        by = .(sensor)
+      ][
+        , occupancy := ifelse(is.na(occupancy), occupancy.rollmean, occupancy)
+      ][, .(volume, occupancy, date, sensor, hour, min)]
+    }
   }
 
 

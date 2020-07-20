@@ -9,6 +9,7 @@ aggregate_sensor_data(
   config,
   interval_length,
   replace_impossible = TRUE,
+  interpolate_missing = FALSE,
   occupancy_pct_threshold = 0.002
 )
 }
@@ -29,6 +30,10 @@ Default is \code{TRUE} and \emph{highly} recommended.}
 to use when calculating speed. Default is \code{0.0020} or 0.2\%. Increasing the threshold
 results in more stable speed values, while lowering it may increase speed variability.
 A higher occupancy threshold is recommended for shorter interval lengths}
+
+\item{interploate_missing}{logical, whether to interpolate missing volume and occupancy
+values at the raw data level. Only applies if \code{replace_impossible} is \code{TRUE}. Note
+that this option increases the function runtime.}
 }
 \value{
 a data.table with values for volume, occupancy, and speed
@@ -60,6 +65,13 @@ To find the number of scans in 15 minutes, we can multiply 0.25 * 216000 = 54,00
 \subsection{Impossible values}{\preformatted{Any observation with a volume that exceeds 20 vehicles or an occupancy that exceeds 1,800 scans
 will be replaced with `NA`. It is impossible for more than twenty vehicles to pass over a sensor
 in only 30 seconds, and the maximum number of scans in 30 seconds is 1,800 (60 scans/second * 30 seconds).
+
+### Interpolating missing values
+
+  `interpolate_missing` indicates whether to interpolate missing volume and occupancy values
+  at the raw data level. The interpolated value for a given observation is the mean of
+  the two observations on either side of the observation. This method preserves the variable's
+  overall distribution.
 }
 }
 }

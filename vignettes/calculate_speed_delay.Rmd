@@ -52,39 +52,6 @@ sensor_data <- future_map(sensor_config$detector_name,
 toc()
 ```
 
-## Review data  
-
-```{r}
-library(leaflet)
-library(htmltools)
-
-popup_text <- paste(
-  strong("Detector name "), sensor_config$detector_name, br(),
-  strong("Detector label "), sensor_config$detector_label, br(),
-  strong("Node name"), sensor_config$r_node_name, br(),
-  strong("Node label"), sensor_config$r_node_label, br(),
-  strong("Node type"), sensor_config$r_node_n_type, br(),
-  strong("Corridor route"), sensor_config$corridor_route, br()
-)
-
-
-pal <- colorFactor(palette = "viridis", 
-                   levels = unique(sensor_config$corridor_dir))
-leaflet() %>% 
-  addProviderTiles(provider = providers$CartoDB.Positron) %>% 
-  addCircleMarkers(lng = as.numeric(sensor_config$r_node_lon),
-                   lat = as.numeric(sensor_config$r_node_lat),
-                   color = pal(sensor_config$corridor_dir),
-                   radius = 4,
-                   popup = popup_text) %>% 
-  addLegend(position = "bottomright",
-            title = "Direction",
-            pal = pal,
-            values = sensor_config$corridor_dir) %>% 
-  addScaleBar(position = "bottomleft")
-
-```
-
 
 Clean data
 ```{r}

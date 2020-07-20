@@ -8,3 +8,5 @@ docs
 inst/doc
 doc
 Meta
+
+vignettes/calculate_speed_delay_cache/

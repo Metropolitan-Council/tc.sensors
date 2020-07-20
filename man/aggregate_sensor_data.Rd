@@ -8,7 +8,8 @@ aggregate_sensor_data(
   sensor_data,
   config,
   interval_length,
-  replace_impossible = TRUE
+  replace_impossible = TRUE,
+  occupancy_pct_threshold = 0.002
 )
 }
 \arguments{
@@ -21,7 +22,13 @@ aggregate_sensor_data(
 \code{0.25} indicates 15 minutes.
 Default is \code{1}.}
 
-\item{replace_impossible}{logical, whether to replace impossible values with \code{NA}}
+\item{replace_impossible}{logical, whether to replace impossible values with \code{NA}.
+Default is \code{TRUE} and \emph{highly} recommended.}
+
+\item{occupancy_pct_threshold}{numeric, the lowest possible occupancy percentage
+to use when calculating speed. Default is \code{0.0020} or 0.2\%. Increasing the threshold
+results in more stable speed values, while lowering it may increase speed variability.
+A higher occupancy threshold is recommended for shorter interval lengths}
 }
 \value{
 a data.table with values for volume, occupancy, and speed
@@ -47,6 +54,12 @@ interval.
 With 60 scans per second, 60 seconds per minute there are 3,600 scans per minute.
 With 3,600 scans per minute, 60 minutes per hour there are 216,000 scans per hour.
 To find the number of scans in 15 minutes, we can multiply 0.25 * 216000 = 54,000 scans.
+}
+}
+
+\subsection{Impossible values}{\preformatted{Any observation with a volume that exceeds 20 vehicles or an occupancy that exceeds 1,800 scans
+will be replaced with `NA`. It is impossible for more than twenty vehicles to pass over a sensor
+in only 30 seconds, and the maximum number of scans in 30 seconds is 1,800 (60 scans/second * 30 seconds).
 }
 }
 }

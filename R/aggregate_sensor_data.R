@@ -6,6 +6,13 @@
 #'   `0.25` indicates 15 minutes.
 #'   Default is `1`.
 #' @param config data.table, a configuration file for the given sensor
+#' @param replace_impossible logical, whether to replace impossible values with `NA`.
+#'   Default is `TRUE` and *highly* recommended.
+#' @param occupancy_pct_threshold numeric, the lowest possible occupancy percentage
+#'   to use when calculating speed. Default is `0.0020` or 0.2%. Increasing the threshold
+#'   results in more stable speed values, while lowering it may increase speed variability.
+#'   A higher occupancy threshold is recommended for shorter interval lengths
+#'
 #'
 #' @return a data.table with values for volume, occupancy, and speed
 #'   - `date` IDate, the given date
@@ -27,6 +34,12 @@
 #'     With 60 scans per second, 60 seconds per minute there are 3,600 scans per minute.
 #'     With 3,600 scans per minute, 60 minutes per hour there are 216,000 scans per hour.
 #'     To find the number of scans in 15 minutes, we can multiply 0.25 * 216000 = 54,000 scans.
+#'
+#'   ## Impossible values
+#'
+#'     Any observation with a volume that exceeds 20 vehicles or an occupancy that exceeds 1,800 scans
+#'     will be replaced with `NA`. It is impossible for more than twenty vehicles to pass over a sensor
+#'     in only 30 seconds, and the maximum number of scans in 30 seconds is 1,800 (60 scans/second * 30 seconds).
 #'
 #' @export
 #'
@@ -53,7 +66,10 @@
 #'   config = config_sample
 #' )
 #' }
-aggregate_sensor_data <- function(sensor_data, config, interval_length) {
+aggregate_sensor_data <- function(sensor_data, config, interval_length,
+                                  replace_impossible = TRUE,
+                                  occupancy_pct_threshold = 0.0020) {
+  # input checks ---------------------------------------------------------------
   if (is.na(interval_length)) {
     stop("No aggregation to do!")
   }
@@ -75,28 +91,34 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length) {
     stop("More than one sensor is in this dataset.")
   }
 
+  # format data ----------------------------------------------------------------
   sensor_data <- data.table::as.data.table(sensor_data)
   config <- data.table::as.data.table(config)[detector_name == sensor_data$sensor[[1]]]
+
   # number of scans in the given interval length
   interval_scans <- interval_length * 216000
+  field_length <- as.numeric(config[, "detector_field"][[1]])
+
+  if(replace_impossible == TRUE){
+    sensor_data <- replace_impossible(sensor_data = sensor_data,
+                                      interval_length = NA)
+  }
+
 
   # there are 60 scans/second
   # 60*30 = 1,800 scans/ 30 sec (the interval we are given)
   # 60*60 = 3,600 scans/minute
   # 3600*60 = 216,000 scans per hour
   # 216,000 = number of scans in one hour
-  # 5,280 = number of feet per mile, used to convert length of car to miles
 
-  if (interval_length < 1) {
+  if (interval_length < 1) { # if the interval length is less than an hour
     # browser()
     interval_length_min <- interval_length * 60
-    interval_length_sec <- 60 * interval_length * 60
-    interval_length_obs <- interval_length_sec/30
 
-    bins <- seq(0, 60, interval_length*60)
-    field_length <- as.numeric(config[, "detector_field"][[1]])
+    bins <- seq(0, 60, interval_length * 60)
 
-    sensor_data[, interval_min_bin := findInterval(sensor_data$min, bins)][, start_min := min(min), by = .(date, hour, interval_min_bin)][, occupancy.pct.raw := occupancy / 1800]
+    sensor_data[, interval_min_bin := findInterval(sensor_data$min, bins)][
+      , start_min := min(min), by = .(date, hour, interval_min_bin)]
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
       list(
@@ -107,19 +129,21 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length) {
     }))),
     by = .(date, hour, start_min, interval_min_bin, sensor),
     .SDcols = c("volume", "occupancy")
-    ][
-      ,
-      start_datetime := as.POSIXct(paste(date, hour, start_min),
-        format = "%Y-%m-%d %H %M"
-      )
-    ][, occupancy.pct := (occupancy.sum / interval_scans)][,
-                                                           speed := ifelse(volume.sum != 0 & occupancy.pct != 0,
-                                                                           (volume.sum *(60/interval_length_min) * field_length)
-                                                                            / (5280 * occupancy.pct), 0
-                                                           )][, start_datetime := as.character(start_datetime)]
-  } else {
+    ][, start_datetime := as.character(as.POSIXct(paste(date, hour, start_min), format = "%Y-%m-%d %H %M"))][
+      , occupancy.pct := (occupancy.sum / interval_scans)][
+        , speed := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
+                          (volume.sum * (60 / interval_length_min) * field_length)
+                          / (5280 * occupancy.pct), NA)]
+
+
+  } else { # if the interval length is greater than or equal to 1 hour
+
     bins <- seq(0, 24, interval_length)
-    sensor_data[, date := data.table::as.IDate(date)][, year := data.table::year(date)][, interval_bin := findInterval(sensor_data$hour, bins)]
+
+    sensor_data[, date := data.table::as.IDate(date)][
+      , year := data.table::year(date)][
+        , interval_bin := findInterval(sensor_data$hour, bins)]
+
     data.table::setorder(sensor_data, date)
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
@@ -131,10 +155,12 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length) {
     }))),
     by = .(date, interval_bin, sensor),
     .SDcols = c("volume", "occupancy")
-    ][, occupancy.pct := (occupancy.sum / interval_scans)][, speed := ifelse(volume.sum != 0,
-      ((volume.sum * as.numeric(config[, "detector_field"][[1]])) /
-        (5280 * occupancy.pct)) / interval_length, 0
-    )]
+    ][, occupancy.sum := ifelse(occupancy.sum >= interval_scans, NA, occupancy.sum)][
+      , occupancy.pct := (occupancy.sum / interval_scans)][
+        , speed := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
+                          ((volume.sum * field_length) /
+                             (5280 * occupancy.pct)) / interval_length, NA
+        )]
   }
   return(sensor_data_agg)
 }

@@ -13,10 +13,10 @@ See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.}
 \item{pull_date}{character, the date of data to pull.
 Needs to by in "YYYY-MM-DD" format.}
 
-\item{fill_gaps}{boolean, whether to fill gaps in the time series with \code{NA}
+\item{fill_gaps}{logical, whether to fill gaps in the time series with \code{NA}
 values. Default is \code{TRUE}}
 
-\item{.quiet}{boolean, whether to hide messages. Default is TRUE}
+\item{.quiet}{logical, whether to hide messages. Default is TRUE}
 }
 \value{
 data frame containing variables volume, occupancy, sensor, date, time.

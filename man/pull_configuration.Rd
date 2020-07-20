@@ -12,7 +12,7 @@ pull_configuration(return_opt = "in_memory", .quiet = TRUE)
 "Configuration of Metro Detectors YYYY-MM-DD".
 \code{"in-memory"} will return the data in R, but requires assignment.}
 
-\item{.quiet}{boolean, whether to hide messages. Default is TRUE}
+\item{.quiet}{logical, whether to hide messages. Default is TRUE}
 }
 \value{
 dataframe containing 20 variables, including detector_field and lat/lons,

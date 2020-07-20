@@ -4,7 +4,12 @@
 \alias{aggregate_sensor_data}
 \title{Aggregate raw sensor data to a chosen level}
 \usage{
-aggregate_sensor_data(sensor_data, config, interval_length)
+aggregate_sensor_data(
+  sensor_data,
+  config,
+  interval_length,
+  replace_impossible = TRUE
+)
 }
 \arguments{
 \item{sensor_data}{data frame for single sensor returned from \code{pull_sensor()}}
@@ -15,6 +20,8 @@ aggregate_sensor_data(sensor_data, config, interval_length)
 \code{NA} indicates no aggregation (30 second data)
 \code{0.25} indicates 15 minutes.
 Default is \code{1}.}
+
+\item{replace_impossible}{logical, whether to replace impossible values with \code{NA}}
 }
 \value{
 a data.table with values for volume, occupancy, and speed

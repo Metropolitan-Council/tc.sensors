@@ -21,16 +21,15 @@ replaced with \code{NA}.
 \description{
 Replace impossible volume and occupancy values with \code{NA} at given interval
 }
-\section{Flag criteria}{
+\section{Criteria}{
 \preformatted{- Hourly
   - total hourly occupancy exceeds 216,000 scans
-  - total hourly volume exceeds 2,300
+  - total hourly volume exceeds 2,300 cars
 - 30-sec
   - total 30-second volume exceeds 20 cars
-  - total 30-second occupancy exceed 1,800
+  - total 30-second occupancy exceed 1,800 scans
+- Percent nulls > 10.
 }
-
-To find impossible values at any given interval length, we can multiply the
 }
 
 \author{

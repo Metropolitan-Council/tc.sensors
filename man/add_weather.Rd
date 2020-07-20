@@ -17,7 +17,7 @@ add_weather(
 \arguments{
 \item{sensor_data}{data.table, a data.table of aggregated sensor data.}
 
-\item{save_raw}{boolean, whether to save the raw data. Default is \code{FALSE}}
+\item{save_raw}{logical, whether to save the raw data. Default is \code{FALSE}}
 
 \item{save_location}{character, relative path to save location}
 

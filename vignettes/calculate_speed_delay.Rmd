@@ -23,20 +23,24 @@ knitr::opts_chunk$set(
 options(scipen = 9999)
 ```
 
-## Aggregate hourly speed  
+## Pull sensor data
 
-First, we will pull the data for three random sensors from January 1 to January 15, 2019. 
+First, we will pull the data for three random sensors from March 3 to March 16, 2019. 
 
 ```{r, cache=TRUE}
 library(tc.sensors)
 library(tictoc)
 library(dplyr)
+library(ggplot2)
+library(purrr)
 library(furrr)
 
-sensor_config <- pull_configuration() %>% 
-  dplyr::filter(corridor_route == "T.H.610",
-                r_node_n_type == "Station",
-                detector_category == "") 
+sensor_config <- pull_configuration() %>%
+  dplyr::filter(
+    corridor_route == "T.H.610", # single out one corridor
+    r_node_n_type == "Station", # only station node types
+    detector_category == "" # only mainline detectors
+  )
 
 date_range <- seq(as.Date("2019/03/03"), as.Date("2019/03/16"), by = "days")
 
@@ -44,24 +48,176 @@ plan(multiprocess)
 
 tic() # Start the timer
 sensor_data <- future_map(sensor_config$detector_name,
-                              .f = function(det_name){
-                                future_map_dfr(seq(1:length(date_range)), .f = function(x){
-                                  tc.sensors::pull_sensor(det_name, date_range[[x]])
-                                })
-                              })
+  .f = function(det_name) {
+    future_map_dfr(seq(1:length(date_range)), .f = function(x) {
+      tc.sensors::pull_sensor(det_name, date_range[[x]])
+    })
+  }
+)
 toc()
 ```
 
 
 Clean data
 ```{r}
-library(purrr)
 clean_sensor_data <- purrr::map(sensor_data,
-                                scrub_sensor, 
-                                interval_length = NA) %>% # replace 
+  scrub_sensor,
+  interval_length = NA
+) # replace
 ```
 
-## Calculate delay  
+## Aggregate sensor data and calculate speed  
+
+To calculate speed and evaluate our speed calculation, we are going to look at two different aggregation intervals:  10 minutes and 60 minutes (or 1 hour). 
+
+To avoid getting unreasonable speed values, we will set an occupancy percentage threshold at 0.002, or 0.2%. This functions somewhat like a sample size cut-off; if the occupancy is too low, its more likely that the speed value returned will be invalid. 
+
+```{r}
+agg_ten <- purrr::map(clean_sensor_data,
+  aggregate_sensor_data,
+  config = sensor_config,
+  interval_length = 10 / 60,
+  occupancy_pct_threshold = 0.002
+) %>%
+  purrr::map_dfr(add_day_type)
+
+agg_hour <- purrr::map(clean_sensor_data,
+  aggregate_sensor_data,
+  config = sensor_config,
+  interval_length = 1,
+  occupancy_pct_threshold = 0.002
+) %>%
+  purrr::map_dfr(add_day_type)
+```
+
+The NA values here aren't evenly distributed across all starting hours and day types. There is a greater percentage of null values in the early morning on both weekdays and weekends, which aligns with our knowledge that there is relatively low traffic during these hours. 
+
+```{r}
+# > 10min speed summary
+summary(agg_ten$speed)
+# > 10 minute speed NA percentage
+summary(agg_ten$speed)[7] / nrow(agg_ten)
+
+# > 1 hour speed summary
+summary(agg_hour$speed)
+# > 1 hour minute speed NA percentage
+summary(agg_hour$speed)[7] / nrow(agg_hour)
+```
+
+We also see this in the 
+
+```{r}
+cowplot::plot_grid(
+  agg_ten %>%
+    group_by(day_type, hour) %>%
+    summarise(
+      pc_n = sum(is.na(speed)) / length(speed),
+      .groups = "keep"
+    ) %>%
+    ggplot() +
+    geom_col(
+      mapping = aes(
+        x = hour,
+        y = pc_n,
+        fill = day_type
+      ),
+      alpha = 0.7,
+      position = position_dodge(width = 0.3),
+    ) +
+    scale_y_continuous(labels = scales::percent) +
+    scale_fill_viridis_d("Day Type", option = "magma", begin = 0.2, end = 0.7) +
+    theme_minimal() +
+    labs(
+      y = "% null speed observations",
+      x = "Start hour",
+      title = "10 minute aggregation"
+    ) +
+    theme(legend.position = "bottom"),
+  agg_hour %>%
+    group_by(day_type, interval_bin) %>%
+    summarise(
+      pc_n = sum(is.na(speed)) / length(speed),
+      .groups = "keep"
+    ) %>%
+    ggplot() +
+    geom_col(
+      mapping = aes(
+        x = interval_bin,
+        y = pc_n,
+        fill = day_type
+      ),
+      position = position_dodge(width = 0.3),
+      alpha = 0.7
+    ) +
+    scale_fill_viridis_d("Day Type", option = "magma", begin = 0.2, end = 0.7) +
+    scale_y_continuous(labels = scales::percent) +
+    scale_x_continuous(limits = range(agg_ten$hour)) +
+    theme_minimal() +
+    labs(
+      y = "",
+      x = "Start hour",
+      title = "1 hour aggregation"
+    ) +
+    theme(legend.position = "bottom")
+)
+```
+
+Next, we will plot the relationship between speed, volume, and occupancy for both aggregation levels. The plots below show that the larger interval size seems to stabilize speed values. 
+
+```{r}
+plot_ten <- ggplot() +
+  geom_point(
+    data = agg_ten %>%
+      arrange(speed),
+    aes(
+      y = occupancy.pct,
+      x = speed,
+      fill = scale(volume.sum),
+      color = scale(volume.sum)
+    ),
+    alpha = 0.5,
+    size = 3
+  ) +
+  scale_fill_viridis_c(stringr::str_wrap("Relative volume", 5), option = "magma", aesthetics = c("fill", "color")) +
+  scale_y_continuous("Occupancy %",
+    labels = scales::percent,
+    limits = range(agg_ten$occupancy.pct)
+  ) +
+  scale_x_continuous("Speed (mph)", limits = range(agg_ten$speed)) +
+  theme_minimal() +
+  labs(title = "10 minute aggregation") +
+  theme(legend.position = "bottom")
+
+
+
+plot_hour <- ggplot() +
+  geom_point(
+    data = agg_hour %>%
+      arrange(speed),
+    aes(
+      y = occupancy.pct,
+      x = speed,
+      fill = scale(volume.sum),
+      color = scale(volume.sum)
+    ),
+    alpha = 0.5,
+    size = 3
+  ) +
+  scale_fill_viridis_c(stringr::str_wrap("Relative volume", 5), option = "magma", aesthetics = c("fill", "color")) +
+  scale_y_continuous("",
+    labels = scales::percent,
+    limits = range(agg_ten$occupancy.pct)
+  ) +
+  scale_x_continuous("Speed (mph)", limits = range(agg_ten$speed)) +
+  theme_minimal() +
+  labs(title = "1 hour aggregation") +
+  theme(legend.position = "bottom")
+
+
+cowplot::plot_grid(plot_ten, plot_hour)
+```
+
+## Delay  
 
 *Delay* is the difference in the time it takes to traverse a given distance at the reference speed and the comparison speed. Reference speed is typically the speed during free-flow periods. Delay is highly dependent on the reference speed.  
 
@@ -72,46 +228,6 @@ To calculate the amount of time (in hours) it takes to traverse a given distance
 $Time = \frac{Distance}{Speed}$
 
 We can safely assume that the distance between sensors is 0.5 miles. 
-
-```{r}
-agg_ten <- purrr::map(clean_sensor_data, 
-                       aggregate_sensor_data,
-                       config = sensor_config,
-                       interval_length = 10/60) %>% 
-  purrr::map(replace_impossible, interval_length = 10/60) %>% 
-  purrr::map(add_day_type)
-
-agg_hour <- purrr::map(clean_sensor_data, 
-                       aggregate_sensor_data,
-                       config = sensor_config,
-                       interval_length = 1) %>% 
-  purrr::map_dfr(replace_impossible, interval_length = 1) %>% 
-    filter(speed < 100)
-
-
-trav <- map(agg_ten, mutate,
-            travel_time = 0.5/speed,
-            travel_time_min = travel_time*60) %>% 
-  map_dfr(left_join, sensor_config,
-          by  = c("sensor" = "detector_name")) %>% 
-  filter(speed < 100)
-
-summary(trav$speed)
-summary(agg_hour$speed)
-```
-
-```{r}
-library(ggplot2)
-
-ggplot(trav)+
-  geom_density(aes(x = speed
-                   # fill = day_type,
-                   # color = day_type
-                   )) +
-  facet_wrap(~day_of_week) +
-  theme_minimal()
-```
-
 
 
 ## Relevant reports and references  

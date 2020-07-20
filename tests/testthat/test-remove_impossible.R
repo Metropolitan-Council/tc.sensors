@@ -10,8 +10,19 @@ test_that("Impossible values are replaced", {
 
   sensor_results <- pull_sensor(
     sensor = config_sample$detector_name[[1]],
-    pull_date = yesterday
+    pull_date = yesterday,
+    fill_gaps = TRUE
   )
+
+  ifelse(is.na(sensor_results$volume), {
+    config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
+    dplyr::sample_n(1)
+
+  sensor_results <- pull_sensor(
+    sensor = config_sample$detector_name[[1]],
+    pull_date = yesterday,
+    fill_gaps = TRUE
+  )}, NA)
 
   imp_rem <- replace_impossible(
     sensor_data = data.table::as.data.table(sensor_results),

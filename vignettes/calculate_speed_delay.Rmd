@@ -27,14 +27,19 @@ options(scipen = 9999)
 
 First, we will pull the data for three random sensors from March 3 to March 16, 2019. 
 
-```{r, cache=TRUE}
+```{r}
 library(tc.sensors)
 library(tictoc)
 library(dplyr)
 library(ggplot2)
 library(purrr)
 library(furrr)
+library(cowplot)
+library(stringr)
+```
 
+
+```{r, cache=TRUE}
 sensor_config <- pull_configuration() %>%
   dplyr::filter(
     corridor_route == "T.H.610", # single out one corridor
@@ -59,6 +64,7 @@ toc()
 
 
 Clean data
+
 ```{r}
 clean_sensor_data <- purrr::map(sensor_data,
   scrub_sensor,

@@ -45,7 +45,6 @@ replace_impossible <- function(sensor_data,
     }
 
     sensor_data[, volume := ifelse(volume >= 20, NA, volume)][, occupancy := ifelse(occupancy >= 1800, NA, occupancy)]
-
   } else {
     if (interval_length > 24) {
       stop("Interval cannot exceed 24 hours.")

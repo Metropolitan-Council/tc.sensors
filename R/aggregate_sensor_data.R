@@ -99,9 +99,11 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length,
   interval_scans <- interval_length * 216000
   field_length <- as.numeric(config[, "detector_field"][[1]])
 
-  if(replace_impossible == TRUE){
-    sensor_data <- replace_impossible(sensor_data = sensor_data,
-                                      interval_length = NA)
+  if (replace_impossible == TRUE) {
+    sensor_data <- replace_impossible(
+      sensor_data = sensor_data,
+      interval_length = NA
+    )
   }
 
 
@@ -118,7 +120,9 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length,
     bins <- seq(0, 60, interval_length * 60)
 
     sensor_data[, interval_min_bin := findInterval(sensor_data$min, bins)][
-      , start_min := min(min), by = .(date, hour, interval_min_bin)]
+      , start_min := min(min),
+      by = .(date, hour, interval_min_bin)
+    ]
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
       list(
@@ -130,19 +134,22 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length,
     by = .(date, hour, start_min, interval_min_bin, sensor),
     .SDcols = c("volume", "occupancy")
     ][, start_datetime := as.character(as.POSIXct(paste(date, hour, start_min), format = "%Y-%m-%d %H %M"))][
-      , occupancy.pct := (occupancy.sum / interval_scans)][
-        , speed := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
-                          (volume.sum * (60 / interval_length_min) * field_length)
-                          / (5280 * occupancy.pct), NA)]
-
-
+      , occupancy.pct := (occupancy.sum / interval_scans)
+    ][
+      , speed := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
+        (volume.sum * (60 / interval_length_min) * field_length)
+        / (5280 * occupancy.pct), NA
+      )
+    ]
   } else { # if the interval length is greater than or equal to 1 hour
 
     bins <- seq(0, 24, interval_length)
 
     sensor_data[, date := data.table::as.IDate(date)][
-      , year := data.table::year(date)][
-        , interval_bin := findInterval(sensor_data$hour, bins)]
+      , year := data.table::year(date)
+    ][
+      , interval_bin := findInterval(sensor_data$hour, bins)
+    ]
 
     data.table::setorder(sensor_data, date)
 
@@ -156,11 +163,13 @@ aggregate_sensor_data <- function(sensor_data, config, interval_length,
     by = .(date, interval_bin, sensor),
     .SDcols = c("volume", "occupancy")
     ][, occupancy.sum := ifelse(occupancy.sum >= interval_scans, NA, occupancy.sum)][
-      , occupancy.pct := (occupancy.sum / interval_scans)][
-        , speed := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
-                          ((volume.sum * field_length) /
-                             (5280 * occupancy.pct)) / interval_length, NA
-        )]
+      , occupancy.pct := (occupancy.sum / interval_scans)
+    ][
+      , speed := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
+        ((volume.sum * field_length) /
+          (5280 * occupancy.pct)) / interval_length, NA
+      )
+    ]
   }
   return(sensor_data_agg)
 }

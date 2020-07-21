@@ -63,7 +63,6 @@ sensor_data <- future_map(sensor_config$detector_name,
 toc()
 ```
 
-
 Clean data
 
 ```{r}
@@ -113,7 +112,7 @@ summary(agg_hour$speed)
 summary(agg_hour$speed)[7] / nrow(agg_hour)
 ```
 
-We also see this in the 
+We also see this by plotting.  
 
 ```{r}
 cowplot::plot_grid(
@@ -225,9 +224,10 @@ plot_hour <- ggplot() +
 
 cowplot::plot_grid(plot_ten, plot_hour)
 ```
+
 ## Impute missing speeds  
 
-Another option for handling NA values is imputation. We can use the `{mice}` package and use a random forest method. A random forest model is relatively easy to understand, handles outliers well, and works with non-linear data well. The random forest also fits with what we know about how speed is dependent on factors like day type and time of day.  
+One option for handling NA values is imputation. We can use the `{mice}` package with a random forest method. A random forest model is relatively easy to understand, handles outliers well, and works with non-linear data well. The random forest also fits with what we know about how speed is dependent on factors like day type and time of day.  
 
 ```{r}
 library(mice)
@@ -243,7 +243,7 @@ rf_imp_day_type <- mice(agg_hour,
 tictoc::toc()
 ```
 
-After we run the imputation model, we are going to fetch the complete imputed data and plot the results. By fetching all the imputations, we are able to assess how the model behaves over time. 
+After we run our random forest, we are going to fetch the complete imputed data and plot the results. By fetching all the imputations, we are able to assess how the model behaves over time. 
 
 ```{r}
 all_imps <- complete(rf_imp_day_type, "all", include = T)
@@ -310,7 +310,7 @@ ggplot() +
     color = "Imputation",
     caption = stringr::str_wrap(paste0(
       "Mainline sensors on T.H.610 corridor, March 3-16, 2019.
-                                          Random forest speed imputation at one hour interval. ",
+      Random forest speed imputation at one hour interval. ",
       format(Sys.Date())
     ), width = 60)
   ) +

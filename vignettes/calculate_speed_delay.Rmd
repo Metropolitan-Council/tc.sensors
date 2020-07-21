@@ -37,6 +37,7 @@ library(furrr)
 library(cowplot)
 library(stringr)
 library(data.table)
+library(lubridate)
 ```
 
 
@@ -317,6 +318,14 @@ ggplot() +
   theme_minimal()
 ```
 
+## Distance  
+
+In order to calculate delay, we need to calculate the distance between the upstream sensor and the sensor of interest. We can accomplish this using the sensor configuration table and `add_distance()`.  
+
+```{r}
+sensor_config_distance <- add_distance(sensor_config, interpolate_missing = TRUE)
+```
+
 
 ## Delay  
 
@@ -328,7 +337,46 @@ To calculate the amount of time (in hours) it takes to traverse a given distance
 
 $Time = \frac{Distance}{Speed}$
 
-We can safely assume that the distance between sensors is 0.5 miles. 
+
+```{r}
+time_test <- complete(rf_imp_day_type) %>% 
+  # sample_n(1000) %>% 
+  left_join(sensor_config_distance %>% 
+              select(detector_name,
+                     distance, 
+                     r_node_s_limit), by = c("sensor" = "detector_name")) %>% 
+  mutate(travel_time = dhours(distance/speed))
+
+ref_speed <- time_test %>% 
+  ungroup() %>% 
+  filter(interval_bin %in% c(1:5, 20:24)) %>% 
+  group_by(sensor, day_type) %>% 
+  summarize(ref_time = dseconds(mean(travel_time)),
+            ref_speed = median(speed),
+            .groups = "keep") %>% 
+  unique()
+
+```
+
+```{r}
+time_compare <- left_join(time_test, ref_speed, by = c("sensor",
+                                                       "day_type")) %>% 
+  group_by(sensor, interval_bin, day_type) %>%
+  mutate(time_diff =  ref_time - travel_time,
+            .groups = "keep")
+```
+
+
+```{r}
+ggplot() +
+  geom_jitter(data = time_compare, 
+              aes(x = interval_bin,
+                  y = time_diff/ 60,
+                  color = speed)) +
+  scale_color_viridis_c(option = "magma", direction = -1) + 
+  # facet_wrap(~day_type, nrow = 2) +
+  ggdark::dark_mode(theme_minimal())
+```
 
 
 ## Relevant reports and references  

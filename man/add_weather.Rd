@@ -64,7 +64,7 @@ sensor_results <- pull_sensor(
   pull_date = yesterday
 )
 
-aggregate_sensor_data(sensor_results,
+aggregate_sensor(sensor_results,
   interval_length = 1,
   config = config_sample
 ) \%>\%

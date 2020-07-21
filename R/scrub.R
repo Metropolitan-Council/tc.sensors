@@ -1,6 +1,6 @@
 #' @title Scrub sensor level data
 #'
-#' @inheritParams aggregate_sensor_data
+#' @inheritParams aggregate_sensor
 #'
 #' @return
 #' @export
@@ -12,7 +12,7 @@ scrub_sensor <- function(sensor_data, interval_length = NA) {
 
 #' Replace impossible volume and occupancy values with `NA` at given interval
 #'
-#' @inheritParams aggregate_sensor_data
+#' @inheritParams aggregate_sensor
 #'
 #' @return the original data.table with impossible volume and occupancy values
 #'   replaced with `NA`.
@@ -60,7 +60,7 @@ replace_impossible <- function(sensor_data,
 #' Append a column with a given date's day type (weekday or weekend),
 #'   day of week, and day category (holiday, weekend, or weekday)
 #'
-#' @inheritParams aggregate_sensor_data
+#' @inheritParams aggregate_sensor
 #'
 #' @return The original data.table with additional columns
 #'   - `day_type` either "Weekday" or "Weekend"

@@ -16,7 +16,7 @@ test_that("Aggregation functions as expected", {
 
 
   # test aggregation at 15 minutes----------------------------------------------
-  agg <- aggregate_sensor_data(sensor_results,
+  agg <- aggregate_sensor(sensor_results,
     interval_length = 0.25,
     config = config_sample
   )
@@ -26,7 +26,7 @@ test_that("Aggregation functions as expected", {
   testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg$occupancy.sum))
 
   # test aggregation at 1 hour--------------------------------------------------
-  agg_hour <- aggregate_sensor_data(sensor_results,
+  agg_hour <- aggregate_sensor(sensor_results,
     interval_length = 1,
     config = config_sample
   )
@@ -34,11 +34,11 @@ test_that("Aggregation functions as expected", {
   testthat::expect_equal(sum(sensor_results$volume, na.rm = T), sum(agg_hour$volume.sum))
   testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg_hour$occupancy.sum))
   ifelse(!is.na(agg$speed),
-    testthat::expect_lt(mean(agg$speed) - mean(agg_hour$speed), 1),
+    testthat::expect_lt(mean(agg$speed) - mean(agg_hour$speed), 5),
     NA
   )
   # test aggregation at 24 hours------------------------------------------------
-  agg_day <- aggregate_sensor_data(sensor_results,
+  agg_day <- aggregate_sensor(sensor_results,
     interval_length = 24,
     config = config_sample
   )
@@ -46,22 +46,22 @@ test_that("Aggregation functions as expected", {
   testthat::expect_equal(sum(sensor_results$volume, na.rm = T), sum(agg_day$volume.sum))
   testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg_day$occupancy.sum))
   ifelse(!is.na(agg$speed),
-    testthat::expect_lt(mean(agg$speed) - agg_day$speed, 1), no = NA
+    testthat::expect_lt(mean(agg$speed) - agg_day$speed, 5), no = NA
   )
 
   # test argument checks--------------------------------------------------------
-  testthat::expect_error(aggregate_sensor_data(sensor_results,
+  testthat::expect_error(aggregate_sensor(sensor_results,
     config = config_sample,
     interval_length = 48
   ))
 
-  testthat::expect_error(aggregate_sensor_data(sensor_results,
+  testthat::expect_error(aggregate_sensor(sensor_results,
     config = config_sample,
     interval_length = NA
   ))
 
 
-  testthat::expect_error(aggregate_sensor_data(rbind(
+  testthat::expect_error(aggregate_sensor(rbind(
     sensor_results,
     data.table::data.table(
       volume = 10,
@@ -75,7 +75,7 @@ test_that("Aggregation functions as expected", {
   config = config_sample, interval_length = 24
   ))
 
-  testthat::expect_error(aggregate_sensor_data(rbind(
+  testthat::expect_error(aggregate_sensor(rbind(
     sensor_results,
     data.table::data.table(
       volume = 10,

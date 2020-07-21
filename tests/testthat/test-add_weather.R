@@ -23,7 +23,7 @@ test_that("Weather data functions as expected", {
 
   # test aggregation at 1 hour--------------------------------------------------
 
-  agg_hour <- aggregate_sensor_data(sensor_results,
+  agg_hour <- aggregate_sensor(sensor_results,
     interval_length = 1,
     config = config_sample
   )
@@ -42,7 +42,7 @@ test_that("Weather data functions as expected", {
   testthat::expect_equal(dim(agg_hour_weather)[[1]], 24)
 
   # test aggregation at 24 hours------------------------------------------------
-  agg_day_weather <- aggregate_sensor_data(sensor_results,
+  agg_day_weather <- aggregate_sensor(sensor_results,
     interval_length = 24,
     config = config_sample
   ) %>%

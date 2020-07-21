@@ -81,7 +81,7 @@ To avoid getting unreasonable speed values, we will set an occupancy percentage 
 
 ```{r}
 agg_ten <- purrr::map(clean_sensor_data,
-  aggregate_sensor_data,
+  aggregate_sensor,
   config = sensor_config,
   interval_length = 10 / 60,
   occupancy_pct_threshold = 0.002,
@@ -90,7 +90,7 @@ agg_ten <- purrr::map(clean_sensor_data,
   purrr::map_dfr(add_day_type)
 
 agg_hour <- purrr::map(clean_sensor_data,
-  aggregate_sensor_data,
+  aggregate_sensor,
   config = sensor_config,
   interval_length = 1,
   occupancy_pct_threshold = 0.002,

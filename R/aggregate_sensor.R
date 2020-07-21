@@ -71,15 +71,15 @@
 #'   pull_date = yesterday
 #' )
 #'
-#' aggregate_sensor_data(sensor_results,
+#' aggregate_sensor(sensor_results,
 #'   interval_length = 1,
 #'   config = config_sample
 #' )
 #' }
-aggregate_sensor_data <- function(sensor_data, config, interval_length,
-                                  replace_impossible = TRUE,
-                                  interpolate_missing = FALSE,
-                                  occupancy_pct_threshold = 0.0020) {
+aggregate_sensor <- function(sensor_data, config, interval_length,
+                             replace_impossible = TRUE,
+                             interpolate_missing = FALSE,
+                             occupancy_pct_threshold = 0.0020) {
   # input checks ---------------------------------------------------------------
   if (is.na(interval_length)) {
     stop("No aggregation to do!")

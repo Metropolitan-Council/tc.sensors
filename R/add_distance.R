@@ -39,7 +39,6 @@
 #' config <- pull_configuration()
 #'
 #' add_distance(config, interpolate_missing = TRUE)
-#'
 #' }
 add_distance <- function(config,
                          interpolate_missing = TRUE) {
@@ -76,12 +75,12 @@ add_distance <- function(config,
   # Join upstream detectors to full detector dataset
   configuration_full <- merge(
     corridor_indexed[config,
-                     on =
-                       .(
-                         r_node_label, r_node_lon, r_node_lat,
-                         corridor_route, corridor_dir
-                       ),
-                     allow.cartesian = TRUE
+      on =
+        .(
+          r_node_label, r_node_lon, r_node_lat,
+          corridor_route, corridor_dir
+        ),
+      allow.cartesian = TRUE
     ],
     corridor_indexed_lagged,
     all.x = TRUE, all.y = FALSE, by.x = c(
@@ -113,11 +112,13 @@ add_distance <- function(config,
   if (interpolate_missing == TRUE) {
     configuration_final <- configuration_final[
       , `:=`(distance = ifelse(is.na(distance) | distance > 1.5,
-                               median(distance, na.rm = TRUE), distance)),
+        median(distance, na.rm = TRUE), distance
+      )),
       keyby = .(corridor_route, corridor_dir)
     ][
       , `:=`(distance = ifelse(is.na(distance) | distance > 3,
-                               median(distance, na.rm = TRUE), distance))
+        median(distance, na.rm = TRUE), distance
+      ))
     ]
   }
 

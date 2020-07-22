@@ -17,7 +17,8 @@ knitr::opts_chunk$set(
   comment = "#>",
   eval = TRUE,
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  cache = TRUE
 )
 
 options(scipen = 9999)
@@ -345,13 +346,16 @@ time_test <- complete(rf_imp_day_type) %>%
               select(detector_name,
                      distance, 
                      r_node_s_limit), by = c("sensor" = "detector_name")) %>% 
-  mutate(travel_time = dhours(distance/speed))
+  mutate(travel_time_speed = dhours(distance/speed),
+         travel_time_limit = dhours(distance/as.numeric(r_node_s_limit)),
+         vehicle_miles_traveled = volume.sum * distance)
 
 ref_speed <- time_test %>% 
   ungroup() %>% 
   filter(interval_bin %in% c(1:5, 20:24)) %>% 
   group_by(sensor, day_type) %>% 
-  summarize(ref_time = dseconds(mean(travel_time)),
+  summarize(ref_time_speed = dseconds(mean(travel_time_speed)),
+            ref_time_limit = dseconds(mean(travel_time_limit)),
             ref_speed = median(speed),
             .groups = "keep") %>% 
   unique()
@@ -362,20 +366,46 @@ ref_speed <- time_test %>%
 time_compare <- left_join(time_test, ref_speed, by = c("sensor",
                                                        "day_type")) %>% 
   group_by(sensor, interval_bin, day_type) %>%
-  mutate(time_diff =  ref_time - travel_time,
+  mutate(time_diff_speed =  ref_time_speed - travel_time_speed,
+         time_diff_limit = ref_time_limit - travel_time_speed,
             .groups = "keep")
 ```
 
+### Plot delay
 
 ```{r}
 ggplot() +
   geom_jitter(data = time_compare, 
               aes(x = interval_bin,
-                  y = time_diff/ 60,
+                  y = time_diff_speed/ 60,
                   color = speed)) +
   scale_color_viridis_c(option = "magma", direction = -1) + 
-  # facet_wrap(~day_type, nrow = 2) +
-  ggdark::dark_mode(theme_minimal())
+  # facet_wrap(~day_type, nrow = 2) + 
+  labs(title = "Speed and median speed delay by hour",
+       x = "Hour",
+       y = "Delay (minutes)",
+       color = "Speed (mph)") +
+  theme_minimal()
+
+ggplot() +
+  geom_jitter(data = time_compare, 
+              aes(x = interval_bin,
+                  y = time_diff_limit/ 60,
+                  color = speed)) +
+  scale_color_viridis_c(option = "magma", direction = -1) + 
+  # facet_wrap(~day_type, nrow = 2) + 
+  labs(title = "Speed and speed limit delay by hour",
+       x = "Hour",
+       y = "Delay (minutes)",
+       color = "Speed (mph)") +
+  theme_minimal()
+
+```
+
+### Map delay  
+
+```{r}
+config_lines <- generate_spatial_lines(config = sensor_config_distance)
 ```
 
 

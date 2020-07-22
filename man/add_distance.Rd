@@ -17,7 +17,8 @@ missing distance values.}
 The original data.table with additional columns
 \itemize{
 \item \code{distance} the distance between the given sensor and the
-nearest upstream sensor in miles.
+nearest upstream sensor in miles. Valid for \code{Station} node
+types only; all others will appear as \code{NA}.
 }
 }
 \description{
@@ -26,7 +27,8 @@ Essential for estimating travel time.
 }
 \details{
 It is best to call this function on the entire sensor configuration data table;
-you can access the table with \code{pull_configuration()}.
+you can access the table with \code{pull_configuration()}. Non-station node types
+will be
 \subsection{Interpolation}{\preformatted{Where upstream detector does not exist, or where distance is
 beyond 3 miles, interpolate so as not to assume large VMT
 merely because vehicles crossed an isolated detector.

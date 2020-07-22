@@ -7,7 +7,8 @@
 #'
 #' @details
 #'   It is best to call this function on the entire sensor configuration data table;
-#'   you can access the table with `pull_configuration()`.
+#'   you can access the table with `pull_configuration()`. Non-station node types
+#'   will be
 #'
 #'   ## Interpolation
 #'     Where upstream detector does not exist, or where distance is
@@ -25,7 +26,8 @@
 #'
 #' @return The original data.table with additional columns
 #'   - `distance` the distance between the given sensor and the
-#'     nearest upstream sensor in miles.
+#'     nearest upstream sensor in miles. Valid for `Station` node
+#'     types only; all others will appear as `NA`.
 #'
 #' @import data.table
 #' @importFrom geosphere distm distHaversine
@@ -43,21 +45,28 @@
 add_distance <- function(config,
                          interpolate_missing = TRUE) {
   # browser()
+  .config <- as.data.table(config)
 
   # input checks ---------------------------------------------------------------
-  if (nrow(config) < 1) {
-    stop("There must be at least two sensors on the same corridor")
+  if (nrow(.config) < 1) {
+    stop("There must be more than one sensor in the configuration")
   }
-  # Select stations (want distance between stations, not between ramps etc.)
-  config <- as.data.table(config)[r_node_n_type == "Station", ]
 
-  if (nrow(config) == 0) {
-    stop("You can only calculate distance on station node types")
+  if (min(.config[, .(n = .N), keyby = .(corridor_route)][, n]) < 2) {
+    stop("There must be at least two sensors for each corridor in the configuration")
   }
+
+  # Select stations (want distance between stations, not between ramps etc.)
+  config_stations <- as.data.table(.config)[r_node_n_type == "Station", ]
+
+  if (nrow(config_stations) == 0) {
+    stop("There must be station node types in the configuration")
+  }
+
 
   # Conflate lanes so they have the same upstream detector; create index
-  corridor_indexed <- unique(config[
-    , .(corridor_route, corridor_dir, r_node_label, r_node_lat, r_node_lon)
+  corridor_indexed <- unique(config_stations[
+    , .(corridor_route, corridor_dir, r_node_lat, r_node_lon)
   ])[
     , `:=`(corridor_index = seq_len(.N)),
     keyby = .(corridor_route, corridor_dir)
@@ -73,11 +82,11 @@ add_distance <- function(config,
   )
 
   # Join upstream detectors to full detector dataset
-  configuration_full <- merge(
-    corridor_indexed[config,
+  config_full <- merge(
+    corridor_indexed[config_stations,
       on =
         .(
-          r_node_label, r_node_lon, r_node_lat,
+          r_node_lon, r_node_lat,
           corridor_route, corridor_dir
         ),
       allow.cartesian = TRUE
@@ -91,26 +100,26 @@ add_distance <- function(config,
     ), allow.cartesian = TRUE
   )
 
-  dist_results <- purrr::map(c(1:nrow(configuration_full)), function(i) {
+  dist_results <- purrr::map(c(1:nrow(config_full)), function(i) {
     geosphere::distm(
       x = c(
-        as.numeric(configuration_full[i, ][, r_node_lon]),
-        as.numeric(configuration_full[i, ][, r_node_lat])
+        as.numeric(config_full[i, ][, r_node_lon]),
+        as.numeric(config_full[i, ][, r_node_lat])
       ),
       y = c(
-        as.numeric(configuration_full[i, ][, r_node_lon_up]),
-        as.numeric(configuration_full[i, ][, r_node_lat_up])
+        as.numeric(config_full[i, ][, r_node_lon_up]),
+        as.numeric(config_full[i, ][, r_node_lat_up])
       ),
       fun = geosphere::distHaversine
     ) / 1609.344 # convert meters to miles
   })
 
   distance_table <- data.table::data.table(distance = unlist(dist_results))
-  config$distance <- distance_table$distance
-  configuration_final <- config
+  config_stations$distance <- distance_table$distance
+  config_final <- config_stations
 
   if (interpolate_missing == TRUE) {
-    configuration_final <- configuration_final[
+    config_final <- config_final[
       , `:=`(distance = ifelse(is.na(distance) | distance > 1.5,
         median(distance, na.rm = TRUE), distance
       )),
@@ -121,6 +130,18 @@ add_distance <- function(config,
       ))
     ]
   }
+  config_final_joined <- config_final[as.data.table(config),
+    on = .(
+      detector_name, detector_label, detector_category,
+      detector_lane, detector_field, detector_abandoned, r_node_name,
+      r_node_n_type, r_node_transition, r_node_label, r_node_lon,
+      r_node_lat, r_node_lanes, r_node_shift, r_node_s_limit, r_node_station_id,
+      r_node_attach_side, corridor_route, corridor_dir, date
+    ),
+    allow.cartesian = TRUE
+  ]
 
-  return(configuration_final)
+  # nrow(config) == nrow(config_final_joined)
+
+  return(config_final_joined)
 }

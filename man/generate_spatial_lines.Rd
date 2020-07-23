@@ -4,17 +4,49 @@
 \alias{generate_spatial_lines}
 \title{Generate spatial lines dataset from sensor configuration}
 \usage{
-generate_spatial_lines(config, class = "sf")
+generate_spatial_lines(config)
 }
 \arguments{
 \item{config}{data.table, sensor configuration for multiple sensors}
-
-\item{class}{character, the output class. Default is \code{"sf"}.
-Other option is \code{"sp"}.}
 }
 \value{
-an \code{sp} or \code{sf} object with poly lines for each corridor
+an\code{sf} object with poly lines for each corridor and the line length
+in miles
 }
 \description{
 Generate spatial lines dataset from sensor configuration
+}
+\details{
+\subsection{Important considerations}{
+
+Lines are generated based on the detector's corridor route, direction, and category,
+defined specifically for I-35 and T.H.5 north and south of the cities,
+and east and west of the cities. When run with the
+full configuration dataset, it can result in some lines over 200 miles
+long and passing over areas where the road does not exist. Rather than
+running the entire configuration, identify specific corridors and sensors
+and narrow the configuration dataset to just those sensors.
+
+If your goal is to map the entire road network, consider using one of the
+datasets available from MnDOT or the Metropolitan Council on
+\href{https://gisdata.mn.gov/}{Minnesota Geospatial Commons}.
+}
+}
+\examples{
+\dontrun{
+
+library(tc.sensors)
+library(ggplot2)
+
+configuration <- pull_configuration()
+
+spatial_lines <- generate_spatial_lines(config = configuration)
+
+# generate map
+ggplot() + geom_sf(data = spatial_lines)
+
+# generate line length histogram
+ggplot() + geom_histogram(data = spatial_lines, mapping = aes(x = length_miles))
+}
+
 }

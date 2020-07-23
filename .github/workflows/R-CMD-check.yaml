@@ -35,6 +35,11 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@master
 
+      - name: For un-install old versions of R
+        if: runner.os == 'MacOS'
+        run:  |
+          brew uninstall --force r
+
       - name: Query dependencies
         run: |
           install.packages('remotes')
@@ -58,7 +63,7 @@ jobs:
           Rscript -e "remotes::install_github('r-hub/sysreqs')"
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
-
+          
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)

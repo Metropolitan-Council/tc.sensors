@@ -34,11 +34,6 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@master
 
-      - name: For un-install old versions of R
-        if: runner.os == 'MacOS'
-        run:  |
-          brew uninstall --force r
-
       - name: Query dependencies
         run: |
           install.packages('remotes')

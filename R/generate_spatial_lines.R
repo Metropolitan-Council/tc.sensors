@@ -39,8 +39,8 @@
 #' }
 #'
 #' @import data.table
-#' @importFrom sf st_as_sf st_cast st_set_crs
-#' @importFrom dplyr mutate group_by summarize st_length
+#' @importFrom sf st_as_sf st_cast st_set_crs st_length
+#' @importFrom dplyr mutate group_by summarize
 generate_spatial_lines <- function(config){
   # browser()
 

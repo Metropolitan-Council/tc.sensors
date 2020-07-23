@@ -2,7 +2,7 @@
 #'
 #' @inheritParams aggregate_sensor
 #'
-#' @return
+#' @return All unique observations from the data.table provided
 #' @export
 #'
 scrub_sensor <- function(sensor_data, interval_length = NA) {

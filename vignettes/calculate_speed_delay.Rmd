@@ -15,7 +15,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = TRUE,
+  eval = FALSE,
   warning = FALSE,
   message = FALSE,
   cache = TRUE
@@ -39,6 +39,7 @@ library(cowplot)
 library(stringr)
 library(data.table)
 library(lubridate)
+library(scales)
 ```
 
 
@@ -63,6 +64,8 @@ sensor_data <- future_map(sensor_config$detector_name,
   }
 )
 toc()
+
+#> 11.92 sec elapsed
 ```
 
 Clean data
@@ -103,15 +106,26 @@ agg_hour <- purrr::map(clean_sensor_data,
 The NA values here aren't evenly distributed across all starting hours and day types. There is a greater percentage of null values in the early morning on both weekdays and weekends, which aligns with our knowledge that there is relatively low traffic during these hours. 
 
 ```{r}
-# > 10min speed summary
+#> 10min speed summary
 summary(agg_ten$speed)
-# > 10 minute speed NA percentage
-summary(agg_ten$speed)[7] / nrow(agg_ten)
+#> Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#> 0.35   54.93   61.98   60.79   68.22  166.91   37879 
 
-# > 1 hour speed summary
+#> 10 minute speed NA percentage
+summary(agg_ten$speed)[7] / nrow(agg_ten)
+#> NA's 
+#> 0.3296349 
+
+
+#> 1 hour speed summary
 summary(agg_hour$speed)
-# > 1 hour minute speed NA percentage
+#> Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#> 1.716  54.950  61.352  60.436  67.139  92.156    6088
+
+#> 1 hour minute speed NA percentage
 summary(agg_hour$speed)[7] / nrow(agg_hour)
+#> NA's 
+#> 0.317878 
 ```
 
 We also see this by plotting.  
@@ -171,8 +185,12 @@ cowplot::plot_grid(
     theme(legend.position = "bottom")
 )
 ```
+```{r, include=FALSE}
+ggsave(device = "png", dpi = 72, filename = "plot_speed_nulls.png")
+```
+![](plot_speed_nulls.png)  
 
-Next, we will plot the relationship between speed, volume, and occupancy for both aggregation levels. The plots below show that the larger interval size seems to stabilize speed values. 
+Next, we will plot the relationship between speed, volume, and occupancy for both aggregation levels. The plots below show that the larger interval size seems to stabilize speed values.  
 
 ```{r}
 plot_ten <- ggplot() +
@@ -188,7 +206,8 @@ plot_ten <- ggplot() +
     alpha = 0.5,
     size = 3
   ) +
-  scale_fill_viridis_c(stringr::str_wrap("Relative volume", 5), option = "magma", aesthetics = c("fill", "color")) +
+  scale_fill_viridis_c(stringr::str_wrap("Relative volume", 5),
+                       option = "magma", aesthetics = c("fill", "color")) +
   scale_y_continuous("Occupancy %",
     labels = scales::percent,
     limits = range(agg_ten$occupancy.pct)
@@ -213,7 +232,8 @@ plot_hour <- ggplot() +
     alpha = 0.5,
     size = 3
   ) +
-  scale_fill_viridis_c(stringr::str_wrap("Relative volume", 5), option = "magma", aesthetics = c("fill", "color")) +
+  scale_fill_viridis_c(stringr::str_wrap("Relative volume", 5),
+                       option = "magma", aesthetics = c("fill", "color")) +
   scale_y_continuous("",
     labels = scales::percent,
     limits = range(agg_ten$occupancy.pct)
@@ -225,6 +245,9 @@ plot_hour <- ggplot() +
 
 
 cowplot::plot_grid(plot_ten, plot_hour)
+```
+```{r, include=FALSE}
+ggsave(device = "png", dpi = 72, filename = "plot_occupancy_speed_volume.png")
 ```
 
 ## Impute missing speeds  
@@ -243,6 +266,7 @@ rf_imp_day_type <- mice(agg_hour,
   maxit = 5, m = 5, print = F
 )
 tictoc::toc()
+#> 98.71 sec elapsed
 ```
 
 After we run our random forest, we are going to fetch the complete imputed data and plot the results. By fetching all the imputations, we are able to assess how the model behaves over time. 
@@ -285,11 +309,17 @@ ggplot() +
     x = "Speed",
     y = "Density",
     title = "Imputed and original speed density by day type",
-    caption = stringr::str_wrap(paste0("Mainline sensors on T.H.610 corridor, March 3-16, 2019. Random forest speed imputation at one hour interval. ", format(Sys.Date())), width = 60)
+    caption = stringr::str_wrap(
+      paste0(
+        "Mainline sensors on T.H.610 corridor, March 3-16, 2019. 
+        Random forest speed imputation at one hour interval. "), width = 60)
   ) +
   theme_minimal()
 ```
-
+![](plot_speed_imputation_density.png)
+```{r, include=FALSE}
+ggsave(device = "png", dpi = 72, filename = "plot_speed_imputation_density.png")
+```
 Next, we will look at a scatter plot of the imputed speed and hour, again, by weekday and weekend. Here, the color indicates the imputation.  
 
 ```{r}
@@ -312,19 +342,21 @@ ggplot() +
     color = "Imputation",
     caption = stringr::str_wrap(paste0(
       "Mainline sensors on T.H.610 corridor, March 3-16, 2019.
-      Random forest speed imputation at one hour interval. ",
-      format(Sys.Date())
+      Random forest speed imputation at one hour interval. "
     ), width = 60)
   ) +
   theme_minimal()
 ```
-
+![](plot_speed_imputation_hourly.png)
+```{r, include=FALSE}
+ggsave(device = "png", dpi = 72, filename = "plot_speed_imputation_hourly.png")
+```
 ## Distance  
 
 In order to calculate delay, we need to calculate the distance between the upstream sensor and the sensor of interest. We can accomplish this using the sensor configuration table and `add_distance()`.  
 
 ```{r}
-sensor_config_distance <- add_distance(sensor_config, interpolate_missing = TRUE)
+sensor_config_distance <- tc.sensors::add_distance(sensor_config, interpolate_missing = TRUE)
 ```
 
 
@@ -384,31 +416,16 @@ ggplot() +
   labs(title = "Speed and median speed delay by hour",
        x = "Hour",
        y = "Delay (minutes)",
-       color = "Speed (mph)") +
+       color = "Speed (mph)",
+       caption = stringr::str_wrap(
+      "Mainline sensors on T.H.610 corridor, March 3-16, 2019.
+      Random forest speed imputation at one hour interval. ", width = 60)) +
   theme_minimal()
-
-ggplot() +
-  geom_jitter(data = time_compare, 
-              aes(x = interval_bin,
-                  y = time_diff_limit/ 60,
-                  color = speed)) +
-  scale_color_viridis_c(option = "magma", direction = -1) + 
-  # facet_wrap(~day_type, nrow = 2) + 
-  labs(title = "Speed and speed limit delay by hour",
-       x = "Hour",
-       y = "Delay (minutes)",
-       color = "Speed (mph)") +
-  theme_minimal()
-
 ```
-
-### Map delay  
-
-```{r}
-config_lines <- generate_spatial_lines(config = sensor_config_distance)
+![](plot_delay_hour_speed.png)
+```{r, include=FALSE}
+ggsave(device = "png", dpi = 72, filename = "plot_delay_hour_speed.png")
 ```
-
-
 ## Relevant reports and references  
 
 <div id="refs"></div>

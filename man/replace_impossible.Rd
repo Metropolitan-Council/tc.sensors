@@ -21,8 +21,8 @@ replaced with \code{NA}.
 \description{
 Replace impossible volume and occupancy values with \code{NA} at given interval
 }
-\section{Criteria}{
-\preformatted{- Hourly
+\details{
+\subsection{Criteria}{\preformatted{- Hourly
   - total hourly occupancy exceeds 216,000 scans
   - total hourly volume exceeds 2,300 cars
 - 30-sec
@@ -31,7 +31,7 @@ Replace impossible volume and occupancy values with \code{NA} at given interval
 - Percent nulls > 10.
 }
 }
-
+}
 \author{
 @R c(person("Ashley", "Asmus"),
 person("Liz", "Roten"))

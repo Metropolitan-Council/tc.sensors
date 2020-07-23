@@ -21,7 +21,7 @@ scrub_sensor <- function(sensor_data, interval_length = NA) {
 #' @import data.table
 #'
 #' @details
-#'   # Criteria
+#'   ## Criteria
 #'     - Hourly
 #'       - total hourly occupancy exceeds 216,000 scans
 #'       - total hourly volume exceeds 2,300 cars

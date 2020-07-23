@@ -16,7 +16,7 @@ Needs to by in "YYYY-MM-DD" format.}
 \item{fill_gaps}{logical, whether to fill gaps in the time series with \code{NA}
 values. Default is \code{TRUE}}
 
-\item{.quiet}{logical, whether to hide messages. Default is TRUE}
+\item{.quiet}{logical, whether to hide messages. Default is \code{TRUE}}
 }
 \value{
 data frame containing variables volume, occupancy, sensor, date, time.

@@ -37,7 +37,6 @@ Imports:
     purrr (>= 0.3.4),
     rlang (>= 0.4.6),
     sf (>= 0.9.5),
-    sp (>= 1.4.2),
     tibble (>= 3.0.1),
     tidyr (>= 1.1.0),
     tis (>= 1.38),
@@ -53,6 +52,7 @@ Suggests:
     lubridate (>= 1.7.9),
     mice (>= 3.10.0),
     rmarkdown (>= 2.3),
+    scales (>= 1.1.1),
     stringr (>= 1.4.0),
     testthat (>= 2.1.0),
     tictoc (>= 1.0)

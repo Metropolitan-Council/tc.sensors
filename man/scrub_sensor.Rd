@@ -15,7 +15,7 @@ scrub_sensor(sensor_data, interval_length = NA)
 Default is \code{1}.}
 }
 \value{
-
+All unique observations from the data.table provided
 }
 \description{
 Scrub sensor level data

@@ -26,14 +26,14 @@ Default is \code{1}.}
 \item{replace_impossible}{logical, whether to replace impossible values with \code{NA}.
 Default is \code{TRUE} and \emph{highly} recommended.}
 
+\item{interpolate_missing}{logical, whether to interpolate missing volume and occupancy
+values at the raw data level. Only applies if \code{replace_impossible} is \code{TRUE}. Note
+that this option increases the function runtime.}
+
 \item{occupancy_pct_threshold}{numeric, the lowest possible occupancy percentage
 to use when calculating speed. Default is \code{0.0020} or 0.2\%. Increasing the threshold
 results in more stable speed values, while lowering it may increase speed variability.
 A higher occupancy threshold is recommended for shorter interval lengths}
-
-\item{interploate_missing}{logical, whether to interpolate missing volume and occupancy
-values at the raw data level. Only applies if \code{replace_impossible} is \code{TRUE}. Note
-that this option increases the function runtime.}
 }
 \value{
 a data.table with values for volume, occupancy, and speed

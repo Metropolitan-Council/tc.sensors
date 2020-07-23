@@ -43,10 +43,12 @@ configuration <- pull_configuration()
 spatial_lines <- generate_spatial_lines(config = configuration)
 
 # generate map
-ggplot() + geom_sf(data = spatial_lines)
+ggplot() +
+  geom_sf(data = spatial_lines)
 
 # generate line length histogram
-ggplot() + geom_histogram(data = spatial_lines, mapping = aes(x = length_miles))
+ggplot() +
+  geom_histogram(data = spatial_lines, mapping = aes(x = length_miles))
 }
 
 }

@@ -18,8 +18,8 @@ test_that("Aggregation functions as expected", {
 
     # test aggregation at 15 minutes----------------------------------------------
     agg <- aggregate_sensor(sensor_results,
-                            interval_length = 0.25,
-                            config = config_sample
+      interval_length = 0.25,
+      config = config_sample
     )
     testthat::expect_equal(dim(agg)[[1]], 96)
 
@@ -28,36 +28,36 @@ test_that("Aggregation functions as expected", {
 
     # test aggregation at 1 hour--------------------------------------------------
     agg_hour <- aggregate_sensor(sensor_results,
-                                 interval_length = 1,
-                                 config = config_sample
+      interval_length = 1,
+      config = config_sample
     )
     testthat::expect_equal(dim(agg_hour)[[1]], 24)
     testthat::expect_equal(sum(sensor_results$volume, na.rm = T), sum(agg_hour$volume.sum))
     testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg_hour$occupancy.sum))
     ifelse(!is.na(agg$speed),
-           testthat::expect_equivalent(mean(agg$speed, na.rm = T), mean(agg_hour$speed, na.rm = T)), NA
+      testthat::expect_equivalent(mean(agg$speed, na.rm = T), mean(agg_hour$speed, na.rm = T)), NA
     )
     # test aggregation at 24 hours------------------------------------------------
     agg_day <- aggregate_sensor(sensor_results,
-                                interval_length = 24,
-                                config = config_sample
+      interval_length = 24,
+      config = config_sample
     )
     testthat::expect_equal(dim(agg_day)[[1]], 1)
     testthat::expect_equal(sum(sensor_results$volume, na.rm = T), sum(agg_day$volume.sum))
     testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg_day$occupancy.sum))
     ifelse(!is.na(agg$speed),
-           testthat::expect_equivalent(mean(agg$speed, na.rm = T), mean(agg_day$speed, na.rm = T)), no = NA
+      testthat::expect_equivalent(mean(agg$speed, na.rm = T), mean(agg_day$speed, na.rm = T)), no = NA
     )
 
     # test argument checks--------------------------------------------------------
     testthat::expect_error(aggregate_sensor(sensor_results,
-                                            config = config_sample,
-                                            interval_length = 48
+      config = config_sample,
+      interval_length = 48
     ))
 
     testthat::expect_error(aggregate_sensor(sensor_results,
-                                            config = config_sample,
-                                            interval_length = NA
+      config = config_sample,
+      interval_length = NA
     ))
 
 

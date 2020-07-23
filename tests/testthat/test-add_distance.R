@@ -4,8 +4,8 @@ testthat::skip_if_offline()
 test_that("distance is calculated correctly", {
   config <- as.data.table(pull_configuration())
 
-  th22 <-  config[corridor_route == "T.H.22",]
-  th100 <- config[corridor_route == "T.H.100",]
+  th22 <- config[corridor_route == "T.H.22", ]
+  th100 <- config[corridor_route == "T.H.100", ]
 
   # test errors ----------------------------------------------------------------
   testthat::expect_error(add_distance(
@@ -13,8 +13,8 @@ test_that("distance is calculated correctly", {
     interpolate_missing = TRUE
   ))
 
-  testthat::expect_error(add_distance(th22[1,]))
-  testthat::expect_error(add_distance(rbind(th100, th22[1,])))
+  testthat::expect_error(add_distance(th22[1, ]))
+  testthat::expect_error(add_distance(rbind(th100, th22[1, ])))
 
   # test output ----------------------------------------------------------------
   pulled <- th22 %>%
@@ -25,5 +25,4 @@ test_that("distance is calculated correctly", {
 
   # max distance no greater than 3 miles
   testthat::expect_true(max(pulled$distance, na.rm = T) < 3)
-
-  })
+})

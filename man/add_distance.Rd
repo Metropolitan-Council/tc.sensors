@@ -2,8 +2,7 @@
 % Please edit documentation in R/add_distance.R
 \name{add_distance}
 \alias{add_distance}
-\title{Find the distance between all sensors based on corridor and direction.
-Essential for estimating travel time.}
+\title{Find the distance between all sensors based on corridor and direction. Essential for estimating travel time.}
 \usage{
 add_distance(config, interpolate_missing = TRUE)
 }
@@ -22,8 +21,7 @@ types only; all others will appear as \code{NA}.
 }
 }
 \description{
-Find the distance between all sensors based on corridor and direction.
-Essential for estimating travel time.
+Find the distance between all sensors based on corridor and direction. Essential for estimating travel time.
 }
 \details{
 It is best to call this function on the entire sensor configuration data table;

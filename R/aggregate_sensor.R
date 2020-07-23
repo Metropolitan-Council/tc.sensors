@@ -8,7 +8,7 @@
 #' @param config data.table, a configuration file for the given sensor
 #' @param replace_impossible logical, whether to replace impossible values with `NA`.
 #'   Default is `TRUE` and *highly* recommended.
-#' @param interploate_missing logical, whether to interpolate missing volume and occupancy
+#' @param interpolate_missing logical, whether to interpolate missing volume and occupancy
 #'   values at the raw data level. Only applies if `replace_impossible` is `TRUE`. Note
 #'   that this option increases the function runtime.
 #' @param occupancy_pct_threshold numeric, the lowest possible occupancy percentage

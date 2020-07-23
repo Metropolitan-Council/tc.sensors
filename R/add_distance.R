@@ -1,5 +1,4 @@
-#' Find the distance between all sensors based on corridor and direction.
-#' Essential for estimating travel time.
+#' Find the distance between all sensors based on corridor and direction. Essential for estimating travel time.
 #'
 #' @param config data.table, sensor configuration for multiple sensors
 #' @param interpolate_missing logical, default is `TRUE`. Whether to interpolate
@@ -29,9 +28,11 @@
 #'     nearest upstream sensor in miles. Valid for `Station` node
 #'     types only; all others will appear as `NA`.
 #'
+#' @export
 #' @import data.table
 #' @importFrom geosphere distm distHaversine
 #' @importFrom purrr map
+#' @importFrom stats median
 #'
 #' @examples
 #' \dontrun{
@@ -121,12 +122,12 @@ add_distance <- function(config,
   if (interpolate_missing == TRUE) {
     config_final <- config_final[
       , `:=`(distance = ifelse(is.na(distance) | distance > 1.5,
-        median(distance, na.rm = TRUE), distance
+        stats::median(distance, na.rm = TRUE), distance
       )),
       keyby = .(corridor_route, corridor_dir)
     ][
       , `:=`(distance = ifelse(is.na(distance) | distance > 3,
-        median(distance, na.rm = TRUE), distance
+        stats::median(distance, na.rm = TRUE), distance
       ))
     ]
   }

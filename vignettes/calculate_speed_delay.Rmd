@@ -6,7 +6,7 @@ bibliography: references.bib
 csl: apa-single-spaced.csl
 nocite: '@*'
 vignette: >
-  %\VignetteIndexEntry{Calculate Speed and Delay}
+  %\VignetteIndexEntry{Calculate speed and delay}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

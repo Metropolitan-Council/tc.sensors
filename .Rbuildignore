@@ -9,3 +9,4 @@
 ^doc$
 ^Meta$
 ^README\.Rmd$
+^vignettes/calculate_speed_delay_cache$

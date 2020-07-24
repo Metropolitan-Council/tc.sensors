@@ -9,7 +9,7 @@ Create a tidy dataframe containing sensor IDs for MnDOT metro district, mainly t
 pull_sensor_ids(.quiet = TRUE)
 }
 \arguments{
-\item{.quiet}{boolean, whether to hide messages. Default is TRUE}
+\item{.quiet}{logical, whether to hide messages. Default is \code{TRUE}}
 }
 \value{
 dataframe containing variable "detector"

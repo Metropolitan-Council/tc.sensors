@@ -1,7 +1,7 @@
 Type: Package
 Package: tc.sensors
 Title: Retrieve Loop Detector Data from the MnDOT JSON Feed
-Version: 0.1.0
+Version: 0.2.0
 Date: 2020-06-30
 Authors@R: 
     c(person(given = "Metropolitan Council",
@@ -31,20 +31,30 @@ Imports:
     curl (>= 4.3),
     data.table (>= 1.12.8),
     dplyr (>= 1.0.0),
+    geosphere (>= 1.5.10),
     jsonlite (>= 1.6.1),
+    lwgeom (>= 0.2.5),
     magrittr (>= 1.5),
     purrr (>= 0.3.4),
     rlang (>= 0.4.6),
+    sf (>= 0.9.5),
     tibble (>= 3.0.1),
     tidyr (>= 1.1.0),
     tis (>= 1.38),
     utils,
     xml2 (>= 1.3.2)
 Suggests: 
+    cowplot (>= 1.0.0),
     doParallel (>= 1.0.15),
     foreach (>= 1.5.0),
+    furrr (>= 0.1.0),
+    ggplot2 (>= 3.3.2),
     knitr (>= 1.28),
+    lubridate (>= 1.7.9),
+    mice (>= 3.10.0),
     rmarkdown (>= 2.3),
+    scales (>= 1.1.1),
+    stringr (>= 1.4.0),
     testthat (>= 2.1.0),
     tictoc (>= 1.0)
 VignetteBuilder: 

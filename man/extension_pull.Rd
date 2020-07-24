@@ -17,7 +17,7 @@ See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.}
 \item{pull_date}{character, the date of data to pull.
 Needs to by in "YYYY-MM-DD" format.}
 
-\item{quiet}{boolean, whether to hide messages. Default is TRUE}
+\item{quiet}{logical, whether to hide messages. Default is TRUE}
 }
 \value{
 a tibble

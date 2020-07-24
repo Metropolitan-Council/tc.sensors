@@ -8,7 +8,7 @@
 #'   Needs to by in "YYYY-MM-DD" format.
 #' @param sensor character, the sensor ID.
 #'   See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
-#' @param fill_gaps boolean, whether to fill gaps in the time series with `NA`
+#' @param fill_gaps logical, whether to fill gaps in the time series with `NA`
 #'   values. Default is `TRUE`
 #' @inheritParams pull_configuration
 #'
@@ -118,7 +118,7 @@ pull_sensor <- function(sensor, pull_date,
 #'
 #' @param ext string, either \code{"v"} for volume or \code{"c"} for occupancy
 #' @param ext_name string, either \code{"volume"} or \code{"occupancy"}
-#' @param quiet boolean, whether to hide messages. Default is TRUE
+#' @param quiet logical, whether to hide messages. Default is TRUE
 #' @inheritParams pull_sensor
 #' @keywords internal
 #'

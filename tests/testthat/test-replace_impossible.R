@@ -10,7 +10,22 @@ test_that("Impossible values are replaced", {
 
   sensor_results <- pull_sensor(
     sensor = config_sample$detector_name[[1]],
-    pull_date = yesterday
+    pull_date = yesterday,
+    fill_gaps = TRUE
+  )
+
+  ifelse(is.na(sensor_results$volume),
+    {
+      config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
+        dplyr::sample_n(1)
+
+      sensor_results <- pull_sensor(
+        sensor = config_sample$detector_name[[1]],
+        pull_date = yesterday,
+        fill_gaps = TRUE
+      )
+    },
+    NA
   )
 
   imp_rem <- replace_impossible(
@@ -22,7 +37,7 @@ test_that("Impossible values are replaced", {
   testthat::expect_true(max(imp_rem$occupancy) < 1800 | is.na(max(imp_rem$occupancy)))
 
   # test aggregation at 15 minutes----------------------------------------------
-  agg <- aggregate_sensor_data(sensor_results,
+  agg <- aggregate_sensor(sensor_results,
     interval_length = 0.25,
     config = config_sample
   ) %>%
@@ -34,7 +49,7 @@ test_that("Impossible values are replaced", {
   testthat::expect_equal(dim(agg)[[1]], 96)
 
   # test aggregation at 1 hour--------------------------------------------------
-  agg_hour <- aggregate_sensor_data(sensor_results,
+  agg_hour <- aggregate_sensor(sensor_results,
     interval_length = 1,
     config = config_sample
   ) %>%
@@ -44,7 +59,7 @@ test_that("Impossible values are replaced", {
   testthat::expect_true(max(agg_hour$occupancy.sum) < 216000)
 
   # test aggregation at 24 hours------------------------------------------------
-  agg_day <- aggregate_sensor_data(sensor_results,
+  agg_day <- aggregate_sensor(sensor_results,
     interval_length = 24,
     config = config_sample
   ) %>%

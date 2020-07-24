@@ -5,7 +5,7 @@
 #'   measures for a given ASOS station in Minnesota.
 #'
 #' @param sensor_data data.table, a data.table of aggregated sensor data.
-#' @param save_raw boolean, whether to save the raw data. Default is `FALSE`
+#' @param save_raw logical, whether to save the raw data. Default is `FALSE`
 #' @param save_location character, relative path to save location
 #' @param interval_length nunmeric, interval length in hours. Default is `1`.
 #' @param station character, ASOS station code. Default is `"MSP"` for the Minneapolis/St. Paul airport
@@ -47,7 +47,7 @@
 #'   pull_date = yesterday
 #' )
 #'
-#' aggregate_sensor_data(sensor_results,
+#' aggregate_sensor(sensor_results,
 #'   interval_length = 1,
 #'   config = config_sample
 #' ) %>%

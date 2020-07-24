@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Scrub sensor level data — scrub_sensor • tc.sensors</title>
+<title>Generate spatial lines dataset from sensor configuration — generate_spatial_lines • tc.sensors</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Scrub sensor level data — scrub_sensor" />
-<meta property="og:description" content="Scrub sensor level data" />
+<meta property="og:title" content="Generate spatial lines dataset from sensor configuration — generate_spatial_lines" />
+<meta property="og:description" content="Generate spatial lines dataset from sensor configuration" />
 
 
 
@@ -129,37 +129,66 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Scrub sensor level data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Metropolitan-Council/tc.sensors/blob/master/R/scrub.R'><code>R/scrub.R</code></a></small>
-    <div class="hidden name"><code>scrub_sensor.Rd</code></div>
+    <h1>Generate spatial lines dataset from sensor configuration</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Metropolitan-Council/tc.sensors/blob/master/R/generate_spatial_lines.R'><code>R/generate_spatial_lines.R</code></a></small>
+    <div class="hidden name"><code>generate_spatial_lines.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Scrub sensor level data</p>
+    <p>Generate spatial lines dataset from sensor configuration</p>
     </div>
 
-    <pre class="usage"><span class='fu'>scrub_sensor</span>(<span class='no'>sensor_data</span>, <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='fl'>NA</span>)</pre>
+    <pre class="usage"><span class='fu'>generate_spatial_lines</span>(<span class='no'>config</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>sensor_data</th>
-      <td><p>data frame for single sensor returned from <code><a href='pull_sensor.html'>pull_sensor()</a></code></p></td>
-    </tr>
-    <tr>
-      <th>interval_length</th>
-      <td><p>numeric, the interval length in hours.
-<code>NA</code> indicates no aggregation (30 second data)
-<code>0.25</code> indicates 15 minutes.
-Default is <code>1</code>.</p></td>
+      <th>config</th>
+      <td><p>data.table, sensor configuration for multiple sensors</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>All unique observations from the data.table provided</p>
+    <p>an<code>sf</code> object with poly lines for each corridor and the line length
+in miles</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
+    
+<h3>Important considerations</h3>
+
+
+<p>Lines are generated based on the detector's corridor route, direction, and category,
+defined specifically for I-35 and T.H.5 north and south of the cities,
+and east and west of the cities. When run with the
+full configuration dataset, it can result in some lines over 200 miles
+long and passing over areas where the road does not exist. Rather than
+running the entire configuration, identify specific corridors and sensors
+and narrow the configuration dataset to just those sensors.</p>
+<p>If your goal is to map the entire road network, consider using one of the
+datasets available from MnDOT or the Metropolitan Council on
+<a href='https://gisdata.mn.gov/'>Minnesota Geospatial Commons</a>.</p>
+
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>tc.sensors</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>ggplot2</span>)
+
+<span class='no'>configuration</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='pull_configuration.html'>pull_configuration</a></span>()
+
+<span class='no'>spatial_lines</span> <span class='kw'>&lt;-</span> <span class='fu'>generate_spatial_lines</span>(<span class='kw'>config</span> <span class='kw'>=</span> <span class='no'>configuration</span>)
+
+<span class='co'># generate map</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span>() +
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>geom_sf</a></span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>spatial_lines</span>)
+
+<span class='co'># generate line length histogram</span>
+<span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span>() +
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_histogram.html'>geom_histogram</a></span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>spatial_lines</span>, <span class='kw'>mapping</span> <span class='kw'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>length_miles</span>))
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

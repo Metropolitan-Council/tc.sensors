@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -54,15 +54,18 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/calculate_speed_delay.html">Calculate Speed and Delay</a>
+      <a href="../articles/calculate_speed_delay.html">Calculate speed and delay</a>
     </li>
     <li>
       <a href="../articles/pulling_sensors_in_parallel.html">Pull multiple sensors using parallel processing</a>
     </li>
     <li>
-      <a href="../articles/tc_sensors.html">tc.sensors</a>
+      <a href="../articles/tc.sensors.html">tc.sensors</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -98,55 +101,51 @@
 <div id="pull-data-for-select-sensors-for-all-2019" class="section level2">
 <h2 class="hasAnchor">
 <a href="#pull-data-for-select-sensors-for-all-2019" class="anchor"></a>Pull data for select sensors for all 2019</h2>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">tc.sensors</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">doParallel</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/RevolutionAnalytics/foreach">foreach</a></span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://dplyr.tidyverse.org">dplyr</a></span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">magrittr</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="http://github.com/collectivemedia/tictoc">tictoc</a></span>) <span class="co"># If you want to benchmark - but you shouldn't have to; I already did (:</span>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tc.sensors</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">doParallel</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">foreach</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">dplyr</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">magrittr</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tictoc</span>) <span class="co"># If you want to benchmark - but you shouldn't have to; I already did (:</span>
 
-<span class="kw">sensor_config</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_configuration.html">pull_configuration</a></span>()
-<span class="kw">sensor_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_sensor_ids.html">pull_sensor_ids</a></span>()
+<span class="no">sensor_config</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/pull_configuration.html">pull_configuration</a></span>()
+<span class="no">sensor_ids</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/pull_sensor_ids.html">pull_sensor_ids</a></span>()
 
-<span class="kw">cores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span>()
-<span class="kw">cl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">makeCluster</a></span>(<span class="kw">cores</span>)
-<span class="fu"><a href="https://rdrr.io/pkg/doParallel/man/registerDoParallel.html">registerDoParallel</a></span>(<span class="kw">cl</span>)
+<span class="no">cores</span> <span class="kw">&lt;-</span> <span class="fu">detectCores</span>()
+<span class="no">cl</span> <span class="kw">&lt;-</span> <span class="fu">makeCluster</span>(<span class="no">cores</span>)
+<span class="fu"><a href="https://rdrr.io/pkg/doParallel/man/registerDoParallel.html">registerDoParallel</a></span>(<span class="no">cl</span>)
 <span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">tic</a></span>() <span class="co"># Start the timer</span>
 
-<span class="fu"><a href="https://rdrr.io/pkg/foreach/man/foreach.html">foreach</a></span>(j = <span class="kw">sensor_ids</span>[[<span class="fl">1</span>]][<span class="fl">633</span><span class="op">:</span><span class="fl">714</span>]) <span class="op">%dopar%</span> {
-  <span class="kw">date_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span>(<span class="st">"2019/01/01"</span>), <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span>(<span class="st">"2019/12/31"</span>), by = <span class="st">"days"</span>)
-  <span class="kw">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="kw">date_range</span>)
-  <span class="kw">loops_ls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span>(<span class="st">"list"</span>, <span class="kw">n</span>)
-  
-  <span class="co">for</span> (<span class="kw">i</span> <span class="co">in</span> <span class="fl">1</span><span class="op">:</span><span class="kw">n</span>) {
-    <span class="kw">loops_ls</span>[[<span class="kw">i</span>]] <span class="op">&lt;-</span> <span class="kw">tc.sensors</span>::<span class="fu"><a href="../reference/pull_sensor.html">pull_sensor</a></span>(<span class="kw">j</span>, <span class="kw">date_range</span>[[<span class="kw">i</span>]])
+<span class="fu"><a href="https://rdrr.io/pkg/foreach/man/foreach.html">foreach</a></span>(<span class="kw">j</span> <span class="kw">=</span> <span class="no">sensor_ids</span><span class="kw">[[</span><span class="fl">1</span>]][<span class="fl">633</span>:<span class="fl">714</span>]) <span class="kw">%dopar%</span> {
+  <span class="no">date_range</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span>(<span class="st">"2019/01/01"</span>), <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span>(<span class="st">"2019/12/31"</span>), <span class="kw">by</span> <span class="kw">=</span> <span class="st">"days"</span>)
+  <span class="no">n</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">date_range</span>)
+  <span class="no">loops_ls</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span>(<span class="st">"list"</span>, <span class="no">n</span>)
+
+  <span class="kw">for</span> (<span class="no">i</span> <span class="kw">in</span> <span class="fl">1</span>:<span class="no">n</span>) {
+    <span class="no">loops_ls</span><span class="kw">[[</span><span class="no">i</span>]] <span class="kw">&lt;-</span> <span class="kw pkg">tc.sensors</span><span class="kw ns">::</span><span class="fu"><a href="../reference/pull_sensor.html">pull_sensor</a></span>(<span class="no">j</span>, <span class="no">date_range</span><span class="kw">[[</span><span class="no">i</span>]])
   }
-  
-  <span class="kw">loops_df</span> <span class="op">&lt;-</span> <span class="kw">data.table</span>::<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html">rbindlist</a></span>(<span class="kw">loops_ls</span>)
-  <span class="kw">data.table</span>::<span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fwrite.html">fwrite</a></span>(<span class="kw">loops_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"../../MnDOT_Loop_Detectors/Volume-Occupancy/2019/Sensor "</span>, <span class="kw">j</span>, <span class="st">".csv"</span>))
+
+  <span class="no">loops_df</span> <span class="kw">&lt;-</span> <span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html">rbindlist</a></span>(<span class="no">loops_ls</span>)
+  <span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fwrite.html">fwrite</a></span>(<span class="no">loops_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"../../MnDOT_Loop_Detectors/Volume-Occupancy/2019/Sensor "</span>, <span class="no">j</span>, <span class="st">".csv"</span>))
 }
 <span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">toc</a></span>()
-<span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">stopCluster</a></span>(<span class="kw">cl</span>)
-</pre></div>
+<span class="fu">stopCluster</span>(<span class="no">cl</span>)</pre></body></html></div>
 </div>
 <div id="save-to-microsoft-access-database" class="section level2">
 <h2 class="hasAnchor">
 <a href="#save-to-microsoft-access-database" class="anchor"></a>Save to Microsoft Access Database</h2>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">RODBC</span>)
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">RODBC</span>)
 
-<span class="kw">test_conn</span> <span class="op">&lt;-</span> <span class="fu">odbcConnectAccess2007</span>(<span class="st">"../LoopDBTest.accdb"</span>)
-<span class="fu">sqlTables</span>(<span class="kw">test_conn</span>, tableType = <span class="st">"TABLE"</span>)<span class="op">$</span><span class="kw">TABLE_NAME</span> <span class="co"># Check available tables</span>
+<span class="no">test_conn</span> <span class="kw">&lt;-</span> <span class="fu">odbcConnectAccess2007</span>(<span class="st">"../LoopDBTest.accdb"</span>)
+<span class="fu">sqlTables</span>(<span class="no">test_conn</span>, <span class="kw">tableType</span> <span class="kw">=</span> <span class="st">"TABLE"</span>)$<span class="no">TABLE_NAME</span> <span class="co"># Check available tables</span>
 
-<span class="fu">sqlSave</span>(channel = <span class="kw">test_conn</span>,
-        dat = <span class="kw">loops_df</span>,
-        append = <span class="kw">T</span>,
-        tablename = <span class="st">"testtable"</span>,
-        rownames = <span class="kw">F</span>) <span class="co"># Prevents RStudio from crashing</span>
+<span class="fu">sqlSave</span>(<span class="kw">channel</span> <span class="kw">=</span> <span class="no">test_conn</span>,
+        <span class="kw">dat</span> <span class="kw">=</span> <span class="no">loops_df</span>,
+        <span class="kw">append</span> <span class="kw">=</span> <span class="no">T</span>,
+        <span class="kw">tablename</span> <span class="kw">=</span> <span class="st">"testtable"</span>,
+        <span class="kw">rownames</span> <span class="kw">=</span> <span class="no">F</span>) <span class="co"># Prevents RStudio from crashing</span>
 
-<span class="kw">check</span> <span class="op">&lt;-</span> <span class="kw">RODBC</span>::<span class="fu">sqlQuery</span>(<span class="kw">test_conn</span>, <span class="st">"SELECT * from testtable WHERE date = 20191231"</span>)
-</pre></div>
+<span class="no">check</span> <span class="kw">&lt;-</span> <span class="kw pkg">RODBC</span><span class="kw ns">::</span><span class="fu">sqlQuery</span>(<span class="no">test_conn</span>, <span class="st">"SELECT * from testtable WHERE date = 20191231"</span>)</pre></body></html></div>
 </div>
   </div>
 
@@ -165,7 +164,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

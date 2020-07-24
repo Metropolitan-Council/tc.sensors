@@ -73,7 +73,7 @@ Useful for mapping (contains lat/lons) and calculating performance measures (con
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -96,15 +96,18 @@ Useful for mapping (contains lat/lons) and calculating performance measures (con
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/calculate_speed_delay.html">Calculate Speed and Delay</a>
+      <a href="../articles/calculate_speed_delay.html">Calculate speed and delay</a>
     </li>
     <li>
       <a href="../articles/pulling_sensors_in_parallel.html">Pull multiple sensors using parallel processing</a>
     </li>
     <li>
-      <a href="../articles/tc_sensors.html">tc.sensors</a>
+      <a href="../articles/tc.sensors.html">tc.sensors</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -137,7 +140,7 @@ Useful for mapping (contains lat/lons) and calculating performance measures (con
 Useful for mapping (contains lat/lons) and calculating performance measures (contains detector_field).</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/pull_configuration.html'>pull_configuration</a></span>(return_opt = <span class='st'>"in_memory"</span>, .quiet = <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>pull_configuration</span>(<span class='kw'>return_opt</span> <span class='kw'>=</span> <span class='st'>"in_memory"</span>, <span class='kw'>.quiet</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -151,7 +154,7 @@ Useful for mapping (contains lat/lons) and calculating performance measures (con
     </tr>
     <tr>
       <th>.quiet</th>
-      <td><p>boolean, whether to hide messages. Default is TRUE</p></td>
+      <td><p>logical, whether to hide messages. Default is <code>TRUE</code></p></td>
     </tr>
     </table>
 
@@ -204,15 +207,14 @@ for each sensor in MnDOT's metro district</p><ul>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other loop sensor functions: 
-<code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor_ids.html'>pull_sensor_ids</a>()</code>,
-<code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor.html'>pull_sensor</a>()</code></p></div>
+<code><a href='pull_sensor_ids.html'>pull_sensor_ids</a>()</code>,
+<code><a href='pull_sensor.html'>pull_sensor</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='kw'>config</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/pull_configuration.html'>pull_configuration</a></span>(<span class='st'>"in-memory"</span>) <span class='co'># Assign to an object</span>
-<span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/pull_configuration.html'>pull_configuration</a></span>(<span class='st'>"within_dir"</span>) <span class='co'># No assignment necessary</span>
-}
-</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='no'>config</span> <span class='kw'>&lt;-</span> <span class='fu'>pull_configuration</span>(<span class='st'>"in-memory"</span>) <span class='co'># Assign to an object</span>
+<span class='fu'>pull_configuration</span>(<span class='st'>"within_dir"</span>) <span class='co'># No assignment necessary</span>
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -228,7 +230,7 @@ for each sensor in MnDOT's metro district</p><ul>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

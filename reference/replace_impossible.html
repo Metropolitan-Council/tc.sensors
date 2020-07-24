@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -95,15 +95,18 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/calculate_speed_delay.html">Calculate Speed and Delay</a>
+      <a href="../articles/calculate_speed_delay.html">Calculate speed and delay</a>
     </li>
     <li>
       <a href="../articles/pulling_sensors_in_parallel.html">Pull multiple sensors using parallel processing</a>
     </li>
     <li>
-      <a href="../articles/tc_sensors.html">tc.sensors</a>
+      <a href="../articles/tc.sensors.html">tc.sensors</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -135,14 +138,14 @@
     <p>Replace impossible volume and occupancy values with <code>NA</code> at given interval</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/replace_impossible.html'>replace_impossible</a></span>(<span class='kw'>sensor_data</span>, interval_length = <span class='fl'>NA</span>)</pre>
+    <pre class="usage"><span class='fu'>replace_impossible</span>(<span class='no'>sensor_data</span>, <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='fl'>NA</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>sensor_data</th>
-      <td><p>data frame for single sensor returned from <code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor.html'>pull_sensor()</a></code></p></td>
+      <td><p>data frame for single sensor returned from <code><a href='pull_sensor.html'>pull_sensor()</a></code></p></td>
     </tr>
     <tr>
       <th>interval_length</th>
@@ -157,22 +160,20 @@ Default is <code>1</code>.</p></td>
 
     <p>the original data.table with impossible volume and occupancy values
 replaced with <code>NA</code>.</p>
-    <h2 class="hasAnchor" id="flag-criteria"><a class="anchor" href="#flag-criteria"></a>Flag criteria</h2>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     
+<h3>Criteria</h3>
 <pre>- Hourly
   - total hourly occupancy exceeds 216,000 scans
-  - total hourly volume exceeds 2,300
+  - total hourly volume exceeds 2,300 cars
 - 30-sec
   - total 30-second volume exceeds 20 cars
-  - total 30-second occupancy exceed 1,800
+  - total 30-second occupancy exceed 1,800 scans
+- Percent nulls &amp;gt; 10.
 </pre>
 
-<p>To find impossible values at any given interval length, we can multiply the</p>
-    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
-    <p>@R c(person("Ashley", "Asmus"),
-person("Liz", "Roten"))</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -189,7 +190,7 @@ person("Liz", "Roten"))</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

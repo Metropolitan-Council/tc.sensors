@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -95,15 +95,18 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/calculate_speed_delay.html">Calculate Speed and Delay</a>
+      <a href="../articles/calculate_speed_delay.html">Calculate speed and delay</a>
     </li>
     <li>
       <a href="../articles/pulling_sensors_in_parallel.html">Pull multiple sensors using parallel processing</a>
     </li>
     <li>
-      <a href="../articles/tc_sensors.html">tc.sensors</a>
+      <a href="../articles/tc.sensors.html">tc.sensors</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -135,7 +138,7 @@
     <p>Pull extension</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/tc.sensors/man/extension_pull.html'>extension_pull</a></span>(<span class='kw'>ext</span>, <span class='kw'>ext_name</span>, <span class='kw'>sensor</span>, <span class='kw'>pull_date</span>, quiet = <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>extension_pull</span>(<span class='no'>ext</span>, <span class='no'>ext_name</span>, <span class='no'>sensor</span>, <span class='no'>pull_date</span>, <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -151,7 +154,7 @@
     <tr>
       <th>sensor</th>
       <td><p>character, the sensor ID.
-See documentation for <code><a href='https://rdrr.io/pkg/tc.sensors/man/pull_sensor_ids.html'>pull_sensor_ids</a></code> to obtain metro sensor IDs.</p></td>
+See documentation for <code><a href='pull_sensor_ids.html'>pull_sensor_ids</a></code> to obtain metro sensor IDs.</p></td>
     </tr>
     <tr>
       <th>pull_date</th>
@@ -160,7 +163,7 @@ Needs to by in "YYYY-MM-DD" format.</p></td>
     </tr>
     <tr>
       <th>quiet</th>
-      <td><p>boolean, whether to hide messages. Default is TRUE</p></td>
+      <td><p>logical, whether to hide messages. Default is TRUE</p></td>
     </tr>
     </table>
 
@@ -183,7 +186,7 @@ Needs to by in "YYYY-MM-DD" format.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

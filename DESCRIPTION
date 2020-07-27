@@ -1,7 +1,7 @@
 Type: Package
 Package: tc.sensors
 Title: Retrieve Loop Detector Data from the MnDOT JSON Feed
-Version: 0.2.0
+Version: 0.2.0.9000
 Date: 2020-06-30
 Authors@R: 
     c(person(given = "Metropolitan Council",

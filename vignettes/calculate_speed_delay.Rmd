@@ -1,6 +1,6 @@
 ---
 title: "Calculate speed and delay"
-author: Liz Roten
+author: Liz Roten, `r Sys.Date()`
 output: rmarkdown::html_vignette
 bibliography: references.bib
 csl: apa-single-spaced.csl
@@ -432,6 +432,4 @@ ggsave(device = "png", dpi = 72, filename = "plot_delay_hour_speed.png")
 
 <div id="refs"></div>
 
-<footer>
-*Last updated by Liz Roten, `r Sys.Date()`*
-</footer>
+<a href="https://metrocouncil.org" target="_blank"><img src="../man/figures/main-logo.png" style="margin-left: 50%;margin-right: 50%;"><div></div></a>

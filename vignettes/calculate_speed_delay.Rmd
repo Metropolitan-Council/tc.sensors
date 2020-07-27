@@ -24,6 +24,8 @@ knitr::opts_chunk$set(
 options(scipen = 9999)
 ```
 
+**Warning: the following analysis has not yet been peer reviewed and is subject to change at any time without notice. The analysis pulls data from a single corridor over a two week period, and is intended to illustrate this package's features. This analysis cannot be used to draw conclusions on the corridor's overall performance or the performance of the system as a whole.**
+
 ## Pull sensor data
 
 First, we will pull the data for three random sensors from March 3 to March 16, 2019. 

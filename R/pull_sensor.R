@@ -15,23 +15,22 @@
 #' @return data frame containing variables volume, occupancy, sensor, date, time.
 #'
 #' @details
-#'   ## Output
+#'  ## Output
+#'    A complete year's worth of data for volume or occupancy for one sensor
+#'    usually results in a file that is around ~30-31KB. Note that if you assign
+#'    `pull_sensor()`'s output, the result is returned in-memory,
+#'    and there must be sufficient space in-memory to do so.
 #'
-#'     A complete year's worth of data for volume or occupancy for one sensor
-#'      usually results in a file that is around ~30-31KB.
+#'  ## Missing data
+#'    There are many events and circumstances that can result in missing data.
 #'
-#'     Approximate time to pull one sensor's and one extension's
-#'      (v or c for volume or occupancy, respectively) data across
-#'       a year on a Mac is 1.33 minutes.
+#'    One potential cause is segmentation error. Segmentation error occurs when
+#'    a vehicle is present on the loop when the current interval terminates. The
+#'    volume is counted toward the following interval volume but part of its scan
+#'    counts for occupancy are assigned to the current interval \insertCite{kwon_improve_2020}{tc.sensors}.
 #'
-#'     Also note that if you assign `pull_sensor()`'s output, the result is returned in-memory,
-#'     and there must be sufficient space in-memory to do so.
-#'
-#'   ## Missing data
-#'
-#'     Occupancy *can* be missing while volume data exists and vice versa.
-#'     It is unknown how a loop could be monitoring volume and not occupancy.
-
+#' @references
+#'   \insertAllCited{}
 #'
 #' @examples
 #' \dontrun{
@@ -61,7 +60,7 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom dplyr bind_cols rename
 #' @importFrom rlang .data
-#'
+#' @importFrom Rdpack reprompt
 #' @family loop sensor functions
 #'
 #' @export

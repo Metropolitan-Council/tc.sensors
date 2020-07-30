@@ -2,7 +2,7 @@
 title: "Calculate speed and delay"
 author: Liz Roten, `r Sys.Date()`
 output: rmarkdown::html_vignette
-bibliography: references.bib
+bibliography: ../inst/REFERENCES.bib
 csl: apa-single-spaced.csl
 nocite: '@*'
 vignette: >

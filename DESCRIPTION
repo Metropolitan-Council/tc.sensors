@@ -36,6 +36,7 @@ Imports:
     lwgeom (>= 0.2.5),
     magrittr (>= 1.5),
     purrr (>= 0.3.4),
+    Rdpack (>= 1.0.0),
     rlang (>= 0.4.6),
     sf (>= 0.9.5),
     tibble (>= 3.0.1),
@@ -59,6 +60,8 @@ Suggests:
     tictoc (>= 1.0)
 VignetteBuilder: 
     knitr
+RdMacros: 
+    Rdpack
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace",

@@ -29,8 +29,13 @@ Use \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
 \subsection{Output}{
 
 A complete year's worth of data for volume or occupancy for one sensor
-usually results in a file that is around ~30-31KB. Note that if you assign
-\code{pull_sensor()}'s output, the result is returned in-memory,
+usually results in a file that is around ~30-31KB.
+
+Approximate time to pull one sensor's and one extension's
+(v or c for volume or occupancy, respectively) data across
+a year on a Mac is 1.33 minutes.
+
+Also note that if you assign \code{pull_sensor()}'s output, the result is returned in-memory,
 and there must be sufficient space in-memory to do so.
 }
 

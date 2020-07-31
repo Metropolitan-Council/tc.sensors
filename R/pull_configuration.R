@@ -197,7 +197,6 @@ pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
       )
     )
   }
-
 }
 
 #' Clean node and detector attributes

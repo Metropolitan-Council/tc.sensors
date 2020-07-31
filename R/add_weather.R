@@ -24,7 +24,7 @@
 #'
 #'   See [Mesonet](http://mesonet.agron.iastate.edu/request/download.phtml?network=MN_ASOS) for additional variables and descriptions.
 #' @export
-#'
+#' @family add column functions
 #' @import data.table
 #' @importFrom curl has_internet
 #' @importFrom tis day

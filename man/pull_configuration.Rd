@@ -15,7 +15,7 @@ pull_configuration(return_opt = "in_memory", .quiet = TRUE)
 \item{.quiet}{logical, whether to hide messages. Default is \code{TRUE}}
 }
 \value{
-dataframe containing 20 variables, including detector_field and lat/lons,
+a data.table containing 20 variables, including detector_field and lat/lons,
 for each sensor in MnDOT's metro district
 \itemize{
 \item \code{detector_name} character, the detector's unique identifier in numbers
@@ -27,7 +27,7 @@ for each sensor in MnDOT's metro district
 \item "B" Bypass, ramp meter bypass
 \item "CD" Collector/Distributor
 \item "D" Shoulder, mainline shoulder
-\item "G" Green, ramp meter displayed green count
+\item "G" Green light counter on highway entrance ramp
 \item "H" High-Occupancy Vehicle
 \item "HT" High-Occupancy Vehicle or Toll
 \item "M" Merge, Freeway on-ramp (counts all merging traffic)

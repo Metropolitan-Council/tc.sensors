@@ -71,3 +71,8 @@ aggregate_sensor(sensor_results,
   add_weather()
 }
 }
+\seealso{
+Other add column functions: 
+\code{\link{add_day_type}()}
+}
+\concept{add column functions}

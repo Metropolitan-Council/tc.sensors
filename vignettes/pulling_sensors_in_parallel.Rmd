@@ -1,21 +1,36 @@
 ---
 title: "Pull multiple sensors using parallel processing"
 output: rmarkdown::html_vignette
+author: Liz Roten and Nicole Sullivan, `r Sys.Date()`
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Pull multiple sensors using parallel processing}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  cache = TRUE
+)
+
+options(scipen = 9999)
+```
 
 ## Pull data for select sensors for all 2019  
 
-```{r, eval = FALSE}
+### Using `{doParallel}` and `{foreach}`
+
+```{r}
 library(tc.sensors)
 library(doParallel)
 library(foreach)
-library(dplyr)
-library(magrittr)
-library(tictoc) # If you want to benchmark - but you shouldn't have to; I already did (:
+library(data.table)
+library(tictoc)
 
 sensor_config <- pull_configuration()
 sensor_ids <- pull_sensor_ids()
@@ -29,33 +44,65 @@ foreach(j = sensor_ids[[1]][633:714]) %dopar% {
   date_range <- seq(as.Date("2019/01/01"), as.Date("2019/12/31"), by = "days")
   n <- length(date_range)
   loops_ls <- vector("list", n)
-  
+
   for (i in 1:n) {
     loops_ls[[i]] <- tc.sensors::pull_sensor(j, date_range[[i]])
   }
-  
+
   loops_df <- data.table::rbindlist(loops_ls)
   data.table::fwrite(loops_df, paste0("../../MnDOT_Loop_Detectors/Volume-Occupancy/2019/Sensor ", j, ".csv"))
 }
 toc()
 stopCluster(cl)
 
+# > 215.58 sec elapsed
 ```
+
+### Using `{furrr}`
+
+```{r}
+library(purrr)
+library(furrr)
+
+sensor_config <- pull_configuration()
+sensor_ids <- pull_sensor_ids()
+
+date_range <- seq(as.Date("2019/01/01"), as.Date("2019/12/31"), by = "days")
+
+plan(multiprocess)
+
+tic() # Start the timer
+sensor_data <- future_map(sensor_ids[[1]][633:714],
+  .f = function(det_name) {
+    future_map_dfr(seq(1:length(date_range)), .f = function(x) {
+      tc.sensors::pull_sensor(det_name, date_range[[x]])
+    })
+  }
+)
+toc()
+
+# > 225.02 sec elapsed
+```
+
 
 ## Save to Microsoft Access Database  
 
-```{r, eval=FALSE}
+```{r}
 library(RODBC)
 
 test_conn <- odbcConnectAccess2007("../LoopDBTest.accdb")
 sqlTables(test_conn, tableType = "TABLE")$TABLE_NAME # Check available tables
 
-sqlSave(channel = test_conn,
-        dat = loops_df,
-        append = T,
-        tablename = "testtable",
-        rownames = F) # Prevents RStudio from crashing
+sqlSave(
+  channel = test_conn,
+  dat = loops_df,
+  append = T,
+  tablename = "testtable",
+  rownames = F
+) # Prevents RStudio from crashing
 
 check <- RODBC::sqlQuery(test_conn, "SELECT * from testtable WHERE date = 20191231")
-
 ```
+
+
+<a href="https://metrocouncil.org" target="_blank"><img src="../man/figures/main-logo.png" style="margin-left: 50%;margin-right: 50%;"><div></div></a>

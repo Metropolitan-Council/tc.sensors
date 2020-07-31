@@ -20,7 +20,7 @@
 #'    datasets available from MnDOT or the Metropolitan Council on
 #'    [Minnesota Geospatial Commons](https://gisdata.mn.gov/).
 #'
-#'
+#' @family geospatial functions
 #' @examples
 #' \dontrun{
 #'

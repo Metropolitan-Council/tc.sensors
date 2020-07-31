@@ -33,7 +33,7 @@
 #' @importFrom geosphere distm distHaversine
 #' @importFrom purrr map
 #' @importFrom stats median
-#'
+#' @family add column functions, geospatial functions
 #' @examples
 #' \dontrun{
 #'

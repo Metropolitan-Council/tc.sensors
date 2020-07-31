@@ -8,6 +8,8 @@
 #'   - `day_of_week` one of "Monday", "Tuesday", etc.
 #'   - `day_category` one of "Weekday", "Weekend", or "Holiday"
 #'
+#' @family add column functions
+#'
 #' @export
 #' @import data.table
 #' @importFrom tis isHoliday

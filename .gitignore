@@ -11,6 +11,8 @@ Meta
 
 vignettes/calculate_speed_delay_cache/
 
+vignettes/pulling_sensors_in_parallel_cache/
+
 vignettes/data_cache/
 
 vignettes/.DS_Store

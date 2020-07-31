@@ -52,3 +52,4 @@ ggplot() +
 }
 
 }
+\concept{geospatial functions}

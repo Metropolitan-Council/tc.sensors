@@ -52,3 +52,4 @@ config <- pull_configuration()
 add_distance(config, interpolate_missing = TRUE)
 }
 }
+\concept{add column functions, geospatial functions}

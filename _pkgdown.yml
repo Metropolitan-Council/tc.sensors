@@ -1,3 +1,36 @@
 template:
   params:
     bootswatch: simplex
+navbar:
+  structure:
+    left:
+    - home
+    - intro
+    - reference
+    - articles
+    - tutorials
+    - news
+    right: github
+  components:
+    home:
+      icon: fas fa-home fa-lg
+      href: index.html
+    intro:
+      text: Get Started
+      href: articles/tc.sensors.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    news:
+      text: News
+      href: news/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/Metropolitan-Council/tc.sensors/
+    articles:
+      text: Articles
+      menu:
+      - text: Calculate speed and delay
+        href: articles/calculate_speed_delay.html
+      - text: Pull multiple sensors using parallel processing
+        href: articles/pulling_sensors_in_parallel.html

@@ -2,6 +2,7 @@
 title: "Pull multiple sensors using parallel processing"
 output: rmarkdown::html_vignette
 author: Liz Roten and Nicole Sullivan, `r Sys.Date()`
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Pull multiple sensors using parallel processing}
   %\VignetteEngine{knitr::rmarkdown}

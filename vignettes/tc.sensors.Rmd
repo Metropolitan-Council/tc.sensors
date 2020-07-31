@@ -1,6 +1,10 @@
 ---
 title: "tc.sensors"
+author: Liz Roten, `r Sys.Date()`
 output: rmarkdown::html_vignette
+bibliography: ../inst/REFERENCES.bib
+csl: apa-single-spaced.csl
+nocite: '@*'
 vignette: >
   %\VignetteIndexEntry{tc.sensors}
   %\VignetteEngine{knitr::rmarkdown}
@@ -24,16 +28,16 @@ library(tc.sensors)
 
 ## Primary terms and definitions  
 
-Raw data is accessed at the sensor level. Sensors are generally spaced in half mile intervals along a corridor. 
+Raw data is accessed at the sensor level. Sensors are generally spaced in half mile intervals along a corridor, but the exact distance can be calculated from the sensor configuration table using `add_distance()`. 
 
 ### Volume  
 
-Volume represents the number of vehicles that pass through a detector in a given time period. Flow represents the number of vehicles that pass through a detector per hour (`Volume * Samples per Hour`).  
+*Volume* represents the number of vehicles that pass through a detector in a given time period. *Flow* represents the number of vehicles that pass through a detector per hour (`Volume * Samples per Hour`).  
 
 
 ### Occupancy  
 
-The term 'occupancy' does not here refer to the occupants of a vehicle but rather the occupancy of the sensor, or how long the sensor was 'occupied'.  In a 30-second time period, 1800 scans are produced (60 per second), and each scan is binary:  either the sensor is occupied or not.  Therefore, a sensor occupied for 1 second within the 30-second time period would have a value of 60.  Raw occupancy values can be converted to percentages:
+The term 'occupancy' does not here refer to the occupants of a vehicle but rather the occupancy of the sensor, or how long the sensor was 'occupied'.  In a 30-second time period, 1,800 scans are produced (60 scans per second), and each scan is binary:  either the sensor is occupied or not.  Therefore, a sensor occupied for 1 second within the 30-second time period would have a value of 60.  Raw occupancy values can be converted to percentages:
 
 $$\frac{Occupancy}{1800}*100% $$
 The resulting percentage is the percentage of time in that 30 seconds that the sensor was 'occupied'.
@@ -71,9 +75,12 @@ $$\frac{Flow}{Density} $$
 
 The average flow that a roadway is losing, either due to low traffic or high congestion, throughout the sampling period.  
 
-
-### Vehicle Miles Traveled (VMT)
-
 ## Additional documentation  
 
 The Regional Traffic Management Center (RTMC) maintains the Intelligent Roadway Information System (IRIS) with an [open-source repository on GitHub](https://github.com/mnit-rtmc/iris). IRIS [documentation](https://mnit-rtmc.github.io/iris/index.html) is served from the GitHub repo, as well. 
+
+## Relevant reports and references  
+
+<div id="refs"></div>
+
+<a href="https://metrocouncil.org" target="_blank"><img src="../man/figures/main-logo.png" style="margin-left: 50%;margin-right: 50%;"><div></div></a>

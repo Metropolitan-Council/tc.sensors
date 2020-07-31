@@ -22,3 +22,8 @@ The original data.table with additional columns
 Append a column with a given date's day type (weekday or weekend),
 day of week, and day category (holiday, weekend, or weekday)
 }
+\seealso{
+Other add column functions: 
+\code{\link{add_weather}()}
+}
+\concept{add column functions}

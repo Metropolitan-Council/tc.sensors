@@ -9,7 +9,7 @@
 #'     \code{"in-memory"} will return the data in R, but requires assignment.
 #' @param .quiet logical, whether to hide messages. Default is `TRUE`
 #'
-#' @return dataframe containing 20 variables, including detector_field and lat/lons,
+#' @return a data.table containing 20 variables, including detector_field and lat/lons,
 #'   for each sensor in MnDOT's metro district
 #'   - `detector_name` character, the detector's unique identifier in numbers
 #'   - `detector_label` character, the detector's label including abbreviations of the roads associated with the roadway node.
@@ -19,7 +19,7 @@
 #'     - "B" Bypass, ramp meter bypass
 #'     - "CD" Collector/Distributor
 #'     - "D" Shoulder, mainline shoulder
-#'     - "G" Green, ramp meter displayed green count
+#'     - "G" Green light counter on highway entrance ramp
 #'     - "H" High-Occupancy Vehicle
 #'     - "HT" High-Occupancy Vehicle or Toll
 #'     - "M" Merge, Freeway on-ramp (counts all merging traffic)
@@ -67,6 +67,7 @@
 #' @importFrom data.table fwrite
 #' @importFrom utils download.file
 #' @importFrom rlang .data
+#' @importFrom data.table as.data.table
 #'
 #' @export
 pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
@@ -182,7 +183,8 @@ pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
       -.data$detector, -.data$detector_path,
       -.data$corridor_path
     ) %>%
-    dplyr::mutate(date = Sys.Date())
+    dplyr::mutate(date = Sys.Date()) %>%
+    data.table::as.data.table()
 
   if (return_opt == "in_memory") {
     return(config_tidy)
@@ -196,7 +198,6 @@ pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
     )
   }
 
-  config_tidy
 }
 
 #' Clean node and detector attributes
@@ -262,4 +263,36 @@ attr_to_df <- function(category, attr_ls, metro_config) {
   attributes_ls <- purrr::map2(category, attr_ls, attr_clean, metro_config)
   names(attributes_ls) <- paste(category, attr_ls, sep = "_")
   dplyr::bind_rows(attributes_ls)
+}
+
+
+#' @title Pull all sensor IDs in the Twin Cities metro
+#'
+#' @description  Create a data.table containing sensor IDs for MnDOT metro district, mainly to be used with `pull_sensor()`
+#'
+#' @inheritParams pull_configuration
+#' @return data.table containing variable "`detector`"
+#'
+#' @family loop sensor functions
+#' @examples
+#' \dontrun{
+#' sensors <- sensor_pull()
+#' }
+#' @importFrom xml2 read_xml xml_find_all xml_attr
+#' @importFrom dplyr transmute
+#' @importFrom tibble enframe
+#' @importFrom utils download.file
+#' @importFrom rlang .data
+#' @importFrom data.table as.data.table
+#'
+#' @export
+pull_sensor_ids <- function(.quiet = TRUE) {
+  url <- "http://data.dot.state.mn.us/iris_xml/metro_config.xml.gz"
+  tmp <- tempfile()
+  utils::download.file(url, tmp, quiet = .quiet)
+  metro_config <- xml2::read_xml(gzfile(tmp))
+
+  tibble::enframe(trimws(xml2::xml_attr(xml2::xml_find_all(metro_config, "//detector"), "name"))) %>%
+    dplyr::transmute(detector = .data$value) %>%
+    data.table::as.data.table()
 }

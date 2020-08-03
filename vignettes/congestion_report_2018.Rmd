@@ -1,0 +1,84 @@
+---
+title: "2018 Metropolitan Freeway System Congestion Report"
+author: Liz Roten, `r Sys.Date()`
+output: rmarkdown::html_vignette
+bibliography: ../inst/REFERENCES.bib
+csl: apa-single-spaced.csl
+nocite: '@*'
+vignette: >
+  %\VignetteIndexEntry{2018 Metropolitan Freeway System Congestion Report}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+collapse = TRUE,
+comment = "#>",
+eval = TRUE,
+warning = FALSE,
+message = FALSE,
+cache = TRUE
+)
+
+options(scipen = 9999)
+```
+
+This vignette aims to re-create the MnDOT 2018 Congestion Report @noauthor_mndot_2019. 
+
+```{r setup}
+library(tc.sensors)
+library(purrr)
+library(furrr)
+library(tictoc)
+```
+
+## Pull relevant sensors  
+
+THe RTMC report evaluates 782 directional miles from around 4,000 mainline sensors. We know that some of the sensors we pull today (in 2020) may not have been in use in 2018, but we will remove sensors with only NULL values later on.  
+
+```{r}
+sensor_config <- pull_configuration()[detector_category == "",][r_node_n_type == "Station",] # only include mainline, station sensors
+```
+
+## Pull relevant data period  
+
+MnDOT uses twelve midweek days (Tuesday, Wednesday, and Thursday) in October for the morning rush (5am - 10am) and evening rush (2pm - 7pm). 
+
+```{r}
+date_range <- seq(as.Date("2018/10/01"), as.Date("2018/10/31"), by = "days")
+
+plan(multiprocess)
+
+tic() # Start the timer
+sensor_data <- future_map(sensor_config$detector_name,
+                          .f = function(det_name) {
+                            future_map_dfr(seq(1:length(date_range)), .f = function(x) {
+                              tc.sensors::pull_sensor(det_name, date_range[[x]])
+                            })
+                          }
+)
+toc()
+
+#> 
+```
+
+We will select only observations on midweek days in the study hours. 
+
+```{r}
+agg_five <- furrr::future_map(clean_sensor_data,
+                              aggregate_sensor,
+                              config = sensor_config,
+                              interval_length = 5 / 60,
+                              occupancy_pct_threshold = 0.002,
+                              interpolate_missing = TRUE
+) %>%
+  furrr::future_map(add_day_type) %>% 
+  furrr::future_map(.f = function(x){
+    x[day_of_week %in% c("Tuesday", 
+                         "Wednesday",
+                         "Thursday")][
+                           start_hour %in% c(seq(5:10),
+                                             seq(14:19)),]
+  })
+```
+

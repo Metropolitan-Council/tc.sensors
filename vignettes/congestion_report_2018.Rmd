@@ -30,6 +30,7 @@ library(tc.sensors)
 library(purrr)
 library(furrr)
 library(tictoc)
+library(data.table)
 ```
 
 ## Pull relevant sensors  
@@ -38,6 +39,10 @@ THe RTMC report evaluates 782 directional miles from around 4,000 mainline senso
 
 ```{r}
 sensor_config <- pull_configuration()[detector_category == "",][r_node_n_type == "Station",] # only include mainline, station sensors
+
+sensor_sample <- sample(sensor_config$corridor_route, 5)
+
+sensor_config <- sensor_config[corridor_route %in% sensor_sample,]
 ```
 
 ## Pull relevant data period  
@@ -45,7 +50,7 @@ sensor_config <- pull_configuration()[detector_category == "",][r_node_n_type ==
 MnDOT uses twelve midweek days (Tuesday, Wednesday, and Thursday) in October for the morning rush (5am - 10am) and evening rush (2pm - 7pm). 
 
 ```{r}
-date_range <- seq(as.Date("2018/10/01"), as.Date("2018/10/31"), by = "days")
+date_range <- seq(as.Date("2018/10/02"), as.Date("2018/10/04"), by = "days")
 
 plan(multiprocess)
 
@@ -59,26 +64,90 @@ sensor_data <- future_map(sensor_config$detector_name,
 )
 toc()
 
-#> 
+#> 169.3 sec elapsed
 ```
 
 We will select only observations on midweek days in the study hours. 
 
 ```{r}
-agg_five <- furrr::future_map(clean_sensor_data,
+agg_one <- furrr::future_map(sensor_data,
                               aggregate_sensor,
                               config = sensor_config,
-                              interval_length = 5 / 60,
+                              interval_length = 1 / 60,
                               occupancy_pct_threshold = 0.002,
                               interpolate_missing = TRUE
 ) %>%
   furrr::future_map(add_day_type) %>% 
-  furrr::future_map(.f = function(x){
+  furrr::future_map_dfr(.f = function(x){
     x[day_of_week %in% c("Tuesday", 
                          "Wednesday",
-                         "Thursday")][
-                           start_hour %in% c(seq(5:10),
-                                             seq(14:19)),]
+                         "Thursday")]
   })
+
+bins <- seq(0, 60, by = 5)
+
+
+agg_five_median_speed <- unique(
+  agg_one[,.(date, sensor, hour, start_min, speed)][
+    ,interval_min_bin := findInterval(start_min, bins)][,start_min := NULL][
+      , median_speed := median(speed, na.rm = T), keyby = .(date, sensor, hour, interval_min_bin)][
+                                   , speed := NULL])[, `:=`(median_speed_calc = case_when(median_speed >= 
+    90 | is.na(median_speed) ~ mean(median_speed, na.rm = ..T), 
+    TRUE ~ median_speed)), keyby = .(sensor)][hour %in% c(seq(5,10),
+                                                          seq(14,19)),][, period := ifelse(hour > 10, "PM", "AM")]
+  
+summary(agg_five_median_speed$median_speed)
+```
+
+
+```{r}
+library(ggplot2)
+
+
+ggplot(data = agg_five_median_speed, 
+      aes(median_speed)) +
+  geom_density(data = agg_five_median_speed,
+              aes(color = as.factor(hour),
+                  fill = as.factor(hour)),
+              alpha = 0.15) +
+  geom_density() +
+  scale_color_viridis_d(option = "magma", aesthetics = c("fill", "color")) +
+  theme_minimal() 
+
+ggplot() +
+  geom_jitter(data = agg_five_median_speed[median_speed < 100,],
+              aes(x = hour,
+                  y = median_speed,
+                  color = median_speed),
+              alpha = 0.3) +
+  scale_color_viridis_c(option = "magma") +
+  theme_minimal() 
+
+```
+
+```{r}
+sensor_config_length <- add_distance(sensor_config)
+setkey(sensor_config_length, detector_name)
+
+sensor_config_length[, .(`sum(distance)` = sum(distance))
+                     # keyby = .(corridor_route, corridor_dir)
+    ]
+```
+
+
+```{r}
+setkey(agg_five_median_speed, sensor) 
+
+summary(agg_five_median_speed$median_speed)
+
+agg_five_congested_stations <- agg_five_median_speed[,congested_status := ifelse(median_speed <= 45, TRUE, FALSE)]
+
+summary(agg_five_congested_stations$congested_status)
+
+agg_five_congested_stations[sensor_config_length][,node_congested_status := ifelse(congested_status == TRUE, TRUE, FALSE), keyby = .(r_node_station_id, period, date)][,.(r_node_station_id, period, date, distance, median_speed, node_congested_status)] %>% unique() %>% View
+```
+
+```{r}
+summary(agg_five$congested_status)
 ```
 

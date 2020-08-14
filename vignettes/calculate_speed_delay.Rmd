@@ -18,7 +18,10 @@ knitr::opts_chunk$set(
   eval = FALSE,
   warning = FALSE,
   message = FALSE,
-  cache = TRUE
+  cache = TRUE,
+  fig.width = 8,
+  fig.height = 4,
+  fig.path = "../man/figures/calculate_speed_delay-"
 )
 
 options(scipen = 9999)

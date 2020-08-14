@@ -193,7 +193,7 @@ cowplot::plot_grid(
 ```{r, include=FALSE}
 ggsave(device = "png", dpi = 72, filename = "img/plot_speed_nulls.png")
 ```
-![](img/plot_speed_nulls.png)  
+![](../man/figures/calculate_speed_delay-unnamed-chunk-7-1.png)  
 
 Next, we will plot the relationship between speed, volume, and occupancy for both aggregation levels. The plots below show that the larger interval size seems to stabilize speed values.  
 
@@ -251,10 +251,7 @@ plot_hour <- ggplot() +
 
 cowplot::plot_grid(plot_ten, plot_hour)
 ```
-```{r, include=FALSE}
-ggsave(device = "png", dpi = 72, filename = "img/plot_occupancy_speed_volume.png")
-```
-
+![](../man/figures/calculate_speed_delay-unnamed-chunk-9-1.png)
 ## Impute missing speeds  
 
 One option for handling NA values is imputation. We can use the `{mice}` package with a random forest method. A random forest model is relatively easy to understand, handles outliers well, and works with non-linear data well. The random forest also fits with what we know about how speed is dependent on factors like day type and time of day.  
@@ -321,10 +318,8 @@ ggplot() +
   ) +
   theme_minimal()
 ```
-![](img/plot_speed_imputation_density.png)
-```{r, include=FALSE}
-ggsave(device = "png", dpi = 72, filename = "img/plot_speed_imputation_density.png")
-```
+![](../man/figures/calculate_speed_delay-unnamed-chunk-12-1.png)
+
 Next, we will look at a scatter plot of the imputed speed and hour, again, by weekday and weekend. Here, the color indicates the imputation.  
 
 ```{r}
@@ -352,10 +347,7 @@ ggplot() +
   ) +
   theme_minimal()
 ```
-![](img/plot_speed_imputation_hourly.png)
-```{r, include=FALSE}
-ggsave(device = "png", dpi = 72, filename = "img/plot_speed_imputation_hourly.png")
-```
+![](../man/figures/calculate_speed_delay-unnamed-chunk-13-1.png)
 ## Distance  
 
 In order to calculate delay, we need to calculate the distance between the upstream sensor and the sensor of interest. We can accomplish this using the sensor configuration table and `add_distance()`.  
@@ -426,11 +418,9 @@ ggplot() +
       Random forest speed imputation at one hour interval. ", width = 60)) +
   theme_minimal()
 ```
-![](img/plot_delay_hour_speed.png)
-```{r, include=FALSE}
-ggsave(device = "png", dpi = 72, filename = "img/plot_delay_hour_speed.png")
-```
-## Relevant reports and references  
+![](../man/figures/calculate_speed_delay-unnamed-chunk-17-1.png)  
+  
+## Relevant reports and references   
 
 <div id="refs"></div>
 

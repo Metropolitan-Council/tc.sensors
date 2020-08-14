@@ -1,0 +1,148 @@
+---
+title: "Link with NPMRDS"
+output: rmarkdown::html_vignette
+author: Liz Roten, `r Sys.Date()`
+bibliography: ../inst/REFERENCES.bib
+csl: apa-single-spaced.csl
+nocite: '@*'
+vignette: >
+  %\VignetteIndexEntry{Link with NPMRDS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  cache = TRUE,
+  fig.width = 7,
+  fig.height = 4,
+  fig.path = "../man/figures/link_with_npmrds-"
+)
+
+options(scipen = 9999)
+```
+
+```{r setup}
+library(tc.sensors)
+library(rritis)
+library(sf)
+library(dplyr)
+library(ggplot2)
+```
+
+
+## Read in NPMRDS data  
+
+The data we are using is from March 2019 for passenger and commercial vehicles.  
+
+```{r}
+tictoc::tic()
+passenger_march <- import_npmrds(npmrds_data_location = "../../data_ritis/data_npmrds/massive_data_downloader/MPO-March2019-Passenger-Commerical-seconds/MPO-March2019-Passenger-Commerical-seconds.csv")[
+  , `:=`(
+    start_hour = data.table::hour(measurement_tstamp),
+    start_date = as.Date(measurement_tstamp)
+  )][
+    , `:=`(study_period = data.table::fcase(
+      start_hour %in% seq(5, 10), "Morning rush",
+      start_hour %in% seq(14, 19), "Evening rush",
+      default = "None"
+    ))
+  ]
+tictoc::toc()
+```
+
+
+```{r}
+inrix_spatial <- import_npmrds_inrix_spatial(
+  state = "MN",
+  year = "2019",
+  location = "../../data_ritis/data_npmrds/inrix_shapefiles/"
+) %>%
+  dplyr::filter(tmc %in% unique(passenger_march$tmc_code)) # filter to only include metro roads
+```
+
+
+## Prepare loop sensor data for comparison  
+
+Spatial join sensors with INRIX spatial data
+```{r}
+sensor_config <- pull_configuration() %>% 
+  filter(detector_abandoned == "f") %>% 
+  mutate(lat = as.numeric(r_node_lat),
+         lon = as.numeric(r_node_lon)) %>% 
+  st_as_sf(
+  coords = c("lon", "lat")
+) %>% 
+  st_set_crs(4326)
+
+
+inrix_config_intersect <- st_intersection(sensor_config,
+                                          inrix_spatial)
+
+inrix_sensor_ids <- inrix_config_intersect %>% 
+  select(detector_name, tmc)
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = inrix_spatial) +
+  geom_sf(data = inrix_config_intersect,
+          color = "blue") +
+  theme_minimal()
+```
+## Pull loop sensor data  
+```{r}
+date_range <- seq(as.Date("2019/03/01"), as.Date("2019/03/31"), by = "days")
+
+plan(multiprocess)
+
+tic() # Start the timer
+sensor_data <- future_map(inrix_sensor_ids$detector_name,
+  .f = function(det_name) {
+    future_map_dfr(seq(1:length(date_range)), .f = function(x) {
+      tc.sensors::pull_sensor(det_name, date_range[[x]])
+    })
+  }
+)
+toc()
+```
+Aggregate sensor data to 5 minute intervals.  
+
+```{r}
+plan(multiprocess)
+tictoc::tic()
+
+clean_sensor_data <- furrr::future_map(sensor_data,
+  scrub_sensor,
+  interval_length = NA
+)
+
+agg_five <- furrr::future_map(clean_sensor_data,
+  aggregate_sensor,
+  config = sensor_config,
+  interval_length = 5 / 60,
+  occupancy_pct_threshold = 0.002,
+  interpolate_missing = TRUE
+) %>%
+  furrr::future_map_dfr(add_day_type)
+tictoc::toc()
+```
+
+
+## MnDOT AADT count locations and segments
+
+```{r}
+## point locations
+temp <- tempfile()
+download.file("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/trans_aadt_traffic_count_locs/gpkg_trans_aadt_traffic_count_locs.zip", temp)
+
+locations <- read_sf(unzip(temp, "trans_aadt_traffic_count_locs.gpkg")) %>% 
+  st_transform(4326) 
+fs::file_delete(temp)
+```
+

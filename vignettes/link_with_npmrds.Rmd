@@ -31,8 +31,12 @@ options(scipen = 9999)
 library(tc.sensors)
 library(rritis)
 library(sf)
+library(tictoc)
 library(dplyr)
 library(ggplot2)
+library(furrr)
+library(purrr)
+library(data.table)
 ```
 
 
@@ -95,7 +99,8 @@ ggplot() +
           color = "blue") +
   theme_minimal()
 ```
-## Pull loop sensor data  
+## Pull and process loop sensor data  
+
 ```{r}
 date_range <- seq(as.Date("2019/03/01"), as.Date("2019/03/31"), by = "days")
 
@@ -111,6 +116,7 @@ sensor_data <- future_map(inrix_sensor_ids$detector_name,
 )
 toc()
 ```
+
 Aggregate sensor data to 5 minute intervals.  
 
 ```{r}
@@ -133,6 +139,33 @@ agg_five <- furrr::future_map(clean_sensor_data,
 tictoc::toc()
 ```
 
+Join with configuration
+
+```{r}
+sample_date <- "2019-03-12"
+passenger_march_match <- passenger_march[tmc_code %in% inrix_sensor_ids$tmc,][timestamp_date == sample_date,][,measurement_tstamp := as.character(measurement_tstamp)][,.(tmc_code, speed, measurement_tstamp, data_density)]
+
+agg_five_dt <- as.data.table(agg_five, keys = c("detector_name"))[date == sample_date,][,start_datetime := as.character(start_datetime)][,.(sensor, start_datetime, volume.sum, speed)]
+
+massive_join <- left_join(agg_five_dt, inrix_sensor_ids, by = c("sensor" = "detector_name"))  %>% 
+  left_join(passenger_march_match, suffix = c(".loop", ".inrix"), by = c("tmc" = "tmc_code",
+                                          "start_datetime" = "measurement_tstamp")) %>% 
+  mutate(start_datetime = as.POSIXct(start_datetime))
+```
+
+```{r}
+ggplot() +
+  geom_jitter(data = massive_join,
+             aes(x = speed.loop,
+                 y = speed.inrix,
+                 color = volume.sum),
+             alpha = 0.5) +
+  geom_smooth(data = massive_join,
+              aes(x = speed.loop,
+                  y = speed.inrix)) +
+  scale_color_viridis_c(option = "magma") +
+  theme_minimal()
+```
 
 ## MnDOT AADT count locations and segments
 
@@ -143,6 +176,26 @@ download.file("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_do
 
 locations <- read_sf(unzip(temp, "trans_aadt_traffic_count_locs.gpkg")) %>% 
   st_transform(4326) 
-fs::file_delete(temp)
+fs::file_delete("trans_aadt_traffic_count_locs.gpkg")
 ```
 
+```{r}
+
+temp <- tempfile()
+download.file("https://resources.gisdata.mn.gov/pub/gdrs/data/pub/us_mn_state_dot/trans_aadt_traffic_segments/gpkg_trans_aadt_traffic_segments.zip", temp)
+
+segments <- read_sf(unzip(temp, "trans_aadt_traffic_segments.gpkg")) %>% 
+  st_transform(4326)
+
+fs::file_delete("trans_aadt_traffic_segments.gpkg")
+
+ggplot() +
+  geom_sf(data = segments) +
+  theme_minimal()
+```
+
+```{r}
+inrix_segments <- st_intersection(segments, inrix_spatial) 
+ggplot() +
+  geom_sf(data = inrix_segments)
+```

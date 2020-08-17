@@ -85,8 +85,11 @@ sensor_config <- pull_configuration() %>%
   st_set_crs(4326)
 
 
+inrix_nearest_join <- st_join(inrix_spatial, sensor_config, join = st_nearest_feature)
+
+
 inrix_config_intersect <- st_intersection(sensor_config,
-                                          inrix_spatial)
+                                          inrix_spatial, tolerance = 2)
 
 inrix_sensor_ids <- inrix_config_intersect %>% 
   select(detector_name, tmc)
@@ -99,6 +102,7 @@ ggplot() +
           color = "blue") +
   theme_minimal()
 ```
+
 ## Pull and process loop sensor data  
 
 ```{r}
@@ -139,18 +143,27 @@ agg_five <- furrr::future_map(clean_sensor_data,
 tictoc::toc()
 ```
 
-Join with configuration
+Join with configuration. 
 
 ```{r}
 sample_date <- "2019-03-12"
-passenger_march_match <- passenger_march[tmc_code %in% inrix_sensor_ids$tmc,][timestamp_date == sample_date,][,measurement_tstamp := as.character(measurement_tstamp)][,.(tmc_code, speed, measurement_tstamp, data_density)]
 
-agg_five_dt <- as.data.table(agg_five, keys = c("detector_name"))[date == sample_date,][,start_datetime := as.character(start_datetime)][,.(sensor, start_datetime, volume.sum, speed)]
+passenger_march_match <- passenger_march[
+  tmc_code %in% inrix_sensor_ids$tmc,][
+    start_date == sample_date,][
+      ,measurement_tstamp := as.character(measurement_tstamp)][
+        ,.(tmc_code, speed, measurement_tstamp, data_density)]
+
+agg_five_dt <- as.data.table(agg_five, keys = c("detector_name"))[
+  date == sample_date,][
+    , start_datetime := as.character(start_datetime)][
+      , .(sensor, start_datetime, volume.sum, speed)]
 
 massive_join <- left_join(agg_five_dt, inrix_sensor_ids, by = c("sensor" = "detector_name"))  %>% 
   left_join(passenger_march_match, suffix = c(".loop", ".inrix"), by = c("tmc" = "tmc_code",
                                           "start_datetime" = "measurement_tstamp")) %>% 
-  mutate(start_datetime = as.POSIXct(start_datetime))
+  mutate(start_datetime = as.POSIXct(start_datetime),
+         late_night = hour(start_datetime) %in% c(22:23, 0:4))
 ```
 
 ```{r}
@@ -164,7 +177,33 @@ ggplot() +
               aes(x = speed.loop,
                   y = speed.inrix)) +
   scale_color_viridis_c(option = "magma") +
-  theme_minimal()
+  theme_minimal() +
+  labs(x = "Loop detector speed (mph)",
+       y = "INRIX speed (mph)",
+       color = "Volume",
+       title = "INRIX and loop detector speeds")
+```
+
+To get a better picture of data periods with low volumes, we will mark late night observations as those starting between midnight and 4am and 10pm to 11pm.
+
+```{r}
+ggplot() +
+  geom_jitter(data = massive_join,
+             aes(x = speed.loop,
+                 y = speed.inrix,
+                 color = volume.sum),
+             alpha = 0.5) +
+  geom_smooth(data = massive_join,
+              aes(x = speed.loop,
+                  y = speed.inrix)) +
+  facet_wrap(~late_night) +
+  scale_color_viridis_c(option = "magma") +
+  theme_minimal() +
+    labs(x = "Loop detector speed (mph)",
+       y = "INRIX speed (mph)",
+       color = "Volume",
+       title = "INRIX and loop detector speeds by late night")
+
 ```
 
 ## MnDOT AADT count locations and segments
@@ -188,14 +227,50 @@ segments <- read_sf(unzip(temp, "trans_aadt_traffic_segments.gpkg")) %>%
   st_transform(4326)
 
 fs::file_delete("trans_aadt_traffic_segments.gpkg")
+fs::file_delete(temp)
+
+counti <- tigris::counties(state = 27, year = 2018, 
+                           class = "sf") %>% 
+  filter(NAME %in% c("Hennepin",
+      "Dakota",
+      "Carver",
+      "Ramsey",
+      "Anoka",
+      "Scott",
+      "Washington",
+      "Wright",
+      "Sherburne")) %>% 
+    st_transform(4326)
+
+
+segments <- st_intersection(segments, counti)
 
 ggplot() +
   geom_sf(data = segments) +
+  geom_sf(data = inrix_spatial,
+          color = "cyan") +
   theme_minimal()
 ```
 
 ```{r}
-inrix_segments <- st_intersection(segments, inrix_spatial) 
+inrix_segments <- st_intersection(segments, inrix_spatial)
+
 ggplot() +
-  geom_sf(data = inrix_segments)
+  geom_sf(data = inrix_spatial,
+          color = "lightcyan4",
+          size = 2) +
+  geom_sf(data = inrix_segments,
+          alpha = 0.5,
+          color = "gray") +
+  theme_minimal()
 ```
+
+
+```{r}
+segments_join <- st_join(inrix_spatial, inrix_segments)
+
+ggplot() +
+  geom_sf(data = segments_join) +
+  theme_minimal()
+```
+

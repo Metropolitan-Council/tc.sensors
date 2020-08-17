@@ -23,6 +23,9 @@
 #'
 #'   \insertCite{cambridge_systematics_inc_use_2015}{tc.sensors}
 #'
+#' @references
+#'   \insertAllCited{}
+#'
 #' @export
 #'
 assess_data_quality <- function(sensor_data,

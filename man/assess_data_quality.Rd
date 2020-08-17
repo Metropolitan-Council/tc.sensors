@@ -42,3 +42,6 @@ moving average of the 10 previous entries, the travel time will be removed.
 \insertCite{cambridge_systematics_inc_use_2015}{tc.sensors}
 }
 }
+\references{
+\insertAllCited{}
+}

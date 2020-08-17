@@ -23,7 +23,7 @@ cache = TRUE
 options(scipen = 9999)
 ```
 
-This vignette aims to re-create the MnDOT 2018 Congestion Report @noauthor_mndot_2019. 
+This vignette aims to re-create the MnDOT 2018 Congestion Report @minnesota_department_of_transportation_mndot_2019.   
 
 ```{r setup}
 library(tc.sensors)

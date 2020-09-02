@@ -81,7 +81,7 @@ Spatial join sensors with INRIX spatial data. We will run different methods:  in
 ```{r}
 sensor_config <- pull_configuration() %>% 
   filter(detector_abandoned == "f",
-         # corridor_route == "I-494",
+         corridor_route == "I-494",
          r_node_n_type == "Station"
   ) %>% 
   mutate(lat = as.numeric(r_node_lat),
@@ -91,27 +91,16 @@ sensor_config <- pull_configuration() %>%
 
 # if sensor_config, inrix_spatial -> points
 # if inrix_spatial, sensor_config -> lines
-
-inrix_nearest_join <- st_join(inrix_spatial, sensor_config, join = st_nearest_feature)
-
+inrix_config_nearest <- st_join(inrix_spatial, sensor_config,
+                                # left = FALSE,
+                                join = st_nearest_feature)
 
 inrix_config_intersect <- st_intersection(sensor_config,
-                                          inrix_spatial, tolerance = 2)
+                                          inrix_spatial, tolerance = 5)
 
-# find the distance between each inrix segment and its nearest sensor
-dist <- st_distance(inrix_spatial, sensor_config[nearest,], by_element = TRUE)
-
-# combine data . 
-inrix_config_nearest <- cbind(inrix_spatial, st_drop_geometry(sensor_config)[nearest,])
-inrix_config_nearest$dist = as.numeric(dist)
-
-```
-
-```{r}
 inrix_sensor_ids <- inrix_config_nearest %>% 
   as.data.table() %>% 
-  filter(dist < 20) %>% 
-  select(detector_name, tmc, direction, tmc_linear, dist) 
+  select(detector_name, tmc, direction, tmc_linear) 
 
 inrix_sensors_collapse <- inrix_sensor_ids %>% 
   group_by(detector_name, direction) %>% 
@@ -122,6 +111,43 @@ inrix_sensors_collapse <- inrix_sensor_ids %>%
 # length(unique(inrix_sensors_collapse$detectors))
 length(unique(inrix_sensors_collapse$tmcs))
 ```
+
+Spatial join results.  
+
+```{r}
+ggplot() +
+  geom_sf(data = inrix_spatial) +
+  geom_sf(data = inrix_config_nearest,
+          color = "blue") +
+  theme_minimal()
+```
+
+```{r}
+library(leaflet)
+
+
+sensor_config_nearest <- sensor_config %>% 
+  filter(detector_name %in% inrix_sensor_ids$detector_name) %>% 
+  mutate(corridor_dir = stringr::str_remove(corridor_dir, "B")) %>% 
+  left_join(inrix_sensor_ids, by = c("detector_name"
+                                     # "corridor_dir" = "direction"
+                                     ))
+
+pal <- colorFactor(palette = "magma",
+                   domain = sensor_config_nearest$direction)
+
+leaflet() %>% 
+  # addProviderTiles(provider = providers$OpenStreetMap) %>% 
+  addPolylines(data = inrix_config_nearest,
+               weight = 5,
+               color = ~pal(direction),
+               popup = ~direction) %>% 
+  addCircleMarkers(data = sensor_config_nearest,
+                   radius = 5,
+                   color = ~pal(corridor_dir),
+                   popup = ~corridor_dir)
+```
+
 
 ## Pull and process loop sensor data  
 
@@ -166,58 +192,43 @@ tictoc::toc()
 Join with configuration. 
 
 ```{r}
-sample_date <- "2019-03-12"
+# sample_date <- "2019-03-12"
 
 passenger_march_match <- passenger_march[
   tmc_code %in% inrix_sensor_ids$tmc,][
-    start_date == sample_date,][
-      ,measurement_tstamp := as.character(measurement_tstamp)][
-        ,.(tmc_code, speed, measurement_tstamp, data_density)]
+    # start_date == sample_date,][
+      , measurement_tstamp := as.character(measurement_tstamp)][
+        , .(tmc_code, speed, measurement_tstamp, data_density)]
 
 agg_five_dt <- as.data.table(agg_five, keys = c("detector_name"))[
-  date == sample_date,][
+  # date == sample_date,][
     , start_datetime := as.character(start_datetime)][
       , .(sensor, start_datetime, volume.sum, speed)]
 
 massive_join <- left_join(agg_five_dt, inrix_sensor_ids, by = c("sensor" = "detector_name"))  %>% 
-  left_join(passenger_march_match, suffix = c(".loop", ".inrix"), by = c("tmc" = "tmc_code",
-                                          "start_datetime" = "measurement_tstamp")) %>% 
+  left_join(passenger_march_match, 
+            suffix = c(".loop", ".inrix"),
+            by = c("tmc" = "tmc_code",
+                   "start_datetime" = "measurement_tstamp")) %>% 
   mutate(start_datetime = as.POSIXct(start_datetime),
          late_night = hour(start_datetime) %in% c(22:23, 0:4))
 ```
 
 ```{r}
-massive_join_clean <- massive_join[, congested.inrix := ifelse(speed.inrix <= 45, TRUE, FALSE)][
+massive_join[, congested.inrix := ifelse(speed.inrix <= 45, TRUE, FALSE)][
   , congested.loop := ifelse(speed.loop <= 45, TRUE, FALSE)
-][!is.na(speed.inrix),][!is.na(speed.loop),]
+]
 
-View(massive_join_clean[,.N, by = c("congested.inrix")][,perc := (N/sum(N) * 100)])
-View(massive_join_clean[,.N, by = c("congested.loop")][,perc := (N/sum(N) * 100)])
+View(massive_join[,.N, by = c("congested.inrix")][,perc := (N/sum(N) * 100)])
+View(massive_join[,.N, by = c("congested.loop")][,perc := (N/sum(N) * 100)])
 ```
 
-```{r}
-ggplot() +
-  geom_jitter(data = passenger_march[start_hour %in% c(5:21)],
-             aes(y = speed,
-                 x = measurement_tstamp,
-                 color = start_hour),
-             alpha = 0.5) +
-  theme_minimal() +
-    scale_color_viridis_c(option = "magma", direction = -1) +
-  labs(x = "Timestamp",
-       y = "INRIX speed (mph)",
-       color = "Hour",
-       title = "INRIX speeds")
-```
 
 
 ```{r}
 ggplot() +
-  geom_jitter(data = massive_join_clean %>% 
-                filter(speed.loop <= 99
-                       # speed.loop > 10,
-                       # late_night == FALSE
-                       ),
+  geom_jitter(data = massive_join %>% 
+                filter(speed.loop < 100),
              aes(x = speed.loop,
                  y = speed.inrix),
              alpha = 0.5) +
@@ -245,10 +256,11 @@ ggplot() +
                  y = speed.inrix,
                  color = volume.sum),
              alpha = 0.5) +
-  geom_smooth(data = massive_join_clean,
+  geom_smooth(data = massive_join %>% 
+                filter(speed.loop < 100),
               aes(x = speed.loop,
                   y = speed.inrix)) +
-  scale_color_viridis_c(option = "magma") +
+  scale_color_viridis_c(option = "magma", direction = -1) +
   theme_minimal() +
   labs(x = "Loop detector speed (mph)",
        y = "INRIX speed (mph)",
@@ -269,7 +281,7 @@ ggplot() +
               aes(x = speed.loop,
                   y = speed.inrix)) +
   facet_wrap(~late_night) +
-  scale_color_viridis_c(option = "magma") +
+  scale_color_viridis_c(option = "magma", direction = -1) +
   theme_minimal() +
     labs(x = "Loop detector speed (mph)",
        y = "INRIX speed (mph)",

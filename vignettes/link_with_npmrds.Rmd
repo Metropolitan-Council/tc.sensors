@@ -81,7 +81,7 @@ Spatial join sensors with INRIX spatial data. We will run different methods:  in
 ```{r}
 sensor_config <- pull_configuration() %>% 
   filter(detector_abandoned == "f",
-         corridor_route == "I-494",
+         # corridor_route == "I-494",
          r_node_n_type == "Station"
   ) %>% 
   mutate(lat = as.numeric(r_node_lat),

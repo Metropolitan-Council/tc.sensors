@@ -92,12 +92,13 @@ sensor_config <- pull_configuration() %>%
 # if sensor_config, inrix_spatial -> points
 # if inrix_spatial, sensor_config -> lines
 
-# find the nearest feature
+# find the nearest sensor for every inrix segment
 nearest <- st_nearest_feature(inrix_spatial, sensor_config)
 
-# find the distance between each inrix segment and the nearest sensor
+# find the distance between each inrix segment and its nearest sensor
 dist <- st_distance(inrix_spatial, sensor_config[nearest,], by_element = TRUE)
 
+# combine data . 
 inrix_config_nearest <- cbind(inrix_spatial, st_drop_geometry(sensor_config)[nearest,])
 inrix_config_nearest$dist = as.numeric(dist)
 
@@ -147,6 +148,8 @@ leaflet() %>%
                    popup = ~corridor_dir)
 ```
 
+There are a couple difficulties here:  
+- INRIX and loop detectors have different rules for directional traffic  
 
 ## Pull and process loop sensor data  
 

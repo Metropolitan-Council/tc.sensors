@@ -38,11 +38,12 @@ library(data.table)
 THe RTMC report evaluates 782 directional miles from around 4,000 mainline sensors. We know that some of the sensors we pull today (in 2020) may not have been in use in 2018, but we will remove sensors with only NULL values later on.  
 
 ```{r}
-sensor_config <- pull_configuration()[detector_category == "",][r_node_n_type == "Station",] # only include mainline, station sensors
+sensor_config <- pull_configuration()[
+  detector_category == "",][
+    r_node_n_type == "Station",][
+      corridor_route == "I-94"
+    ] # only include mainline, station sensors
 
-sensor_sample <- sample(sensor_config$corridor_route, 5)
-
-sensor_config <- sensor_config[corridor_route %in% sensor_sample,]
 ```
 
 ## Pull relevant data period  
@@ -58,25 +59,24 @@ tic() # Start the timer
 sensor_data <- future_map(sensor_config$detector_name,
                           .f = function(det_name) {
                             future_map_dfr(seq(1:length(date_range)), .f = function(x) {
-                              tc.sensors::pull_sensor(det_name, date_range[[x]])
+                              pull_sensor(det_name, date_range[[x]])
                             })
                           }
 )
 toc()
 
-#> 169.3 sec elapsed
 ```
 
 We will select only observations on midweek days in the study hours. 
 
 ```{r}
-agg_one <- furrr::future_map(sensor_data,
+agg_five <- furrr::future_map(sensor_data,
                               aggregate_sensor,
                               config = sensor_config,
-                              interval_length = 1 / 60,
+                              interval_length = 5 / 60,
                               occupancy_pct_threshold = 0.002,
                               interpolate_missing = TRUE
-) %>%
+)  %>% 
   furrr::future_map(add_day_type) %>% 
   furrr::future_map_dfr(.f = function(x){
     x[day_of_week %in% c("Tuesday", 
@@ -84,44 +84,29 @@ agg_one <- furrr::future_map(sensor_data,
                          "Thursday")]
   })
 
-bins <- seq(0, 60, by = 5)
 
-
-agg_five_median_speed <- unique(
-  agg_one[,.(date, sensor, hour, start_min, speed)][
-    ,interval_min_bin := findInterval(start_min, bins)][,start_min := NULL][
-      , median_speed := median(speed, na.rm = T), keyby = .(date, sensor, hour, interval_min_bin)][
-                                   , speed := NULL])[, `:=`(median_speed_calc = case_when(median_speed >= 
-    90 | is.na(median_speed) ~ mean(median_speed, na.rm = ..T), 
-    TRUE ~ median_speed)), keyby = .(sensor)][hour %in% c(seq(5,10),
-                                                          seq(14,19)),][, period := ifelse(hour > 10, "PM", "AM")]
+agg_five_clean <- agg_five[hour %in% c(seq(5,10), seq(14,19)),][
+  , period := ifelse(hour > 10, "PM", "AM")][
+    , speed.fill := ifelse(is.na(speed.median), speed.calc, speed.median)][
+      , congested.calc := ifelse(speed.calc <= 45, TRUE, FALSE)][
+        , congested.prov := ifelse(speed.median <= 45, TRUE, FALSE)
+    ][
+      
+        , congested.fill := ifelse(speed.fill <= 45, TRUE, FALSE)
+    
+    ]
   
-summary(agg_five_median_speed$median_speed)
 ```
-
 
 ```{r}
 library(ggplot2)
 
-
-ggplot(data = agg_five_median_speed, 
-      aes(median_speed)) +
-  geom_density(data = agg_five_median_speed,
-              aes(color = as.factor(hour),
-                  fill = as.factor(hour)),
-              alpha = 0.15) +
-  geom_density() +
-  scale_color_viridis_d(option = "magma", aesthetics = c("fill", "color")) +
-  theme_minimal() 
-
-ggplot() +
-  geom_jitter(data = agg_five_median_speed[median_speed < 100,],
-              aes(x = hour,
-                  y = median_speed,
-                  color = median_speed),
-              alpha = 0.3) +
-  scale_color_viridis_c(option = "magma") +
-  theme_minimal() 
+ggplot(data = agg_five_clean,
+              aes(y = speed.fill,
+                  x = hour,
+                  color = congested.fill)) +
+  geom_jitter(alpha = 0.5)  +
+  theme_minimal()
 
 ```
 

@@ -8,7 +8,7 @@
 #' @param config data.table, a configuration file for the given sensor
 #' @param replace_impossible logical, whether to replace impossible values with `NA`.
 #'   Default is `TRUE` and *highly* recommended.
-#' @param interpolate_missing logical, whether to interpolate missing volume and occupancy
+#' @param interpolate_missing logical, whether to interpolate missing volume, occupancy, and speed
 #'   values at the raw data level. Only applies if `replace_impossible` is `TRUE`. Note
 #'   that this option increases the function runtime.
 #' @param occupancy_pct_threshold numeric, the lowest possible occupancy percentage
@@ -123,8 +123,15 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
           data.table::frollapply(volume, 3, mean, align = "center", na.rm = T, hasNA = T)
         )),
         by = .(sensor)
-      ][
+      ][][
         , volume := ifelse(is.na(volume), volume.rollmean, volume)
+      ][
+        , `:=`(speed.rollmean = data.table::shift(
+          data.table::frollapply(speed, 3, mean, align = "center", na.rm = T, hasNA = T)
+        )),
+        by = .(sensor)
+      ][
+        , speed := ifelse(is.na(speed), speed.rollmean, speed)
       ][
         , `:=`(occupancy.rollmean = data.table::shift(
           data.table::frollapply(occupancy, 3, mean, align = "center", na.rm = T, hasNA = T)
@@ -132,7 +139,7 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
         by = .(sensor)
       ][
         , occupancy := ifelse(is.na(occupancy), occupancy.rollmean, occupancy)
-      ][, .(volume, occupancy, date, sensor, hour, min)]
+      ][, .(volume, occupancy, speed, date, sensor, hour, min)]
     }
   }
 

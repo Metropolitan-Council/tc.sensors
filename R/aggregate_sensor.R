@@ -24,7 +24,8 @@
 #'      values for the given measure
 #'   - `{measure}.sum` numeric, the measure's total over the given interval
 #'   - `{measure}.mean` numeric, the measure's mean over the given interval
-#'   - `speed` numeric, the mean traffic speed over the given interval
+#'   - `speed.calc` numeric, the mean traffic speed over the given interval
+#'     calculated using the `volume.sum`, `occupancy.pct`, and `field_length`.
 #'
 #' @details
 #'   ## Calculating speed
@@ -157,15 +158,16 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
       list(
         sum = sum(x, na.rm = T),
         mean = mean(x, na.rm = T),
+        median = median(x, na.rm = T),
         pct.null = round(100 * sum(is.na(x)) / length(x))
       )
     }))),
     by = .(date, hour, start_min, interval_min_bin, sensor),
-    .SDcols = c("volume", "occupancy")
+    .SDcols = c("volume", "occupancy", "speed")
     ][, start_datetime := as.character(as.POSIXct(paste(date, hour, start_min), format = "%Y-%m-%d %H %M"))][
       , occupancy.pct := (occupancy.sum / interval_scans)
     ][
-      , speed := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
+      , speed.calc := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
         (volume.sum * (60 / interval_length_min) * field_length)
         / (5280 * occupancy.pct), NA
       )

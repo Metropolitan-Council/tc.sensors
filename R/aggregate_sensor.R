@@ -195,6 +195,7 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
       list(
         sum = sum(x, na.rm = T),
         mean = mean(x, na.rm = T),
+        median = median(x, na.rm = T),
         pct.null = round(100 * sum(is.na(x)) / length(x))
       )
     }))),

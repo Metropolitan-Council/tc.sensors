@@ -74,8 +74,10 @@ pull_sensor <- function(sensor, pull_date,
   volume <- extension_pull("v", "volume", pull_date = pull_date, sensor = sensor, quiet = .quiet)
   ## occupancy, number of occupied scans
   occupancy <- extension_pull("c", "occupancy", pull_date = pull_date, sensor = sensor, quiet = .quiet)
+  speed <- extension_pull("s", "speed", pull_date = pull_date, sensor = sensor, quiet = .quiet)
 
   ## additional 30-second extensions. Not all sensors collect speed and vehicle length data.
+  loop_uneven <- data.table::as.data.table(dplyr::bind_cols(volume, occupancy, speed))
 
   ## speed in miles per hour
   speed <- extension_pull("s", "speed", pull_date = pull_date, sensor = sensor, quiet = .quiet)

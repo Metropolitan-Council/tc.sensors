@@ -73,8 +73,9 @@ pull_sensor <- function(sensor, pull_date,
 
   volume <- extension_pull("v", "volume", pull_date = pull_date, sensor = sensor, quiet = .quiet)
   occupancy <- extension_pull("c", "occupancy", pull_date = pull_date, sensor = sensor, quiet = .quiet)
+  speed <- extension_pull("s", "speed", pull_date = pull_date, sensor = sensor, quiet = .quiet)
 
-  loop_uneven <- data.table::as.data.table(dplyr::bind_cols(volume, occupancy))
+  loop_uneven <- data.table::as.data.table(dplyr::bind_cols(volume, occupancy, speed))
 
   loop_date_sensor <- loop_uneven[, `:=`(date = pull_date, sensor = sensor)]
 
@@ -89,8 +90,10 @@ pull_sensor <- function(sensor, pull_date,
         expand.grid(
           volume = NA,
           occupancy = NA,
+          speed = NA,
           date = pull_date,
           sensor = sensor,
+          # speed = speed,
           hour = 0:23,
           min = seq(0, 59.5, 0.5)
         )

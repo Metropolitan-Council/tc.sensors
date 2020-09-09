@@ -26,7 +26,7 @@ Default is \code{1}.}
 \item{replace_impossible}{logical, whether to replace impossible values with \code{NA}.
 Default is \code{TRUE} and \emph{highly} recommended.}
 
-\item{interpolate_missing}{logical, whether to interpolate missing volume and occupancy
+\item{interpolate_missing}{logical, whether to interpolate missing volume, occupancy, and speed
 values at the raw data level. Only applies if \code{replace_impossible} is \code{TRUE}. Note
 that this option increases the function runtime.}
 
@@ -44,7 +44,8 @@ a data.table with values for volume, occupancy, and speed
 values for the given measure
 \item \verb{\{measure\}.sum} numeric, the measure's total over the given interval
 \item \verb{\{measure\}.mean} numeric, the measure's mean over the given interval
-\item \code{speed} numeric, the mean traffic speed over the given interval
+\item \code{speed.calc} numeric, the mean traffic speed over the given interval
+calculated using the \code{volume.sum}, \code{occupancy.pct}, and \code{field_length}.
 }
 }
 \description{

@@ -201,11 +201,11 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
       )
     }))),
     by = .(date, interval_bin, sensor),
-    .SDcols = c("volume", "occupancy")
+    .SDcols = c("volume", "occupancy", "speed")
     ][, occupancy.sum := ifelse(occupancy.sum >= interval_scans, NA, occupancy.sum)][
       , occupancy.pct := (occupancy.sum / interval_scans)
     ][
-      , speed := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
+      , speed.calc := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
         ((volume.sum * field_length) /
           (5280 * occupancy.pct)) / interval_length, NA
       )

@@ -45,27 +45,28 @@ library(leaflet)
 sensor_config <- pull_configuration()[
   detector_category == "",][
     r_node_n_type == "Station",][
-      corridor_route == "I-94",][
-        r_node_lat <= 44.95
-      ]
+      corridor_route == "I-94",]
+# [
+        # r_node_lat <= 44.95
+      # ]
 # only include mainline, station sensors on I-94
 
 ```
 
 ```{r}
-# date_range <- seq(as.Date("2018/10/01"), as.Date("2018/10/31"), by = "days")
-# plan(multiprocess)
-# 
-# tic() # Start the timer
-# sensor_data <- future_map(sensor_config$detector_name,
-#                           .f = function(det_name) {
-#                             future_map_dfr(seq(1:length(date_range)), .f = function(x) {
-#                               pull_sensor(det_name, date_range[[x]])
-#                             })
-#                           }
-# )
-# toc()
-# saveRDS(sensor_data, "data_cache/october_2018_i94.RDS")
+date_range <- seq(as.Date("2018/10/01"), as.Date("2018/10/31"), by = "days")
+plan(multiprocess)
+
+tic() # Start the timer
+sensor_data <- future_map(sensor_config$detector_name,
+                          .f = function(det_name) {
+                            future_map_dfr(seq(1:length(date_range)), .f = function(x) {
+                              pull_sensor(det_name, date_range[[x]])
+                            })
+                          }
+)
+toc()
+saveRDS(sensor_data, "data_cache/october_2018_i94_full.RDS")
 ```
 
 ## Metrics  

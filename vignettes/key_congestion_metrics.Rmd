@@ -1,12 +1,12 @@
 ---
-title: "2018 Metropolitan Freeway System Congestion Report"
+title: "Key Congestion Metrics"
 author: Liz Roten, `r Sys.Date()`
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
 csl: apa-single-spaced.csl
 nocite: '@*'
 vignette: >
-  %\VignetteIndexEntry{2018 Metropolitan Freeway System Congestion Report}
+  %\VignetteIndexEntry{Key Congestion Metrics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,13 +17,15 @@ comment = "#>",
 eval = FALSE,
 warning = FALSE,
 message = FALSE,
-cache = TRUE
+cache = TRUE,
+fig.width = 8,
+fig.height = 4,
+fig.path = "../man/figures/key_congestion_metrics-"
 )
 
 options(scipen = 9999)
 ```
 
-This vignette aims to re-create the MnDOT 2018 Congestion Report @minnesota_department_of_transportation_mndot_2019.   
 
 ```{r setup}
 library(tc.sensors)
@@ -31,28 +33,25 @@ library(purrr)
 library(furrr)
 library(tictoc)
 library(data.table)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(leaflet)
 ```
 
-## Pull relevant sensors  
-
-THe RTMC report evaluates 782 directional miles from around 4,000 mainline sensors. We know that some of the sensors we pull today (in 2020) may not have been in use in 2018, but we will remove sensors with only NULL values later on.  
+## Data  
 
 ```{r}
 sensor_config <- pull_configuration()[
   detector_category == "",][
     r_node_n_type == "Station",][
-      corridor_route == "I-94"
-    ] # only include mainline, station sensors
+      corridor_route == "I-94",]
+# only include mainline, station sensors on I-94
 
 ```
 
-## Pull relevant data period  
-
-MnDOT uses twelve midweek days (Tuesday, Wednesday, and Thursday) in October for the morning rush (5am - 10am) and evening rush (2pm - 7pm). 
-
 ```{r}
-date_range <- seq(as.Date("2018/10/02"), as.Date("2018/10/04"), by = "days")
-
+date_range <- seq(as.Date("2018/10/02"), as.Date("2018/10/09"), by = "days")
 plan(multiprocess)
 
 tic() # Start the timer
@@ -64,8 +63,22 @@ sensor_data <- future_map(sensor_config$detector_name,
                           }
 )
 toc()
+```
+
+## Metrics  
+
+There are a few key metrics we want to evaluate when deciding how to define congestion. 
+
+### Speed   
+
+Currently, the RTMC defines congestion as an operating speed under 45 miles per hour (@minnesota_department_of_transportation_mndot_2019). If we change this threshold to a different speed, we can dramatically affect how much of a given road is congested.  
+
+There are a 
+
+```{r}
 
 ```
+
 
 We will select only observations on midweek days in the study hours. 
 
@@ -79,33 +92,52 @@ agg_five <- furrr::future_map(sensor_data,
 )  %>% 
   furrr::future_map(add_day_type) %>% 
   furrr::future_map_dfr(.f = function(x){
-    x[day_of_week %in% c("Tuesday", 
-                         "Wednesday",
-                         "Thursday")]
+    x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
+      hour %in% c(seq(5,10), seq(14,19)),][
+        , period := ifelse(hour > 10, "PM", "AM")]
   })
 
 
-agg_five_clean <- agg_five[hour %in% c(seq(5,10), seq(14,19)),][
-  , period := ifelse(hour > 10, "PM", "AM")][
-    , speed.fill := ifelse(is.na(speed.median), speed.calc, speed.median)][
+agg_five_clean <- agg_five[
       , congested.calc := ifelse(speed.calc <= 45, TRUE, FALSE)][
-        , congested.prov := ifelse(speed.median <= 45, TRUE, FALSE)
-    ][
-      
-        , congested.fill := ifelse(speed.fill <= 45, TRUE, FALSE)
-    
-    ]
+        , congested.prov := ifelse(speed.median <= 45, TRUE, FALSE)][
+          , congested.any := ifelse(congested.calc != TRUE | congested.prov == TRUE,
+                                    TRUE, FALSE)
+        ]
   
 ```
 
-```{r}
-library(ggplot2)
 
-ggplot(data = agg_five_clean,
-              aes(y = speed.fill,
-                  x = hour,
-                  color = congested.fill)) +
-  geom_jitter(alpha = 0.5)  +
+```{r}
+agg_hour <- furrr::future_map(sensor_data,
+                              aggregate_sensor,
+                              config = sensor_config,
+                              interval_length = 1,
+                              occupancy_pct_threshold = 0.003,
+                              interpolate_missing = TRUE
+)  %>% 
+  furrr::future_map(add_day_type)  %>% 
+  furrr::future_map_dfr(.f = function(x){
+    x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")]
+  })
+```
+
+```{r}
+agg_five_clean %>% 
+  left_join(sensor_config, by = c("sensor" = "detector_name")) %>% 
+  group_by(r_node_station_id) %>% 
+  count(r_node_station_id, congested.prov) %>% 
+  spread(congested.prov, n, ) %>% 
+  mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, `<NA>`, na.rm = T) * 100, 2))
+```
+
+
+```{r}
+ggplot() +
+  geom_jitter(agg_hour,
+              mapping = aes(x = speed.median,
+                            y = speed.calc)) +
+  geom_abline(slope = 1) +
   theme_minimal()
 
 ```

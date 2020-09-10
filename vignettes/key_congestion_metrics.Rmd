@@ -24,8 +24,6 @@ fig.path = "../man/figures/key_congestion_metrics-"
 )
 
 options(scipen = 9999)
-ggplot2::theme_set(councilR::council_theme() +
-                     theme(legend.position = "bottom"))
 ```
 
 
@@ -39,7 +37,6 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(leaflet)
-library(lubridate)
 ```
 
 ## Data  
@@ -48,221 +45,126 @@ library(lubridate)
 sensor_config <- pull_configuration()[
   detector_category == "",][
     r_node_n_type == "Station",][
-      corridor_route == "I-94",][
-        r_node_lat <= 44.95] %>% 
-  add_distance()
+      corridor_route == "I-94",]
 # only include mainline, station sensors on I-94
 
 ```
 
-We will then fetch sensor data from October 1-31, 2018.  
-
-
 ```{r}
-sensor_data <- pull_sensor_range("2018-10-01",
-                                 "2018-10-31",
-                                 sensor_config)
+date_range <- seq(as.Date("2018/10/02"), as.Date("2018/10/09"), by = "days")
+plan(multiprocess)
 
-sensor_data <- readRDS("data_cache/october_2018_i94.RDS")
+tic() # Start the timer
+sensor_data <- future_map(sensor_config$detector_name,
+                          .f = function(det_name) {
+                            future_map_dfr(seq(1:length(date_range)), .f = function(x) {
+                              pull_sensor(det_name, date_range[[x]])
+                            })
+                          }
+)
+toc()
 ```
 
 ## Metrics  
 
-There are a few key metrics we want to evaluate when deciding whether a road is congested or not. We want to define each each station as congested or not congested. For this exercise, we will examine how each metric's parameters change the outcome. 
+There are a few key metrics we want to evaluate when deciding how to define congestion. 
 
-The current status quo  
-
-- Operating speeds under 45 miles per hour (mph)  
-- Speed calculated as the median value of speeds over a 5 minute interval  
-- Sample mid-week days (Tuesday, Wednesday, Thursday) in October  
-- Sample morning and evening peak hours (5am to 10am, 2pm to 7pm)
-
-
-```{r agg_five}
-# agg_five <- furrr::future_map(sensor_data,
-#                                       aggregate_sensor,
-#                                       config = sensor_config,
-#                                       interval_length = 5 / 60,
-#                                       occupancy_pct_threshold = 0.002,
-#                                       interpolate_missing = TRUE
-# )  %>%
-#   furrr::future_map(add_day_type)
-# saveRDS(agg_five, "data_cache/october_2018_i94_agg_five.RDS")
-# 
-# agg_five_midweek <- agg_five %>%
-#   furrr::future_map_dfr(.f = function(x){
-#     x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
-#       hour %in% c(seq(5,10), seq(14,19)),][
-#         , period := ifelse(hour > 10, "PM", "AM")]
-#   })
-# saveRDS(agg_five_midweek, "data_cache/october_2018_i94_agg_five_midweek.RDS")
-
-agg_five <- readRDS("data_cache/october_2018_i94_agg_five.RDS")
-agg_five_midweek <- readRDS("data_cache/october_2018_i94_agg_five_midweek.RDS")
-```
-
-
-```{r agg_hour}
-# agg_hour <- furrr::future_map(sensor_data,
-#                               aggregate_sensor,
-#                               config = sensor_config,
-#                               interval_length = 1,
-#                               occupancy_pct_threshold = 0.002,
-#                               interpolate_missing = TRUE
-# )  %>% 
-#   furrr::future_map(add_day_type) 
-# saveRDS(agg_hour, "data_cache/october_2018_i94_agg_hour.RDS")
-# 
-# agg_hour_midweek <- agg_hour %>% 
-#   furrr::future_map_dfr(.f = function(x){
-#     x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
-#       interval_bin %in% c(seq(5,10), seq(14,19)),][
-#         , period := ifelse(interval_bin > 10, "PM", "AM")]
-#   })
-# saveRDS(agg_hour_midweek, "data_cache/october_2018_i94_agg_hour_midweek.RDS")
-
-agg_hour <- readRDS("data_cache/october_2018_i94_agg_hour.RDS")
-agg_hour_midweek <- readRDS("data_cache/october_2018_i94_agg_hour_midweek.RDS")
-
-```
-
-### Speed (miles per hour)  
+### Speed   
 
 Currently, the RTMC defines congestion as an operating speed under 45 miles per hour (@minnesota_department_of_transportation_mndot_2019). If we change this threshold to a different speed, we can dramatically affect how much of a given road is congested.  
 
-To keep this process a bit more streamlined, we are going to write a function that will calculate the percentage of observations that are congested.  
-
-
-```{r is_congested()}
-is_congested <- function(dt,
-                         congestion_type = "speed",
-                         .sensor_config = sensor_config,
-                         reference_speed = 55,
-                         threshold_speed = 45){
-  
-  if(congestion_type == "speed"){ ## if speed congestion -------
-    is_congested <- dt[, congested.prov := ifelse(speed.median <= threshold_speed, TRUE, FALSE)][
-      , congested.calc := ifelse(speed.calc <= threshold_speed, TRUE, FALSE)][
-        , congested.any := ifelse(congested.prov == TRUE | congested.calc == TRUE, TRUE, FALSE)]
-    
-    is_congested <- is_congested %>% 
-      left_join(.sensor_config, by = c("sensor" = "detector_name")) %>% 
-      group_by(r_node_station_id) %>%
-      count(corridor_route, congested.any) %>%
-      spread(congested.any, n) %>% 
-      mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, `<NA>`, na.rm = T) * 100, 2),
-             threshold_speed = threshold_speed)
-    
-    return(is_congested)
-    
-  } else if(congestion_type == "delay"){ ## if using delay congestion
-    dt %>% 
-      left_join(sensor_config, by = c("sensor" = "detector_name")) %>% 
-      mutate(travel_time_observ = dhours(distance/speed.calc),
-             travel_time_limit = dhours(distance/as.numeric(reference_speed)),
-             travel_time_diff = travel_time_observ - travel_time_limit
-      ) %>% 
-      select(travel_time_diff, everything())
-  }
-}
-```
-
-Now that we have a function, we will feed it three different speeds and find the proportion of 5-minute observations that are congested.  
-
-```{r agg_five_congested}
-threshold_speeds <- c(35, 45, 55)
-
-agg_five_congested <- purrr::map(
-  threshold_speeds, 
-  is_congested, 
-  dt = agg_five_midweek, 
-  congestion_type = "speed",
-  reference_speed = 55,
-  .sensor_config = sensor_config)
-
-agg_five_congested
-```
-
-`percent_congested` indicates what percentage of the 5-minute observations can be classified as congested. If we go with a speed threshold of 60 miles per hour, about 18% of the five minute observations are congested.  
-
-We can then look at the same measure, but for hourly aggregations.  
-
-```{r agg_hour_congested}
-agg_hour_congested <- purrr::map(
-  threshold_speeds, 
-  is_congested,
-  dt = agg_hour_midweek,
-  congestion_type = "speed",
-  reference_speed = 55,
-  .sensor_config = sensor_config
-)
-agg_hour_congested
-
-summary(agg_hour_congested[[3]]$percent_congested)
-```
-
-### Daily hours of congestion  
-
-To define hours as congested, we need to calculate the number of hours delayed. The reference duration is the theoretical amount of time it takes to traverse from one station to the next at free-flow speed. The observed travel duration is the amount of time it takes to traverse that same distance during the study period. If the travel duration is greater than the reference duration, the difference is considered delay.  
-
-```{r agg_hour_delay}
-reference_speeds <- list(55, 65, 75)
-
-agg_hour_delay <- map(
-  reference_speeds,
-  is_congested,
-  dt = agg_hour_midweek,
-  congestion_type = "delay",
-  threshold_speed = 45)
-```
-
-If we total up the the difference between observed travel time and expected travel time (time traveling at the speed limit), we will get an idea of how much delay there is. 
+There are a 
 
 ```{r}
-agg_hour_delay[[1]] %>% 
-  group_by(sensor, period) %>% 
-  summarize(mean_delay_minutes = round(mean(travel_time_diff)/60, 2),
-            total_delay_minutes = round(sum(travel_time_diff)/60, 2),
-            .groups = "keep") %>% 
-  arrange(-total_delay_minutes)
+
 ```
 
-### Sampled week days  
 
-Tuesdays, Wednesdays, and Thursdays are the typical study days, as they avoid most weekends and holidays. People travel every day of the week, so lets examine how changing which week days are sampled can affect congestion measures.  
+We will select only observations on midweek days in the study hours. 
 
-```{r agg_five_all_days}
-agg_five_all_days <- agg_five %>%   
+```{r}
+agg_five <- furrr::future_map(sensor_data,
+                              aggregate_sensor,
+                              config = sensor_config,
+                              interval_length = 5 / 60,
+                              occupancy_pct_threshold = 0.002,
+                              interpolate_missing = TRUE
+)  %>% 
+  furrr::future_map(add_day_type) %>% 
   furrr::future_map_dfr(.f = function(x){
-    x[hour %in% c(seq(5,10), seq(14,19)),][
+    x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
+      hour %in% c(seq(5,10), seq(14,19)),][
         , period := ifelse(hour > 10, "PM", "AM")]
   })
-saveRDS(agg_five_all_days, "data_cache/october_2018_i94_agg_five_all_days.RDS")
-agg_five_all_days <- readRDS("data_cache/october_2018_i94_agg_five_all_days.RDS")
+
+
+agg_five_clean <- agg_five[
+      , congested.calc := ifelse(speed.calc <= 45, TRUE, FALSE)][
+        , congested.prov := ifelse(speed.median <= 45, TRUE, FALSE)][
+          , congested.any := ifelse(congested.calc != TRUE | congested.prov == TRUE,
+                                    TRUE, FALSE)
+        ]
+  
 ```
 
 
-### Sampled months   
-
-October has historically been the sample month for congestion reports because it theoretically reflects regular traffic (@minnesota_department_of_transportation_mndot_2019). Computation limitations also contributed to this decision.  
-
-```{r all_months}
-start_dates <- seq(as.Date("2018-01-01"), as.Date("2018-12-01"), by = 'month')
-end_dates <- c(floor_date(start_dates[2:12]-1), as.Date("2018-12-31")) %>% 
-  format("%Y-%m-%d") %>% 
-  as.character()
-end_dates[12] <- "2018-12-31"
-start_dates <- as.character(start_dates)
-
-all_months <- furrr::future_map2(start_dates,
-                   end_dates,
-                   pull_sensor_range,
-                   config = sensor_config)
-
-saveRDS(all_months, "data_cache/monthly_2018_i94.RDS")
+```{r}
+agg_hour <- furrr::future_map(sensor_data,
+                              aggregate_sensor,
+                              config = sensor_config,
+                              interval_length = 1,
+                              occupancy_pct_threshold = 0.003,
+                              interpolate_missing = TRUE
+)  %>% 
+  furrr::future_map(add_day_type)  %>% 
+  furrr::future_map_dfr(.f = function(x){
+    x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")]
+  })
 ```
-### Sampled hours  
 
-The standard sample hours (5am to 10am, 2pm to 7pm) reflect the traditional morning and evening peak volume periods. However, examining only these time periods can have equity implications. The travelers captured in these study periods are more likely to work during the day in centralized locations, such as downtown office spaces and subsequently have a higher income than travelers who work in the evening and early morning. By limiting the study hours to the morning and evening peak only, we explicitly prioritize these travelers over others.  
+```{r}
+agg_five_clean %>% 
+  left_join(sensor_config, by = c("sensor" = "detector_name")) %>% 
+  group_by(r_node_station_id) %>% 
+  count(r_node_station_id, congested.prov) %>% 
+  spread(congested.prov, n, ) %>% 
+  mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, `<NA>`, na.rm = T) * 100, 2))
+```
 
-Lets examine how changing the sample hours can affect overall congestion. 
+
+```{r}
+ggplot() +
+  geom_jitter(agg_hour,
+              mapping = aes(x = speed.median,
+                            y = speed.calc)) +
+  geom_abline(slope = 1) +
+  theme_minimal()
+
+```
+
+```{r}
+sensor_config_length <- add_distance(sensor_config)
+setkey(sensor_config_length, detector_name)
+
+sensor_config_length[, .(`sum(distance)` = sum(distance))
+                     # keyby = .(corridor_route, corridor_dir)
+    ]
+```
+
+
+```{r}
+setkey(agg_five_median_speed, sensor) 
+
+summary(agg_five_median_speed$median_speed)
+
+agg_five_congested_stations <- agg_five_median_speed[,congested_status := ifelse(median_speed <= 45, TRUE, FALSE)]
+
+summary(agg_five_congested_stations$congested_status)
+
+agg_five_congested_stations[sensor_config_length][,node_congested_status := ifelse(congested_status == TRUE, TRUE, FALSE), keyby = .(r_node_station_id, period, date)][,.(r_node_station_id, period, date, distance, median_speed, node_congested_status)] %>% unique() %>% View
+```
+
+```{r}
+summary(agg_five$congested_status)
+```
+

@@ -67,15 +67,35 @@ toc()
 
 ## Metrics  
 
-There are a few key metrics we want to evaluate when deciding how to define congestion. 
+There are a few key metrics we want to evaluate when deciding whether a road is congested or not. We want to define each each station as congested or not congested. For this exercise, we will examine how each metric's parameters change the outcome. 
 
-### Speed   
+The current status quo  
+
+- Operating speeds under 45 miles per hour (mph)  
+- Speed calculated as the median value of speeds over a 5 minute interval  
+- Sample mid-week days (Tuesday, Wednesday, Thursday) in October  
+- Sample morning and evening peak hours (5am to 10am, 2pm to 7pm)
+
+### Speed (miles per hour)  
 
 Currently, the RTMC defines congestion as an operating speed under 45 miles per hour (@minnesota_department_of_transportation_mndot_2019). If we change this threshold to a different speed, we can dramatically affect how much of a given road is congested.  
 
-There are a 
+There are 
 
 ```{r}
+agg_five_midweek <- furrr::future_map(sensor_data,
+                              aggregate_sensor,
+                              config = sensor_config,
+                              interval_length = 5 / 60,
+                              occupancy_pct_threshold = 0.002,
+                              interpolate_missing = TRUE
+)  %>% 
+  furrr::future_map(add_day_type) %>% 
+  furrr::future_map_dfr(.f = function(x){
+    x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
+      hour %in% c(seq(5,10), seq(14,19)),][
+        , period := ifelse(hour > 10, "PM", "AM")]
+  })
 
 ```
 
@@ -168,3 +188,20 @@ agg_five_congested_stations[sensor_config_length][,node_congested_status := ifel
 summary(agg_five$congested_status)
 ```
 
+### Daily hours of congestion  
+
+To define hours as congested, we need to calculate the number of hours delayed. The reference duration is the theoretical amount of time it takes to traverse from one station to the next at free-flow speed. The observed travel duration is the amount of time it takes to traverse that same distance during the study period. If the travel duration is greater than the reference duration, the difference is considered delay.  
+
+### Sampled week days  
+
+Tuesdays, Wednesdays, and Thursdays are the typical study days, as they avoid most weekends and holidays. People travel every day of the week, so lets examine how changing which week days are sampled can affect congestion measures.  
+
+### Sampled months   
+
+October has historically been the sample month for congestion reports because it theoretically reflects regular traffic (@minnesota_department_of_transportation_mndot_2019). Computation limitations also contributed to this decision.  
+
+### Sampled hours  
+
+The standard sample hours (5am to 10am, 2pm to 7pm) reflect the traditional morning and evening peak volume periods. However, examining only these time periods can have equity implications. The travelers captured in these study periods are more likely to work during the day in centralized locations, such as downtown office spaces and subsequently have a higher income than travelers who work in the evening and early morning. By limiting the study hours to the morning and evening peak only, we explicitly prioritize these travelers over others.  
+
+Lets examine how changing the sample hours can affect overall congestion. 

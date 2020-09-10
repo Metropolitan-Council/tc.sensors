@@ -146,12 +146,14 @@ agg_hour <- furrr::future_map(sensor_data,
                               aggregate_sensor,
                               config = sensor_config,
                               interval_length = 1,
-                              occupancy_pct_threshold = 0.003,
+                              occupancy_pct_threshold = 0.002,
                               interpolate_missing = TRUE
 )  %>% 
   furrr::future_map(add_day_type)  %>% 
   furrr::future_map_dfr(.f = function(x){
-    x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")]
+    x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
+      hour %in% c(seq(5,10), seq(14,19)),][
+        , period := ifelse(hour > 10, "PM", "AM")]
   })
 ```
 

@@ -68,18 +68,31 @@ pull_sensor <- function(sensor, pull_date,
                         fill_gaps = TRUE,
                         .quiet = TRUE) {
   # browser()
-  # exts <- c("v", "c")
-  # loops_ls <- map(exts, extension_pull)
 
+  # pull data by extension -----------------------------------------------------
+  ## volume, number of vehicles that passed over sensor
   volume <- extension_pull("v", "volume", pull_date = pull_date, sensor = sensor, quiet = .quiet)
+  ## occupancy, number of occupied scans
   occupancy <- extension_pull("c", "occupancy", pull_date = pull_date, sensor = sensor, quiet = .quiet)
+
+  ## additional 30-second extensions. Not all sensors collect speed and vehicle length data.
+
+  ## speed in miles per hour
   speed <- extension_pull("s", "speed", pull_date = pull_date, sensor = sensor, quiet = .quiet)
+  # ## number of large vehicles, 43 feet or longer
+  # large <- extension_pull("vl", "volume_large", pull_date = pull_date, sensor = sensor, quiet = .quiet)
+  # ## number of medium vehicles, 20 to 43 feet
+  # medium <- extension_pull("vm", "volume_medium", pull_date = pull_date, sensor = sensor, quiet = .quiet)
+  # ## number of small vehicles, 7 to 20 feet
+  # small <- extension_pull("vs", "volume_small", pull_date = pull_date, sensor = sensor, quiet = .quiet)
+  # ## number of motorcycles, vehicles up to 7 feet
+  # motorcycle <- extension_pull("vmc", "volume_motorcycle", pull_date = pull_date, sensor = sensor, quiet = .quiet)
 
   loop_uneven <- data.table::as.data.table(dplyr::bind_cols(volume, occupancy, speed))
 
   loop_date_sensor <- loop_uneven[, `:=`(date = pull_date, sensor = sensor)]
 
-  # Add time
+  # Add time -------------------------------------------------------------------
   if (nrow(loop_date_sensor) == 1) {
     if (fill_gaps == TRUE) {
       if (.quiet == FALSE) {
@@ -104,7 +117,6 @@ pull_sensor <- function(sensor, pull_date,
     }
   } else {
     # Add hour and minutes if either volume or occupancy (or both) are available
-
     loop_date_sensor[, `:=`(
       hour = rep(0:23, each = 120),
       min = rep(seq(0, 59.5, by = 0.5), 24)

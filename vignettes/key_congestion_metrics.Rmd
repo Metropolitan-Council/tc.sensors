@@ -155,51 +155,6 @@ agg_hour <- furrr::future_map(sensor_data,
   })
 ```
 
-```{r}
-agg_five_clean %>% 
-  left_join(sensor_config, by = c("sensor" = "detector_name")) %>% 
-  group_by(r_node_station_id) %>% 
-  count(r_node_station_id, congested.prov) %>% 
-  spread(congested.prov, n, ) %>% 
-  mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, `<NA>`, na.rm = T) * 100, 2))
-```
-
-
-```{r}
-ggplot() +
-  geom_jitter(agg_hour,
-              mapping = aes(x = speed.median,
-                            y = speed.calc)) +
-  geom_abline(slope = 1) +
-  theme_minimal()
-
-```
-
-```{r}
-sensor_config_length <- add_distance(sensor_config)
-setkey(sensor_config_length, detector_name)
-
-sensor_config_length[, .(`sum(distance)` = sum(distance))
-                     # keyby = .(corridor_route, corridor_dir)
-    ]
-```
-
-
-```{r}
-setkey(agg_five_median_speed, sensor) 
-
-summary(agg_five_median_speed$median_speed)
-
-agg_five_congested_stations <- agg_five_median_speed[,congested_status := ifelse(median_speed <= 45, TRUE, FALSE)]
-
-summary(agg_five_congested_stations$congested_status)
-
-agg_five_congested_stations[sensor_config_length][,node_congested_status := ifelse(congested_status == TRUE, TRUE, FALSE), keyby = .(r_node_station_id, period, date)][,.(r_node_station_id, period, date, distance, median_speed, node_congested_status)] %>% unique() %>% View
-```
-
-```{r}
-summary(agg_five$congested_status)
-```
 
 ### Daily hours of congestion  
 

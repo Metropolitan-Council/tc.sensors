@@ -99,32 +99,45 @@ agg_five_midweek <- furrr::future_map(sensor_data,
 
 ```
 
+```{r}
+is_congested_speed <- function(dt,
+                               .sensor_config = sensor_config,
+                               speed = 45){
+  # browser()
+  is_congested <- dt[, congested.prov := ifelse(speed.median <= speed, TRUE, FALSE)][
+    , congested.calc := ifelse(speed.calc <= speed, TRUE, FALSE)][
+      , congested.any := ifelse(congested.prov == TRUE | congested.calc == TRUE, TRUE, FALSE)]
+  
+  is_congsted <- is_congested %>% 
+    left_join(.sensor_config, by = c("sensor" = "detector_name")) %>% 
+    # group_by(r_node_station_id) %>% 
+    count(corridor_route, congested.any) %>% 
+    spread(congested.any, n, ) %>% 
+    mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, `<NA>`, na.rm = T) * 100, 2))
+  return(is_congsted)
+  }
+```
+
+```{r}
+is_congested_speed(agg_five_midweek, speed = 45)
+is_congested_speed(agg_five_midweek, speed = 60)
+is_congested_speed(agg_five_midweek, speed = 20)
+```
 
 We will select only observations on midweek days in the study hours. 
 
 ```{r}
-agg_five <- furrr::future_map(sensor_data,
-                              aggregate_sensor,
-                              config = sensor_config,
-                              interval_length = 5 / 60,
-                              occupancy_pct_threshold = 0.002,
-                              interpolate_missing = TRUE
-)  %>% 
-  furrr::future_map(add_day_type) %>% 
-  furrr::future_map_dfr(.f = function(x){
-    x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
-      hour %in% c(seq(5,10), seq(14,19)),][
-        , period := ifelse(hour > 10, "PM", "AM")]
-  })
-
-
-agg_five_clean <- agg_five[
-      , congested.calc := ifelse(speed.calc <= 45, TRUE, FALSE)][
-        , congested.prov := ifelse(speed.median <= 45, TRUE, FALSE)][
-          , congested.any := ifelse(congested.calc != TRUE | congested.prov == TRUE,
-                                    TRUE, FALSE)
-        ]
-  
+agg_five_midweek %>% 
+  group_by(sensor, date, hour) %>% 
+  summarize(volume.sum = sum(volume.sum, na.rm = T),
+            speed.median = median(speed.median, na.rm = T),
+            speed.calc.median = median(speed.calc, na.rm = T)) %>% 
+  mutate(congested = case_when(speed.median <= 45 | speed.calc.median <= 45 ~ TRUE,
+                               TRUE ~ FALSE)) %>% 
+  ungroup() %>% 
+  count(congested) %>% 
+  spread(congested, n) %>% 
+  mutate(percent_congested = `TRUE`/ sum(`TRUE`, `FALSE`) * 100)
 ```
 
 

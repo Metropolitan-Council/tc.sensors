@@ -183,9 +183,11 @@ pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
       -.data$detector, -.data$detector_path,
       -.data$corridor_path
     ) %>%
-    dplyr::mutate(date = Sys.Date(),
-                  r_node_lat = as.numeric(.data$r_node_lat),
-                  r_node_lon = as.numeric(.data$r_node_lon)) %>%
+    dplyr::mutate(
+      date = Sys.Date(),
+      r_node_lat = as.numeric(.data$r_node_lat),
+      r_node_lon = as.numeric(.data$r_node_lon)
+    ) %>%
     data.table::as.data.table()
 
   if (return_opt == "in_memory") {

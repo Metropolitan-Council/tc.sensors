@@ -123,8 +123,8 @@ is_congested_speed <- function(dt,
 ```
 
 ```{r}
-is_congested_speed(agg_five_midweek, speed = 45)
 is_congested_speed(agg_five_midweek, speed = 60)
+is_congested_speed(agg_five_midweek, speed = 45)
 is_congested_speed(agg_five_midweek, speed = 20)
 ```
 
@@ -142,6 +142,8 @@ agg_five_midweek %>%
   count(congested) %>% 
   spread(congested, n) %>% 
   mutate(percent_congested = `TRUE`/ sum(`TRUE`, `FALSE`) * 100)
+
+saveRDS(agg_five_midweek, "data_cache/october_2018_i94_agg_five_midweek.RDS")
 ```
 
 

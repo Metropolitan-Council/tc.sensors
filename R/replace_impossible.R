@@ -39,13 +39,20 @@ replace_impossible <- function(sensor_data,
     }
 
     sensor_data[
-      , volume.sum := ifelse(volume.sum >= (interval_length * 2300), NA, volume.sum)][
-        , occupancy.sum := ifelse(occupancy.sum >= (interval_length * 216000),
-                                  NA, occupancy.sum)][
-          , volume.sum := ifelse(volume.pct.null >= 10, NA, volume.sum)][
-            , occupancy.sum := ifelse(occupancy.pct.null >= 10, NA, occupancy.sum)][
-              , speed.calc := ifelse(is.na(volume.sum), NA, speed.calc)][
-                , speed.calc := ifelse(is.na(occupancy.sum), NA, speed.calc)]
+      , volume.sum := ifelse(volume.sum >= (interval_length * 2300), NA, volume.sum)
+    ][
+      , occupancy.sum := ifelse(occupancy.sum >= (interval_length * 216000),
+        NA, occupancy.sum
+      )
+    ][
+      , volume.sum := ifelse(volume.pct.null >= 10, NA, volume.sum)
+    ][
+      , occupancy.sum := ifelse(occupancy.pct.null >= 10, NA, occupancy.sum)
+    ][
+      , speed.calc := ifelse(is.na(volume.sum), NA, speed.calc)
+    ][
+      , speed.calc := ifelse(is.na(occupancy.sum), NA, speed.calc)
+    ]
   }
 
   return(sensor_data)

@@ -30,7 +30,7 @@
 #'
 assess_data_quality <- function(sensor_data,
                                 config,
-                                interval_length){
+                                interval_length) {
 
 
 

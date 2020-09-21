@@ -46,8 +46,8 @@ for each sensor in MnDOT's metro district
 \item \code{r_node_n_type} character, one of "Station", "Exit", "Entrance", or "Intersection"
 \item \code{r_node_transition} character, how the entrance or exit nodes connect with linked nodes
 \item \code{r_node_label} character, unique road name, including affixes such as “St” or “Rd” or stall number
-\item \code{r_node_lon} character, the roadway node longitude
-\item \code{r_node_lat} character, the roadway node latitude
+\item \code{r_node_lon} numeric, the roadway node longitude
+\item \code{r_node_lat} numeric, the roadway node latitude
 \item \code{r_node_lanes} character, for an entrance or exit ramp, this is the number of lanes entering or exiting the corridor. Otherwise, it is the number of lanes on the corridor.
 \item \code{r_node_shift} character,  the difference (number of lanes) between the corridor reference lane and the attach side of the roadway node.
 \item \code{r_node_s_limit} character, the posted speed limit in miles per hour

@@ -37,6 +37,7 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(leaflet)
+library(lubridate)
 ```
 
 ## Data  
@@ -46,10 +47,13 @@ sensor_config <- pull_configuration()[
   detector_category == "",][
     r_node_n_type == "Station",][
       corridor_route == "I-94",][
-        r_node_lat <= 44.95]
+        r_node_lat <= 44.95] %>% 
+  add_distance()
 # only include mainline, station sensors on I-94
 
 ```
+
+We will then fetch sensor data from October 1-31, 2018.  
 
 ```{r}
 # date_range <- seq(as.Date("2018/10/01"), as.Date("2018/10/31"), by = "days")

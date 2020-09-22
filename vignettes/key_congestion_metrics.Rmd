@@ -83,97 +83,173 @@ The current status quo
 - Sample mid-week days (Tuesday, Wednesday, Thursday) in October  
 - Sample morning and evening peak hours (5am to 10am, 2pm to 7pm)
 
+
+```{r agg_five}
+# agg_five <- furrr::future_map(sensor_data,
+#                                       aggregate_sensor,
+#                                       config = sensor_config,
+#                                       interval_length = 5 / 60,
+#                                       occupancy_pct_threshold = 0.002,
+#                                       interpolate_missing = TRUE
+# )  
+# saveRDS(agg_five, "data_cache/october_2018_i94_agg_five.RDS")
+
+# agg_five_midweek <- agg_five %>% 
+#   furrr::future_map(add_day_type) %>%
+#   furrr::future_map_dfr(.f = function(x){
+#     x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
+#       hour %in% c(seq(5,10), seq(14,19)),][
+#         , period := ifelse(hour > 10, "PM", "AM")]
+#   })
+# saveRDS(agg_five_midweek, "data_cache/october_2018_i94_agg_five_midweek.RDS")
+
+agg_five <- readRDS("data_cache/october_2018_i94_agg_five.RDS")
+agg_five_midweek <- readRDS("data_cache/october_2018_i94_agg_five_midweek.RDS")
+```
+
+
+```{r agg_hour}
+# agg_hour <- furrr::future_map(sensor_data,
+#                               aggregate_sensor,
+#                               config = sensor_config,
+#                               interval_length = 1,
+#                               occupancy_pct_threshold = 0.002,
+#                               interpolate_missing = TRUE
+# )  
+# saveRDS(agg_hour, "data_cache/october_2018_i94_agg_hour.RDS")
+# 
+# agg_hour_midweek <- agg_hour %>% 
+#   furrr::future_map(add_day_type) %>%
+#   furrr::future_map_dfr(.f = function(x){
+#     x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
+#       interval_bin %in% c(seq(5,10), seq(14,19)),][
+#         , period := ifelse(interval_bin > 10, "PM", "AM")]
+#   })
+# saveRDS(agg_hour_midweek, "data_cache/october_2018_i94_agg_hour_midweek.RDS")
+
+agg_hour <- readRDS("data_cache/october_2018_i94_agg_hour.RDS")
+agg_hour_midweek <- readRDS("data_cache/october_2018_i94_agg_hour_midweek.RDS")
+
+```
+
 ### Speed (miles per hour)  
 
 Currently, the RTMC defines congestion as an operating speed under 45 miles per hour (@minnesota_department_of_transportation_mndot_2019). If we change this threshold to a different speed, we can dramatically affect how much of a given road is congested.  
 
-There are 
+To keep this process a bit more streamlined, we are going to write a function that will calculate the percentage of observations that are congested.  
 
-```{r}
-agg_five_midweek <- furrr::future_map(sensor_data,
-                              aggregate_sensor,
-                              config = sensor_config,
-                              interval_length = 5 / 60,
-                              occupancy_pct_threshold = 0.002,
-                              interpolate_missing = TRUE
-)  %>% 
-  furrr::future_map(add_day_type) %>% 
-  furrr::future_map_dfr(.f = function(x){
-    x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
-      hour %in% c(seq(5,10), seq(14,19)),][
-        , period := ifelse(hour > 10, "PM", "AM")]
-  })
 
-```
-
-```{r}
-is_congested_speed <- function(dt,
-                               .sensor_config = sensor_config,
-                               speed = 45){
-  # browser()
-  is_congested <- dt[, congested.prov := ifelse(speed.median <= speed, TRUE, FALSE)][
-    , congested.calc := ifelse(speed.calc <= speed, TRUE, FALSE)][
-      , congested.any := ifelse(congested.prov == TRUE | congested.calc == TRUE, TRUE, FALSE)]
+```{r is_congested()}
+is_congested <- function(dt,
+                         congestion_type = "speed",
+                         .sensor_config = sensor_config,
+                         reference_speed = 55,
+                         threshold_speed = 45){
   
-  is_congsted <- is_congested %>% 
-    left_join(.sensor_config, by = c("sensor" = "detector_name")) %>% 
-    # group_by(r_node_station_id) %>% 
-    count(corridor_route, congested.any) %>% 
-    spread(congested.any, n, ) %>% 
-    mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, `<NA>`, na.rm = T) * 100, 2))
-  return(is_congsted)
+  if(congestion_type == "speed"){ ## if speed congestion -------
+    is_congested <- dt[, congested.prov := ifelse(speed.median <= threshold_speed, TRUE, FALSE)][
+      , congested.calc := ifelse(speed.calc <= threshold_speed, TRUE, FALSE)][
+        , congested.any := ifelse(congested.prov == TRUE | congested.calc == TRUE, TRUE, FALSE)]
+    
+    is_congested <- is_congested %>% 
+      left_join(.sensor_config, by = c("sensor" = "detector_name")) %>% 
+      group_by(r_node_station_id) %>%
+      count(corridor_route, congested.any) %>%
+      spread(congested.any, n) %>% 
+      mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, `<NA>`, na.rm = T) * 100, 2),
+             threshold_speed = threshold_speed)
+    
+    return(is_congested)
+    
+  } else if(congestion_type == "delay"){ ## if using delay congestion
+    
+    dt %>% 
+      left_join(sensor_config, by = c("sensor" = "detector_name")) %>% 
+      mutate(travel_time_observ = dhours(distance/speed.calc),
+             travel_time_limit = dhours(distance/as.numeric(reference_speed)),
+             travel_time_diff = travel_time_observ - travel_time_limit
+      ) %>% 
+      select(travel_time_diff, everything())
   }
+}
 ```
 
-```{r}
-is_congested_speed(agg_five_midweek, speed = 60)
-is_congested_speed(agg_five_midweek, speed = 45)
-is_congested_speed(agg_five_midweek, speed = 20)
+Now that we have a function, we will feed it three different speeds and find the proportion of 5-minute observations that are congested.  
+
+```{r agg_five_congested}
+threshold_speeds <- c(35, 45, 55)
+
+agg_five_congested <- purrr::map(
+  threshold_speeds, 
+  is_congested, 
+  dt = agg_five_midweek, 
+  congestion_type = "speed",
+  reference_speed = 55,
+  .sensor_config = sensor_config)
+
+agg_five_congested
 ```
 
-We will select only observations on midweek days in the study hours. 
+`percent_congested` indicates what percentage of the 5-minute observations can be classified as congested. If we go with a speed threshold of 60 miles per hour, about 18% of the five minute observations are congested.  
 
-```{r}
-agg_five_midweek %>% 
-  group_by(sensor, date, hour) %>% 
-  summarize(volume.sum = sum(volume.sum, na.rm = T),
-            speed.median = median(speed.median, na.rm = T),
-            speed.calc.median = median(speed.calc, na.rm = T)) %>% 
-  mutate(congested = case_when(speed.median <= 45 | speed.calc.median <= 45 ~ TRUE,
-                               TRUE ~ FALSE)) %>% 
-  ungroup() %>% 
-  count(congested) %>% 
-  spread(congested, n) %>% 
-  mutate(percent_congested = `TRUE`/ sum(`TRUE`, `FALSE`) * 100)
+We can then look at the same measure, but for hourly aggregations.  
 
-saveRDS(agg_five_midweek, "data_cache/october_2018_i94_agg_five_midweek.RDS")
+```{r agg_hour_congested}
+agg_hour_congested <- purrr::map(
+  threshold_speeds, 
+  is_congested,
+  dt = agg_hour_midweek,
+  congestion_type = "speed",
+  reference_speed = 55,
+  .sensor_config = sensor_config
+)
+agg_hour_congested
+
+summary(agg_hour_congested[[3]]$percent_congested)
 ```
-
-
-```{r}
-agg_hour <- furrr::future_map(sensor_data,
-                              aggregate_sensor,
-                              config = sensor_config,
-                              interval_length = 1,
-                              occupancy_pct_threshold = 0.002,
-                              interpolate_missing = TRUE
-)  %>% 
-  furrr::future_map(add_day_type)  %>% 
-  furrr::future_map_dfr(.f = function(x){
-    x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
-      hour %in% c(seq(5,10), seq(14,19)),][
-        , period := ifelse(hour > 10, "PM", "AM")]
-  })
-```
-
 
 ### Daily hours of congestion  
 
 To define hours as congested, we need to calculate the number of hours delayed. The reference duration is the theoretical amount of time it takes to traverse from one station to the next at free-flow speed. The observed travel duration is the amount of time it takes to traverse that same distance during the study period. If the travel duration is greater than the reference duration, the difference is considered delay.  
 
+```{r agg_hour_delay}
+reference_speeds <- list(55, 65, 75)
+
+agg_hour_delay <- map(
+  reference_speeds,
+  is_congested,
+  dt = agg_hour,
+  congestion_type = "delay",
+  threshold_speed = 45)
+```
+
+If we total up the the difference between observed travel time and expected travel time (time traveling at the speed limit), we will get an idea of how much delay there is. 
+
+```{r}
+agg_hour_delay[[1]] %>% 
+  group_by(sensor, period) %>% 
+  summarize(mean_delay_minutes = round(mean(travel_time_diff)/60, 2),
+            total_delay_minutes = round(sum(travel_time_diff)/60, 2),
+            .groups = "keep") %>% 
+  arrange(-total_delay_minutes)
+```
+
 ### Sampled week days  
 
 Tuesdays, Wednesdays, and Thursdays are the typical study days, as they avoid most weekends and holidays. People travel every day of the week, so lets examine how changing which week days are sampled can affect congestion measures.  
+
+```{r}
+
+agg_five_all_days <- agg_five %>%   
+furrr::future_map(add_day_type) %>%
+  furrr::future_map_dfr(.f = function(x){
+    x[hour %in% c(seq(5,10), seq(14,19)),][
+        , period := ifelse(hour > 10, "PM", "AM")]
+  })
+saveRDS(agg_five_all_days, "data_cache/october_2018_i94_agg_five_all_days.RDS")
+agg_five_all_days <- readRDS("data_cache/october_2018_i94_agg_five_all_days.RDS")
+```
+
 
 ### Sampled months   
 

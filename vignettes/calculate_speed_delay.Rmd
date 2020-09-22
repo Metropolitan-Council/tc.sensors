@@ -383,8 +383,8 @@ ref_speed <- time_test %>%
   ungroup() %>% 
   filter(interval_bin %in% c(1:5, 20:24)) %>% 
   group_by(sensor, day_type) %>% 
-  summarize(ref_time_speed = dseconds(mean(travel_time_speed)),
-            ref_time_limit = dseconds(mean(travel_time_limit)),
+  summarize(ref_time_speed = mean(travel_time_speed),
+            ref_time_limit = mean(travel_time_limit),
             ref_speed = median(speed),
             .groups = "keep") %>% 
   unique()

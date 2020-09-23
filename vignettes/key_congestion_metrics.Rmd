@@ -85,11 +85,11 @@ The current status quo
 #                                       interval_length = 5 / 60,
 #                                       occupancy_pct_threshold = 0.002,
 #                                       interpolate_missing = TRUE
-# )  
+# )  %>%
+#   furrr::future_map(add_day_type)
 # saveRDS(agg_five, "data_cache/october_2018_i94_agg_five.RDS")
-
-# agg_five_midweek <- agg_five %>% 
-#   furrr::future_map(add_day_type) %>%
+# 
+# agg_five_midweek <- agg_five %>%
 #   furrr::future_map_dfr(.f = function(x){
 #     x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
 #       hour %in% c(seq(5,10), seq(14,19)),][
@@ -109,11 +109,11 @@ agg_five_midweek <- readRDS("data_cache/october_2018_i94_agg_five_midweek.RDS")
 #                               interval_length = 1,
 #                               occupancy_pct_threshold = 0.002,
 #                               interpolate_missing = TRUE
-# )  
+# )  %>% 
+#   furrr::future_map(add_day_type) 
 # saveRDS(agg_hour, "data_cache/october_2018_i94_agg_hour.RDS")
 # 
 # agg_hour_midweek <- agg_hour %>% 
-#   furrr::future_map(add_day_type) %>%
 #   furrr::future_map_dfr(.f = function(x){
 #     x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
 #       interval_bin %in% c(seq(5,10), seq(14,19)),][
@@ -156,7 +156,6 @@ is_congested <- function(dt,
     return(is_congested)
     
   } else if(congestion_type == "delay"){ ## if using delay congestion
-    
     dt %>% 
       left_join(sensor_config, by = c("sensor" = "detector_name")) %>% 
       mutate(travel_time_observ = dhours(distance/speed.calc),
@@ -232,10 +231,8 @@ agg_hour_delay[[1]] %>%
 
 Tuesdays, Wednesdays, and Thursdays are the typical study days, as they avoid most weekends and holidays. People travel every day of the week, so lets examine how changing which week days are sampled can affect congestion measures.  
 
-```{r}
-
+```{r agg_five_all_days}
 agg_five_all_days <- agg_five %>%   
-furrr::future_map(add_day_type) %>%
   furrr::future_map_dfr(.f = function(x){
     x[hour %in% c(seq(5,10), seq(14,19)),][
         , period := ifelse(hour > 10, "PM", "AM")]

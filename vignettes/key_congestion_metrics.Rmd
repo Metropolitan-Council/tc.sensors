@@ -24,6 +24,8 @@ fig.path = "../man/figures/key_congestion_metrics-"
 )
 
 options(scipen = 9999)
+ggplot2::theme_set(councilR::council_theme() +
+                     theme(legend.position = "bottom"))
 ```
 
 

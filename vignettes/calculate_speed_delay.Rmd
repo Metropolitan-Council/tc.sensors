@@ -112,23 +112,23 @@ The NA values here aren't evenly distributed across all starting hours and day t
 
 ```{r}
 #> 10min speed summary
-summary(agg_ten$speed)
+summary(agg_ten$speed.calc)
 #> Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#> 0.35   54.93   61.98   60.79   68.22  166.91   37879 
+#> 0.50   54.93   61.98   60.78   68.22  166.91   37882 
 
 #> 10 minute speed NA percentage
-summary(agg_ten$speed)[7] / nrow(agg_ten)
+summary(agg_ten$speed.calc)[7] / nrow(agg_ten)
 #> NA's 
-#> 0.3296349 
+#> 0.329661 
 
 
 #> 1 hour speed summary
-summary(agg_hour$speed)
+summary(agg_hour$speed.calc)
 #> Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#> 1.716  54.950  61.352  60.436  67.139  92.156    6088
+#> 1.885  54.950  61.352  60.435  67.131  91.054    6088 
 
 #> 1 hour minute speed NA percentage
-summary(agg_hour$speed)[7] / nrow(agg_hour)
+summary(agg_hour$speed.calc)[7] / nrow(agg_hour)
 #> NA's 
 #> 0.317878 
 ```
@@ -140,7 +140,7 @@ cowplot::plot_grid(
   agg_ten %>%
     group_by(day_type, hour) %>%
     summarise(
-      pc_n = sum(is.na(speed)) / length(speed),
+      pc_n = sum(is.na(speed.calc)) / length(speed.calc),
       .groups = "keep"
     ) %>%
     ggplot() +
@@ -165,7 +165,7 @@ cowplot::plot_grid(
   agg_hour %>%
     group_by(day_type, interval_bin) %>%
     summarise(
-      pc_n = sum(is.na(speed)) / length(speed),
+      pc_n = sum(is.na(speed.calc)) / length(speed.calc),
       .groups = "keep"
     ) %>%
     ggplot() +
@@ -201,10 +201,10 @@ Next, we will plot the relationship between speed, volume, and occupancy for bot
 plot_ten <- ggplot() +
   geom_point(
     data = agg_ten %>%
-      arrange(speed),
+      arrange(speed.calc),
     aes(
       y = occupancy.pct,
-      x = speed,
+      x = speed.calc,
       fill = scale(volume.sum),
       color = scale(volume.sum)
     ),
@@ -217,7 +217,7 @@ plot_ten <- ggplot() +
     labels = scales::percent,
     limits = range(agg_ten$occupancy.pct)
   ) +
-  scale_x_continuous("Speed (mph)", limits = range(agg_ten$speed)) +
+  scale_x_continuous("Speed (mph)", limits = range(agg_ten$speed.calc)) +
   theme_minimal() +
   labs(title = "10 minute aggregation") +
   theme(legend.position = "bottom")
@@ -227,10 +227,10 @@ plot_ten <- ggplot() +
 plot_hour <- ggplot() +
   geom_point(
     data = agg_hour %>%
-      arrange(speed),
+      arrange(speed.calc),
     aes(
       y = occupancy.pct,
-      x = speed,
+      x = speed.calc,
       fill = scale(volume.sum),
       color = scale(volume.sum)
     ),
@@ -243,7 +243,7 @@ plot_hour <- ggplot() +
     labels = scales::percent,
     limits = range(agg_ten$occupancy.pct)
   ) +
-  scale_x_continuous("Speed (mph)", limits = range(agg_ten$speed)) +
+  scale_x_continuous("Speed (mph)", limits = range(agg_ten$speed.calc)) +
   theme_minimal() +
   labs(title = "1 hour aggregation") +
   theme(legend.position = "bottom")
@@ -263,7 +263,7 @@ tictoc::tic()
 rf_imp_day_type <- mice(agg_hour,
   method = "rf",
   formulas = c(
-    as.formula("speed ~ volume.sum + occupancy.sum + interval_bin + day_type")
+    as.formula("speed.calc ~ volume.sum + occupancy.sum + interval_bin + day_type")
   ),
   maxit = 5, m = 5, print = F
 )
@@ -279,7 +279,7 @@ all_imps <- complete(rf_imp_day_type, "all", include = T)
 agg_hour_imputed <- map_dfr(seq(1, 6), .f = function(x) {
   all_imps[[x]] %>%
     mutate(imp_n = x) %>%
-    select(interval_bin, speed, day_type, imp_n)
+    select(interval_bin, speed.calc, day_type, imp_n)
 })
 ```
 
@@ -290,7 +290,7 @@ ggplot() +
   geom_density(
     data = agg_hour_imputed,
     aes(
-      x = speed,
+      x = speed.calc,
       group = imp_n
     ),
     color = "plum4",
@@ -300,7 +300,7 @@ ggplot() +
   ) +
   geom_density(
     data = agg_hour,
-    aes(x = speed),
+    aes(x = speed.calc),
     color = "black",
     # fill = "gray58",
     # alpha =0.5,
@@ -310,7 +310,7 @@ ggplot() +
   labs(
     x = "Speed",
     y = "Density",
-    title = "Imputed and original speed density by day type",
+    title = "Imputed and original speed.calc density by day type",
     caption = stringr::str_wrap(
       paste0(
         "Mainline sensors on T.H.610 corridor, March 3-16, 2019. 
@@ -328,7 +328,7 @@ ggplot() +
     data = agg_hour_imputed,
     mapping = aes(
       x = reorder(interval_bin, imp_n),
-      y = speed,
+      y = speed.calc,
       color = imp_n
     ),
     alpha = 0.2
@@ -375,7 +375,7 @@ time_test <- complete(rf_imp_day_type) %>%
               select(detector_name,
                      distance, 
                      r_node_s_limit), by = c("sensor" = "detector_name")) %>% 
-  mutate(travel_time_speed = dhours(distance/speed),
+  mutate(travel_time_speed = dhours(distance/speed.calc),
          travel_time_limit = dhours(distance/as.numeric(r_node_s_limit)),
          vehicle_miles_traveled = volume.sum * distance)
 
@@ -385,7 +385,7 @@ ref_speed <- time_test %>%
   group_by(sensor, day_type) %>% 
   summarize(ref_time_speed = mean(travel_time_speed),
             ref_time_limit = mean(travel_time_limit),
-            ref_speed = median(speed),
+            ref_speed = median(speed.calc),
             .groups = "keep") %>% 
   unique()
 
@@ -406,7 +406,7 @@ ggplot() +
   geom_jitter(data = time_compare, 
               aes(x = interval_bin,
                   y = time_diff_speed/ 60,
-                  color = speed)) +
+                  color = speed.calc)) +
   scale_color_viridis_c(option = "magma", direction = -1) + 
   # facet_wrap(~day_type, nrow = 2) + 
   labs(title = "Speed and median speed delay by hour",

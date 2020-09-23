@@ -190,9 +190,6 @@ cowplot::plot_grid(
     theme(legend.position = "bottom")
 )
 ```
-```{r, include=FALSE}
-ggsave(device = "png", dpi = 72, filename = "img/plot_speed_nulls.png")
-```
 ![](../man/figures/calculate_speed_delay-unnamed-chunk-7-1.png)  
 
 Next, we will plot the relationship between speed, volume, and occupancy for both aggregation levels. The plots below show that the larger interval size seems to stabilize speed values.  

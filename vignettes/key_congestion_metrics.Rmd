@@ -211,7 +211,7 @@ reference_speeds <- list(55, 65, 75)
 agg_hour_delay <- map(
   reference_speeds,
   is_congested,
-  dt = agg_hour,
+  dt = agg_hour_midweek,
   congestion_type = "delay",
   threshold_speed = 45)
 ```

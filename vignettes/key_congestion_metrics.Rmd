@@ -249,7 +249,10 @@ October has historically been the sample month for congestion reports because it
 ```{r all_months}
 start_dates <- seq(as.Date("2018-01-01"), as.Date("2018-12-01"), by = 'month')
 end_dates <- c(floor_date(start_dates[2:12]-1), as.Date("2018-12-31")) %>% 
-  format("%Y-%m-%d")
+  format("%Y-%m-%d") %>% 
+  as.character()
+end_dates[12] <- "2018-12-31"
+start_dates <- as.character(start_dates)
 
 all_months <- furrr::future_map2(start_dates,
                    end_dates,

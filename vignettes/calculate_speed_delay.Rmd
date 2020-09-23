@@ -385,7 +385,7 @@ ref_speed <- time_test %>%
   group_by(sensor, day_type) %>% 
   summarize(ref_time_speed = mean(travel_time_speed),
             ref_time_limit = mean(travel_time_limit),
-            ref_speed = median(speed),
+            ref_speed = median(speed.calc),
             .groups = "keep") %>% 
   unique()
 

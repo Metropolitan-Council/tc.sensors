@@ -140,31 +140,54 @@ is_congested <- function(dt,
                          congestion_type = "speed",
                          .sensor_config = sensor_config,
                          reference_speed = 55,
-                         threshold_speed = 45){
+                         threshold_speed = 45,
+                         replace_na_speeds = TRUE,
+                         join_config = TRUE){
+  if(join_config == TRUE){
+    dt <- dt %>% 
+    left_join(.sensor_config, by = c("sensor" = "detector_name"))
+  }
+  
+  if(replace_na_speeds == TRUE){
+    dt <- dt[
+      , `:=`(speed.median = ifelse(is.na(speed.median), r_node_s_limit, speed.median),
+             speed.calc = ifelse(is.na(speed.calc), r_node_s_limit, speed.calc))]
+  }
   
   if(congestion_type == "speed"){ ## if speed congestion -------
-    is_congested <- dt[, congested.prov := ifelse(speed.median <= threshold_speed, TRUE, FALSE)][
-      , congested.calc := ifelse(speed.calc <= threshold_speed, TRUE, FALSE)][
-        , congested.any := ifelse(congested.prov == TRUE | congested.calc == TRUE, TRUE, FALSE)]
-    
+    is_congested <- dt[
+      , congested.prov := ifelse(speed.median <= threshold_speed, TRUE, FALSE)][
+        , congested.calc := ifelse(speed.calc <= threshold_speed, TRUE, FALSE)][
+          , congested.any := ifelse(congested.prov == TRUE | congested.calc == TRUE, TRUE, FALSE)]
     is_congested <- is_congested %>% 
-      left_join(.sensor_config, by = c("sensor" = "detector_name")) %>% 
-      group_by(r_node_station_id) %>%
+      group_by(r_node_station_id, month(as.Date(date.x))) %>%
       count(corridor_route, congested.any) %>%
-      spread(congested.any, n) %>% 
-      mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, `<NA>`, na.rm = T) * 100, 2),
-             threshold_speed = threshold_speed)
+      spread(congested.any, n)
     
+    if(replace_na_speeds == FALSE){
+      is_congested <- is_congested %>% 
+        mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, `<NA>`, na.rm = T) * 100, 2),
+               threshold_speed = threshold_speed)
+      
+    } else if(replace_na_speeds == TRUE){
+      is_congested <- is_congested %>% 
+        mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, na.rm = T) * 100, 2),
+               threshold_speed = threshold_speed,
+               percent_congested = case_when(is.na(percent_congested) ~ 0,
+                                             TRUE ~ percent_congested))
+    }
     return(is_congested)
     
   } else if(congestion_type == "delay"){ ## if using delay congestion
-    dt %>% 
-      left_join(sensor_config, by = c("sensor" = "detector_name")) %>% 
-      mutate(travel_time_observ = dhours(distance/speed.calc),
+    dt <- dt %>% 
+      mutate(travel_time_observ = dhours(distance/as.numeric(speed.calc)),
              travel_time_limit = dhours(distance/as.numeric(reference_speed)),
-             travel_time_diff = travel_time_observ - travel_time_limit
+             travel_time_diff = travel_time_observ - travel_time_limit,
+             reference_speed = reference_speed
       ) %>% 
       select(travel_time_diff, everything())
+    
+    return(dt)
   }
 }
 ```

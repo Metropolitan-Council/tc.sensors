@@ -332,7 +332,42 @@ all_months <- furrr::future_map2(start_dates,
 saveRDS(all_months, "data_cache/monthly_2018_i94.RDS")
 ```
 
+#### Sampled hours  
 
 The standard sample hours (5am to 10am, 2pm to 7pm) reflect the traditional morning and evening peak volume periods. However, examining only these time periods can have equity implications. The travelers captured in these study periods are more likely to work during the day in centralized locations, such as downtown office spaces and subsequently have a higher income than travelers who work in the evening and early morning. By limiting the study hours to the morning and evening peak only, we explicitly prioritize these travelers over others.  
 
 Lets examine how changing the sample hours can affect overall congestion. 
+
+
+```{r agg_five_all_hours}
+# agg_five_all_hours <- agg_five %>%
+#   furrr::future_map_dfr(.f = function(x){
+#     x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")]
+#   })
+# 
+# saveRDS(agg_five_all_hours, "data_cache/october_2018_i94_agg_five_all_hours.RDS")
+agg_five_all_hours <- readRDS("data_cache/october_2018_i94_agg_five_all_hours.RDS")
+```
+
+```{r}
+agg_five_congested_all_hours <- purrr::map(
+  threshold_speeds, 
+  is_congested, 
+  dt = agg_five_all_hours, 
+  congestion_type = "speed",
+  reference_speed = 55,
+  replace_na_speeds = TRUE,
+  .sensor_config = sensor_config)
+
+summary(agg_five_congested[[3]]$percent_congested)
+summary(agg_five_congested_all_hours[[3]]$percent_congested)
+```
+```{r}
+ggplot() +
+  geom_density(agg_five_congested_replace[[3]],
+               mapping = aes(x = percent_congested)) +
+  geom_density(agg_five_congested_all_hours[[3]],
+               mapping = aes(x = percent_congested),
+               color = councilR::colors$councilBlue)
+```
+

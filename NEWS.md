@@ -1,5 +1,9 @@
 # tc.sensors (development version)
 
+# tc.sensors 0.2.0.90001
+
+* Patch `pull_extension()` internal function. Remove port 8080 from URL. See [issue #13](https://github.com/Metropolitan-Council/tc.sensors/issues/13) and [PR #14](https://github.com/Metropolitan-Council/tc.sensors/pull/14).
+
 # tc.sensors 0.2.0
 
 * **NEW** functions!

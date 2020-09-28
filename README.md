@@ -69,7 +69,12 @@ Definitions come from MnDOT Data Extract
     regional traffic levels in response to the COVID-19 pandemic.  
   - **[Twin-Cities-Loop-Detectors](https://github.com/sullivannicole/Twin-Cities-Loop-Detectors)**
     A pre-cursor to `{tc.sensors}`. Contains extensive documentation and
-    code samples that will be integrated into this package.
+    code samples that will be integrated into this package.  
+  - **[iris](https://github.com/mnit-rtmc/iris)** IRIS (Intelligent
+    Roadway Information System) is an integrated platform for
+    transportation agencies to manage traffic monitoring and control
+    devices. The repository is open-source and contains important
+    metadata.
 
 ## Contributors
 

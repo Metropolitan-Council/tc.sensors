@@ -126,7 +126,9 @@ agg_hour_midweek <- readRDS("data_cache/october_2018_i94_agg_hour_midweek.RDS")
 
 ```
 
-### Speed (miles per hour)  
+### Congestion definitions
+
+#### Speed (miles per hour)  
 
 Currently, the RTMC defines congestion as an operating speed under 45 miles per hour (@minnesota_department_of_transportation_mndot_2019). If we change this threshold to a different speed, we can dramatically affect how much of a given road is congested.  
 
@@ -229,6 +231,10 @@ agg_hour_delay[[1]] %>%
 
 ### Sampled week days  
 
+### Data treatments
+
+#### Sampled week days  
+
 Tuesdays, Wednesdays, and Thursdays are the typical study days, as they avoid most weekends and holidays. People travel every day of the week, so lets examine how changing which week days are sampled can affect congestion measures.  
 
 ```{r agg_five_all_days}
@@ -242,7 +248,7 @@ agg_five_all_days <- readRDS("data_cache/october_2018_i94_agg_five_all_days.RDS"
 ```
 
 
-### Sampled months   
+#### Sampled months   
 
 October has historically been the sample month for congestion reports because it theoretically reflects regular traffic (@minnesota_department_of_transportation_mndot_2019). Computation limitations also contributed to this decision.  
 
@@ -261,7 +267,7 @@ all_months <- furrr::future_map2(start_dates,
 
 saveRDS(all_months, "data_cache/monthly_2018_i94.RDS")
 ```
-### Sampled hours  
+
 
 The standard sample hours (5am to 10am, 2pm to 7pm) reflect the traditional morning and evening peak volume periods. However, examining only these time periods can have equity implications. The travelers captured in these study periods are more likely to work during the day in centralized locations, such as downtown office spaces and subsequently have a higher income than travelers who work in the evening and early morning. By limiting the study hours to the morning and evening peak only, we explicitly prioritize these travelers over others.  
 

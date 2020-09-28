@@ -195,17 +195,19 @@ is_congested <- function(dt,
 Now that we have a function, we will feed it three different speeds and find the proportion of 5-minute observations that are congested.  
 
 ```{r agg_five_congested}
-threshold_speeds <- c(35, 45, 55)
+threshold_speeds <- c(25, 35, 45)
 
 agg_five_congested <- purrr::map(
   threshold_speeds, 
   is_congested, 
   dt = agg_five_midweek, 
   congestion_type = "speed",
+  replace_na_speeds = TRUE,
   reference_speed = 55,
   .sensor_config = sensor_config)
 
-agg_five_congested
+summary(agg_five_congested[[3]]$percent_congested)
+
 ```
 
 `percent_congested` indicates what percentage of the 5-minute observations can be classified as congested. If we go with a speed threshold of 60 miles per hour, about 18% of the five minute observations are congested.  
@@ -219,14 +221,15 @@ agg_hour_congested <- purrr::map(
   dt = agg_hour_midweek,
   congestion_type = "speed",
   reference_speed = 55,
-  .sensor_config = sensor_config
+  .sensor_config = sensor_config,
+  replace_na_speeds = TRUE
 )
 agg_hour_congested
 
 summary(agg_hour_congested[[3]]$percent_congested)
 ```
 
-### Daily hours of congestion  
+#### Daily hours of congestion  
 
 To define hours as congested, we need to calculate the number of hours delayed. The reference duration is the theoretical amount of time it takes to traverse from one station to the next at free-flow speed. The observed travel duration is the amount of time it takes to traverse that same distance during the study period. If the travel duration is greater than the reference duration, the difference is considered delay.  
 
@@ -238,21 +241,36 @@ agg_hour_delay <- map(
   is_congested,
   dt = agg_hour_midweek,
   congestion_type = "delay",
-  threshold_speed = 45)
+  replace_na_speeds = TRUE,
+  .sensor_config = sensor_config,
+  threshold_speed = NA)
 ```
 
 If we total up the the difference between observed travel time and expected travel time (time traveling at the speed limit), we will get an idea of how much delay there is. 
 
 ```{r}
-agg_hour_delay[[1]] %>% 
-  group_by(sensor, period) %>% 
-  summarize(mean_delay_minutes = round(mean(travel_time_diff)/60, 2),
-            total_delay_minutes = round(sum(travel_time_diff)/60, 2),
-            .groups = "keep") %>% 
-  arrange(-total_delay_minutes)
+agg_hour_delay_summaries <- purrr::map_dfr(
+  agg_hour_delay,
+  .f = function(d){
+    d %>% 
+      group_by(sensor, period, reference_speed) %>% 
+      summarize(mean_delay = round(mean(travel_time_diff)/60/60, 2),
+                total_delay = round(sum(travel_time_diff)/60/60, 2),
+                .groups = "keep") %>% 
+      arrange(-total_delay)})
 ```
 
-### Sampled week days  
+```{r}
+ggplot() +
+  geom_density(agg_hour_delay_summaries,
+               mapping = aes(x = total_delay,
+                             group = as.factor(reference_speed),
+                             color = as.factor(reference_speed),
+                             fill = as.factor(reference_speed)),
+               alpha = 0.5) +
+  scale_color_viridis_d(option = "magma", end = 0.8,
+                        aesthetics = c("fill", "color")) 
+```
 
 ### Data treatments
 
@@ -261,13 +279,36 @@ agg_hour_delay[[1]] %>%
 Tuesdays, Wednesdays, and Thursdays are the typical study days, as they avoid most weekends and holidays. People travel every day of the week, so lets examine how changing which week days are sampled can affect congestion measures.  
 
 ```{r agg_five_all_days}
-agg_five_all_days <- agg_five %>%   
-  furrr::future_map_dfr(.f = function(x){
-    x[hour %in% c(seq(5,10), seq(14,19)),][
-        , period := ifelse(hour > 10, "PM", "AM")]
-  })
-saveRDS(agg_five_all_days, "data_cache/october_2018_i94_agg_five_all_days.RDS")
+# agg_five_all_days <- agg_five %>%   
+#   furrr::future_map_dfr(.f = function(x){
+#     x[hour %in% c(seq(5,10), seq(14,19)),][
+#         , period := ifelse(hour > 10, "PM", "AM")]
+#   })
+# saveRDS(agg_five_all_days, "data_cache/october_2018_i94_agg_five_all_days.RDS")
 agg_five_all_days <- readRDS("data_cache/october_2018_i94_agg_five_all_days.RDS")
+```
+
+```{r agg_five_congested_all_days}
+agg_five_congested_all_days <- purrr::map(
+  threshold_speeds, 
+  is_congested, 
+  dt = agg_five_all_days, 
+  congestion_type = "speed",
+  reference_speed = NA,
+  replace_na_speeds = TRUE,
+  .sensor_config = sensor_config)
+
+summary(agg_five_congested[[3]]$percent_congested)
+summary(agg_five_congested_all_days[[3]]$percent_congested)
+```
+
+```{r}
+ggplot() +
+  geom_density(agg_five_congested[[3]],
+               mapping = aes(x = percent_congested)) +
+  geom_density(agg_five_congested_all_days[[3]],
+               mapping = aes(x = percent_congested),
+               color = councilR::colors$councilBlue)
 ```
 
 

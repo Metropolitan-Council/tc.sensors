@@ -8,7 +8,7 @@ status](https://github.com/Metropolitan-Council/tc.sensors/workflows/R-CMD-check
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![Website MnDOT
-JSON](https://img.shields.io/website?label=MnDOT&up_color=olivedrab&up_message=online&url=http%3A%2F%2Fdata.dot.state.mn.us%3A8080%2Ftrafdat%2Fmetro%2F2018%2F20181021%2F5474.c30.json)](http://data.dot.state.mn.us:8080/trafdat/metro/2018/20181021/5474.c30.json)
+JSON](https://img.shields.io/website?label=MnDOT&up_color=olivedrab&up_message=online&url=http%3A%2F%2Fdata.dot.state.mn.us%2Ftrafdat%2Fmetro%2F2018%2F20181021%2F5474.c30.json)](http://data.dot.state.mn.us/trafdat/metro/2018/20181021/5474.c30.json)
 [![Website IEM
 ASOS](https://img.shields.io/website?label=IEM%20ASOS&up_color=seagreen&up_message=online&url=http%3A%2F%2Fmesonet.agron.iastate.edu%2Frequest%2Fdownload.phtml%3Fnetwork%3DMN_ASOS)](http://mesonet.agron.iastate.edu/request/download.phtml?network=MN_ASOS)
 

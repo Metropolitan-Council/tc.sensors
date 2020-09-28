@@ -312,24 +312,63 @@ ggplot() +
 ```
 
 
+
 #### Sampled months   
 
 October has historically been the sample month for congestion reports because it theoretically reflects regular traffic (@minnesota_department_of_transportation_mndot_2019). Computation limitations also contributed to this decision.  
 
 ```{r all_months}
-start_dates <- seq(as.Date("2018-01-01"), as.Date("2018-12-01"), by = 'month')
-end_dates <- c(floor_date(start_dates[2:12]-1), as.Date("2018-12-31")) %>% 
-  format("%Y-%m-%d") %>% 
-  as.character()
-end_dates[12] <- "2018-12-31"
-start_dates <- as.character(start_dates)
+# start_dates <- seq(as.Date("2018-01-01"), as.Date("2018-12-01"), by = 'month')
+# end_dates <- c(floor_date(start_dates[2:12]-1), as.Date("2018-12-31")) %>% 
+#   format("%Y-%m-%d") %>% 
+#   as.character()
+# end_dates[12] <- "2018-12-31"
+# start_dates <- as.character(start_dates)
+# 
+# all_months <- furrr::future_map2(start_dates,
+#                    end_dates,
+#                    pull_sensor_range,
+#                    config = sensor_config)
+# 
+all_months_config <- readRDS("data_cache/monthly_2018_agg_hour.RDS")[, `:=` (speed.median = speed,
+                                                                     speed.calc = speed)]
+```
 
-all_months <- furrr::future_map2(start_dates,
-                   end_dates,
-                   pull_sensor_range,
-                   config = sensor_config)
 
-saveRDS(all_months, "data_cache/monthly_2018_i94.RDS")
+
+```{r}
+agg_hour_all_months_congested <- purrr::map(
+  threshold_speeds, 
+  is_congested, 
+  dt = all_months_config,
+  congestion_type = "speed",
+  reference_speed = NA,
+  replace_na_speeds = TRUE,
+  join_config = FALSE,
+  .sensor_config = sensor_config)
+```
+
+```{r}
+ggplot() +
+  geom_boxplot(data = agg_hour_all_months_congested[[3]],
+               mapping = aes(y = percent_congested,
+                             x = as.factor(`month(as.Date(date.x))`)
+                             )
+               ) +
+  scale_x_discrete(labels = month.name) +
+  labs(x = "Month")
+                        
+```
+
+```{r}
+ggplot() +
+  geom_jitter(data = agg_hour_all_months_congested[[3]],
+               mapping = aes(y = percent_congested,
+                             x = as.factor(`month(as.Date(date.x))`),
+                             color = ..x..)
+               ) +
+  scale_x_discrete(labels = month.name) +
+  labs(x = "Month")
 ```
 
 #### Sampled hours  

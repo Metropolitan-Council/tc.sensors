@@ -46,6 +46,7 @@ Definitions come from MnDOT Data Extract [documentation](http://data.dot.state.m
 
 - **[loop-sensor-trends](https://github.com/Metropolitan-Council/loop-sensor-trends)** Data analysis and interactive R Shiny app for examining changes in regional traffic levels in response to the COVID-19 pandemic.  
 - **[Twin-Cities-Loop-Detectors](https://github.com/sullivannicole/Twin-Cities-Loop-Detectors)** A pre-cursor to `{tc.sensors}`. Contains extensive documentation and code samples that will be integrated into this package.  
+- **[iris](https://github.com/mnit-rtmc/iris)** IRIS (Intelligent Roadway Information System) is an integrated platform for transportation agencies to manage traffic monitoring and control devices. The repository is open-source and contains important metadata.  
 
 ## Contributors  
 

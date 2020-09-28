@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9001</span>
       </span>
     </div>
 
@@ -136,6 +136,13 @@
 <h1 class="page-header" data-toc-text="development version">
 <a href="#tcsensors-development-version" class="anchor"></a>tc.sensors (development version)</h1>
 </div>
+    <div id="tcsensors-02090001" class="section level1">
+<h1 class="page-header" data-toc-text="0.2.0.90001">
+<a href="#tcsensors-02090001" class="anchor"></a>tc.sensors 0.2.0.90001</h1>
+<ul>
+<li>Patch <code>pull_extension()</code> internal function. Remove port 8080 from URL. See <a href="https://github.com/Metropolitan-Council/tc.sensors/issues/13">issue <a href='https://github.com/Metropolitan-Council/tc.sensors/issues/13'>#13</a></a> and <a href="https://github.com/Metropolitan-Council/tc.sensors/pull/14">PR <a href='https://github.com/Metropolitan-Council/tc.sensors/issues/14'>#14</a></a>.</li>
+</ul>
+</div>
     <div id="tcsensors-020" class="section level1">
 <h1 class="page-header" data-toc-text="0.2.0">
 <a href="#tcsensors-020" class="anchor"></a>tc.sensors 0.2.0</h1>
@@ -170,7 +177,7 @@
 <li>Made significant progress on “Calculate speed and delay” vignette
 <ul>
 <li>Chose a subset of sensors to consistently work with</li>
-<li>Used <code>{mice}</code> to impute null speed values with a random forest model based on total volume, total occupancy, hour, and day type.</li>
+<li>Used <a href="https://github.com/stefvanbuuren/mice">mice</a> to impute null speed values with a random forest model based on total volume, total occupancy, hour, and day type.</li>
 <li>Added bibliography with regional and international relevant literature</li>
 <li>New plots
 <ul>
@@ -185,7 +192,7 @@
 </li>
 <li>General updates
 <ul>
-<li>Shift from using <code>{dplyr}</code> to <code>{data.table}</code>
+<li>Shift from using <a href="https://dplyr.tidyverse.org">dplyr</a> to <a href="http://r-datatable.com">data.table</a>
 </li>
 <li>Added a <code>NEWS.md</code> file to track changes to the package.</li>
 </ul>
@@ -209,7 +216,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

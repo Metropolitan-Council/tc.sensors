@@ -73,7 +73,7 @@ Use pull_sensor_ids to obtain metro sensor IDs." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9001</span>
       </span>
     </div>
 
@@ -140,7 +140,7 @@ Use pull_sensor_ids to obtain metro sensor IDs." />
 Use <code><a href='pull_sensor_ids.html'>pull_sensor_ids</a></code> to obtain metro sensor IDs.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pull_sensor</span>(<span class='no'>sensor</span>, <span class='no'>pull_date</span>, <span class='kw'>fill_gaps</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>.quiet</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>pull_sensor</span><span class='op'>(</span><span class='va'>sensor</span>, <span class='va'>pull_date</span>, fill_gaps <span class='op'>=</span> <span class='cn'>TRUE</span>, .quiet <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -172,7 +172,7 @@ values. Default is <code>TRUE</code></p></td>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     
-<h3>Output</h3>
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Output</h3>
 <pre>A complete year's worth of data for volume or occupancy for one sensor
  usually results in a file that is around ~30-31KB.
 
@@ -185,7 +185,7 @@ and there must be sufficient space in-memory to do so.
 </pre>
 
 
-<h3>Missing data</h3>
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Missing data</h3>
 <pre>Occupancy *can* be missing while volume data exists and vice versa.
 It is unknown how a loop could be monitoring volume and not occupancy.
 </pre>
@@ -198,28 +198,29 @@ It is unknown how a loop could be monitoring volume and not occupancy.
 <code><a href='pull_sensor_ids.html'>pull_sensor_ids</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># Simple example</span>
-<span class='no'>loop_data</span> <span class='kw'>&lt;-</span> <span class='fu'>pull_sensor</span>(<span class='fl'>5474</span>, <span class='st'>"2018-10-14"</span>)
+<span class='va'>loop_data</span> <span class='op'>&lt;-</span> <span class='fu'>pull_sensor</span><span class='op'>(</span><span class='fl'>5474</span>, <span class='st'>"2018-10-14"</span><span class='op'>)</span>
 
 <span class='co'># Mapping example</span>
-<span class='no'>date_range</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span>(<span class='st'>"2019/01/01"</span>), <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span>(<span class='st'>"2019/01/02"</span>), <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"days"</span>)
-<span class='no'>loop_data</span> <span class='kw'>&lt;-</span> <span class='fu'>pmap</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='fl'>8564</span>, <span class='no'>date_range</span>), <span class='no'>pull_sensor</span>)
-<span class='no'>loops_full</span> <span class='kw'>&lt;-</span> <span class='fu'>rbindlist</span>(<span class='no'>loop_data</span>)
+<span class='va'>date_range</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='st'>"2019/01/01"</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='st'>"2019/01/02"</span><span class='op'>)</span>, by <span class='op'>=</span> <span class='st'>"days"</span><span class='op'>)</span>
+<span class='va'>loop_data</span> <span class='op'>&lt;-</span> <span class='fu'>pmap</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='fl'>8564</span>, <span class='va'>date_range</span><span class='op'>)</span>, <span class='va'>pull_sensor</span><span class='op'>)</span>
+<span class='va'>loops_full</span> <span class='op'>&lt;-</span> <span class='fu'>rbindlist</span><span class='op'>(</span><span class='va'>loop_data</span><span class='op'>)</span>
 
 <span class='co'># Parallel mapping example</span>
 <span class='co'>## takes longer if only pulling 1-2 days because libraries are copied to each core</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>parallel</span>)
-<span class='no'>cl</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/parallel/makeCluster.html'>makeCluster</a></span>(<span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span>() - <span class='fl'>1</span>) <span class='co'># Leaving one core unused</span>
-<span class='no'>params</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='fl'>8564</span>, <span class='no'>date_range</span>)
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>parallel</span><span class='op'>)</span>
+<span class='va'>cl</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/parallel/makeCluster.html'>makeCluster</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>1</span><span class='op'>)</span> <span class='co'># Leaving one core unused</span>
+<span class='va'>params</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='fl'>8564</span>, <span class='va'>date_range</span><span class='op'>)</span>
 
-<span class='fu'><a href='https://rdrr.io/r/parallel/RngStream.html'>clusterSetRNGStream</a></span>(<span class='no'>cl</span>, <span class='fl'>1</span>)
-<span class='no'>loop_data</span> <span class='kw'>&lt;-</span> <span class='no'>params</span> <span class='kw'>%&gt;%</span>
-  <span class='fu'>lift</span>(<span class='no'>clusterMap</span>, <span class='kw'>cl</span> <span class='kw'>=</span> <span class='no'>cl</span>)(<span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>pull_sensor</span>)
-<span class='fu'><a href='https://rdrr.io/r/parallel/makeCluster.html'>stopCluster</a></span>(<span class='no'>cl</span>)
+<span class='fu'><a href='https://rdrr.io/r/parallel/RngStream.html'>clusterSetRNGStream</a></span><span class='op'>(</span><span class='va'>cl</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='va'>loop_data</span> <span class='op'>&lt;-</span> <span class='va'>params</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>lift</span><span class='op'>(</span><span class='va'>clusterMap</span>, cl <span class='op'>=</span> <span class='va'>cl</span><span class='op'>)</span><span class='op'>(</span>fun <span class='op'>=</span> <span class='va'>pull_sensor</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/parallel/makeCluster.html'>stopCluster</a></span><span class='op'>(</span><span class='va'>cl</span><span class='op'>)</span>
 
-<span class='no'>loops_full</span> <span class='kw'>&lt;-</span> <span class='fu'>rbindlist</span>(<span class='no'>loop_data</span>)
-}</div></pre>
+<span class='va'>loops_full</span> <span class='op'>&lt;-</span> <span class='fu'>rbindlist</span><span class='op'>(</span><span class='va'>loop_data</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -235,7 +236,7 @@ It is unknown how a loop could be monitoring volume and not occupancy.
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

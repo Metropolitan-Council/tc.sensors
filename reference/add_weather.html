@@ -75,7 +75,7 @@ measures for a given ASOS station in Minnesota." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9001</span>
       </span>
     </div>
 
@@ -143,14 +143,14 @@ the Iowa State University API.</h1>
 measures for a given ASOS station in Minnesota.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>add_weather</span>(
-  <span class='no'>sensor_data</span>,
-  <span class='kw'>save_raw</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>save_location</span> <span class='kw'>=</span> <span class='st'>"."</span>,
-  <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>station</span> <span class='kw'>=</span> <span class='st'>"MSP"</span>,
-  <span class='kw'>time_zone</span> <span class='kw'>=</span> <span class='st'>"America%2FChicago"</span>
-)</pre>
+    <pre class="usage"><span class='fu'>add_weather</span><span class='op'>(</span>
+  <span class='va'>sensor_data</span>,
+  save_raw <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  save_location <span class='op'>=</span> <span class='st'>"."</span>,
+  interval_length <span class='op'>=</span> <span class='fl'>1</span>,
+  station <span class='op'>=</span> <span class='st'>"MSP"</span>,
+  time_zone <span class='op'>=</span> <span class='st'>"America%2FChicago"</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -199,27 +199,28 @@ the <a href='http://mesonet.agron.iastate.edu/sites/networks.php?network=MN_ASOS
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>tc.sensors</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>dplyr</span>)
-<span class='no'>config</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='pull_configuration.html'>pull_configuration</a></span>()
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>tc.sensors</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
+<span class='va'>config</span> <span class='op'>&lt;-</span> <span class='fu'><a href='pull_configuration.html'>pull_configuration</a></span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='no'>config_sample</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>dplyr</span><span class='kw ns'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span>(<span class='no'>config</span>, <span class='no'>config</span>$<span class='no'>detector_abandoned</span> <span class='kw'>==</span> <span class='st'>"f"</span>) <span class='kw'>%&gt;%</span>
-  <span class='kw pkg'>dplyr</span><span class='kw ns'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/sample_n.html'>sample_n</a></span>(<span class='fl'>1</span>)
-<span class='no'>yesterday</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span>() - <span class='fl'>365</span>)
+<span class='va'>config_sample</span> <span class='op'>&lt;-</span> <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>config</span>, <span class='va'>config</span><span class='op'>$</span><span class='va'>detector_abandoned</span> <span class='op'>==</span> <span class='st'>"f"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/sample_n.html'>sample_n</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>
+<span class='va'>yesterday</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Sys.time.html'>Sys.Date</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>365</span><span class='op'>)</span>
 
-<span class='no'>sensor_results</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='pull_sensor.html'>pull_sensor</a></span>(
-  <span class='kw'>sensor</span> <span class='kw'>=</span> <span class='no'>config_sample</span>$<span class='no'>detector_name</span><span class='kw'>[[</span><span class='fl'>1</span>]],
-  <span class='kw'>pull_date</span> <span class='kw'>=</span> <span class='no'>yesterday</span>
-)
+<span class='va'>sensor_results</span> <span class='op'>&lt;-</span> <span class='fu'><a href='pull_sensor.html'>pull_sensor</a></span><span class='op'>(</span>
+  sensor <span class='op'>=</span> <span class='va'>config_sample</span><span class='op'>$</span><span class='va'>detector_name</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>,
+  pull_date <span class='op'>=</span> <span class='va'>yesterday</span>
+<span class='op'>)</span>
 
-<span class='fu'><a href='aggregate_sensor.html'>aggregate_sensor</a></span>(<span class='no'>sensor_results</span>,
-  <span class='kw'>interval_length</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>config</span> <span class='kw'>=</span> <span class='no'>config_sample</span>
-) <span class='kw'>%&gt;%</span>
-  <span class='fu'>add_weather</span>()
-}</div></pre>
+<span class='fu'><a href='aggregate_sensor.html'>aggregate_sensor</a></span><span class='op'>(</span><span class='va'>sensor_results</span>,
+  interval_length <span class='op'>=</span> <span class='fl'>1</span>,
+  config <span class='op'>=</span> <span class='va'>config_sample</span>
+<span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>add_weather</span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -235,7 +236,7 @@ the <a href='http://mesonet.agron.iastate.edu/sites/networks.php?network=MN_ASOS
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -73,7 +73,7 @@ Useful for mapping (contains lat/lons) and calculating performance measures (con
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9001</span>
       </span>
     </div>
 
@@ -140,7 +140,7 @@ Useful for mapping (contains lat/lons) and calculating performance measures (con
 Useful for mapping (contains lat/lons) and calculating performance measures (contains detector_field).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pull_configuration</span>(<span class='kw'>return_opt</span> <span class='kw'>=</span> <span class='st'>"in_memory"</span>, <span class='kw'>.quiet</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>pull_configuration</span><span class='op'>(</span>return_opt <span class='op'>=</span> <span class='st'>"in_memory"</span>, .quiet <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -211,10 +211,12 @@ for each sensor in MnDOT's metro district</p><ul>
 <code><a href='pull_sensor.html'>pull_sensor</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>config</span> <span class='kw'>&lt;-</span> <span class='fu'>pull_configuration</span>(<span class='st'>"in-memory"</span>) <span class='co'># Assign to an object</span>
-<span class='fu'>pull_configuration</span>(<span class='st'>"within_dir"</span>) <span class='co'># No assignment necessary</span>
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>config</span> <span class='op'>&lt;-</span> <span class='fu'>pull_configuration</span><span class='op'>(</span><span class='st'>"in-memory"</span><span class='op'>)</span> <span class='co'># Assign to an object</span>
+<span class='fu'>pull_configuration</span><span class='op'>(</span><span class='st'>"within_dir"</span><span class='op'>)</span> <span class='co'># No assignment necessary</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -230,7 +232,7 @@ for each sensor in MnDOT's metro district</p><ul>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

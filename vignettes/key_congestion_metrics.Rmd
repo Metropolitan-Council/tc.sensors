@@ -403,7 +403,7 @@ summary(agg_five_congested_all_hours[[3]]$percent_congested)
 ```
 ```{r}
 ggplot() +
-  geom_density(agg_five_congested_replace[[3]],
+  geom_density(agg_five_congested[[3]],
                mapping = aes(x = percent_congested)) +
   geom_density(agg_five_congested_all_hours[[3]],
                mapping = aes(x = percent_congested),

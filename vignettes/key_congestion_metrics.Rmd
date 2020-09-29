@@ -359,16 +359,29 @@ ggplot() +
   labs(x = "Month")
                         
 ```
+```{r}
+dec_stations <- agg_hour_all_months_congested[[3]] %>% 
+  filter(`month(as.Date(date.x))` ==12,
+        percent_congested > 80) %>% 
+  left_join(pull_configuration()[
+  detector_category == "",][
+    r_node_n_type == "Station",][
+      corridor_route == "I-94",]) %>% 
+  select(r_node_station_id,
+         corridor_route, 
+         percent_congested, 
+         threshold_speed,
+         r_node_lat,
+         r_node_lon) %>% 
+  unique()
+```
 
 ```{r}
-ggplot() +
-  geom_jitter(data = agg_hour_all_months_congested[[3]],
-               mapping = aes(y = percent_congested,
-                             x = as.factor(`month(as.Date(date.x))`),
-                             color = ..x..)
-               ) +
-  scale_x_discrete(labels = month.name) +
-  labs(x = "Month")
+library(leaflet)
+
+leaflet() %>% 
+  addProviderTiles(providers$OpenStreetMap) %>% 
+  addCircleMarkers(lng = dec_stations$r_node_lon, lat = dec_stations$r_node_lat,radius = 4)
 ```
 
 #### Sampled hours  

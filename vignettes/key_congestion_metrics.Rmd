@@ -24,8 +24,10 @@ fig.path = "../man/figures/key_congestion_metrics-"
 )
 
 options(scipen = 9999)
-ggplot2::theme_set(councilR::council_theme() +
-                     theme(legend.position = "bottom"))
+ggplot2::theme_set(councilR::council_theme(size_header = 16,
+                                           use_showtext = TRUE,
+                                           size_axis_title = 12) +
+                     ggplot2::theme(legend.position = "bottom"))
 ```
 
 
@@ -337,6 +339,8 @@ all_months_config <- readRDS("data_cache/monthly_2018_agg_hour.RDS")[, `:=` (spe
 
 
 ```{r}
+# TODO make talbe of hourly volume and speed for high congestion stations and compare with NPMRDS a coup
+
 agg_hour_all_months_congested <- purrr::map(
   threshold_speeds, 
   is_congested, 

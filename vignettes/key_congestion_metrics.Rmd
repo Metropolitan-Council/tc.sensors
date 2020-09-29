@@ -359,8 +359,12 @@ ggplot() +
                              x = as.factor(`month(as.Date(date.x))`)
                              )
                ) +
-  scale_x_discrete(labels = month.name) +
-  labs(x = "Month")
+  scale_x_discrete(labels = month.abb) +
+  labs(x = "",
+       y = "% observations congested",
+       title = "Monthly congestion distribution",
+       subtitle  = "200 stations along I-94 corridor",
+       caption = stringr::str_wrap(paste0("Select I-94 stations, 2018 during morning and evening rush periods aggregated by hour. Congestion threshold  = 45mph. ", format(Sys.Date(), "%Y-%m-%d")), 75))
                         
 ```
 ```{r}

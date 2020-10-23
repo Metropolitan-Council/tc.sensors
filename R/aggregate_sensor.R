@@ -156,7 +156,7 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
       list(
-        sum =  mean(x, na.rm = T) * n_rows_expected,
+        sum =  round(mean(x, na.rm = T) * n_rows_expected),
         mean = mean(x, na.rm = T),
         pct.null = round(100 * sum(is.na(x)) / length(x))
       )
@@ -186,7 +186,7 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
       list(
-        sum = mean(x, na.rm = T)*n_rows_expected,
+        sum = round(mean(x, na.rm = T)*n_rows_expected),
         mean = mean(x, na.rm = T),
         pct.null = round(100 * sum(is.na(x)) / length(x))
       )

@@ -24,14 +24,16 @@ fig.path = "../man/figures/key_congestion_metrics-"
 )
 
 options(scipen = 9999)
-ggplot2::theme_set(councilR::council_theme(size_header = 16,
-                                           use_showtext = TRUE,
-                                           size_axis_title = 12) +
-                     ggplot2::theme(legend.position = "bottom"))
 ```
 
 
 ```{r setup}
+
+ggplot2::theme_set(councilR::council_theme(size_header = 16,
+                                           use_showtext = TRUE,
+                                           size_axis_title = 12) +
+                     ggplot2::theme(legend.position = "bottom"))
+
 library(tc.sensors)
 library(purrr)
 library(furrr)

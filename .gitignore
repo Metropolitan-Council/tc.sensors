@@ -36,3 +36,5 @@ vignettes/link_with_npmrds_cache/
 vignettes/data_cache/
 
 .DS_Store
+
+vignettes/key_congestion_metrics_cache/

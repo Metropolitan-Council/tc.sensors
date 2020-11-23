@@ -14,26 +14,28 @@ vignette: >
 knitr::opts_chunk$set(
 collapse = TRUE,
 comment = "#>",
-eval = FALSE,
+# eval = FALSE,
 warning = FALSE,
 message = FALSE,
 cache = TRUE,
 fig.width = 8,
 fig.height = 4,
+# dev = "CairoPNG",
 fig.path = "../man/figures/key_congestion_metrics-"
 )
 
 options(scipen = 9999)
+
+th <- ggplot2::theme_minimal() +
+                     councilR::council_theme(use_showtext = TRUE,
+                                             size_header = 16,
+                                             size_axis_title = 12) +
+                     ggplot2::theme(legend.position = "bottom")
+
 ```
 
 
 ```{r setup}
-
-ggplot2::theme_set(councilR::council_theme(size_header = 16,
-                                           use_showtext = TRUE,
-                                           size_axis_title = 12) +
-                     ggplot2::theme(legend.position = "bottom"))
-
 library(tc.sensors)
 library(purrr)
 library(furrr)
@@ -45,6 +47,7 @@ library(tidyr)
 library(leaflet)
 library(lubridate)
 ```
+
 
 ## Data  
 
@@ -130,12 +133,6 @@ agg_hour_midweek <- readRDS("data_cache/october_2018_i94_agg_hour_midweek.RDS")
 
 ```
 
-### Congestion definitions
-
-#### Speed (miles per hour)  
-
-Currently, the RTMC defines congestion as an operating speed under 45 miles per hour (@minnesota_department_of_transportation_mndot_2019). If we change this threshold to a different speed, we can dramatically affect how much of a given road is congested.  
-
 To keep this process a bit more streamlined, we are going to write a function that will calculate the percentage of observations that are congested.  
 
 
@@ -145,58 +142,72 @@ is_congested <- function(dt,
                          .sensor_config = sensor_config,
                          reference_speed = 55,
                          threshold_speed = 45,
-                         replace_na_speeds = TRUE,
-                         join_config = TRUE){
-  if(join_config == TRUE){
+                         replace_na_speeds = TRUE){
+  
+  if(!"r_node_n_type" %in% names(dt)) {
     dt <- dt %>% 
-    left_join(.sensor_config, by = c("sensor" = "detector_name"))
+      left_join(.sensor_config, by = c("sensor" = "detector_name"))
   }
   
-  if(replace_na_speeds == TRUE){
+  # replace NA speeds with the station speed limit?
+  if(replace_na_speeds){
     dt <- dt[
       , `:=`(speed.median = ifelse(is.na(speed.median), r_node_s_limit, speed.median),
              speed.calc = ifelse(is.na(speed.calc), r_node_s_limit, speed.calc))]
   }
   
-  if(congestion_type == "speed"){ ## if speed congestion -------
+  if(congestion_type == "speed"){
+    ## if speed congestion -------
     is_congested <- dt[
-      , congested.prov := ifelse(speed.median <= threshold_speed, TRUE, FALSE)][
-        , congested.calc := ifelse(speed.calc <= threshold_speed, TRUE, FALSE)][
-          , congested.any := ifelse(congested.prov == TRUE | congested.calc == TRUE, TRUE, FALSE)]
+      , congested.prov := ifelse(speed.median <= threshold_speed, TRUE, FALSE)][ # congested based on provided speed?
+        , congested.calc := ifelse(speed.calc <= threshold_speed, TRUE, FALSE)][ # congested based on calculated speed?
+          , congested.any := ifelse(congested.prov == TRUE | congested.calc == TRUE, TRUE, FALSE)] # congested using either speed?
+    
     is_congested <- is_congested %>% 
-      group_by(r_node_station_id, month(as.Date(date.x))) %>%
-      count(corridor_route, congested.any) %>%
-      spread(congested.any, n)
+      group_by(r_node_station_id, month(as.Date(date.x))) %>% # group by station and month
+      count(corridor_route, congested.any) %>% # get # congested/not-congested observations for each corridor_route
+      spread(congested.any, n) # spread out congested.any to 2-3 columns with n as value
     
     if(replace_na_speeds == FALSE){
+      # calculate percent congested using ALL observations
       is_congested <- is_congested %>% 
         mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, `<NA>`, na.rm = T) * 100, 2),
                threshold_speed = threshold_speed)
       
     } else if(replace_na_speeds == TRUE){
+      # calculate percent congested only TRUE/FALSE observations
       is_congested <- is_congested %>% 
         mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, na.rm = T) * 100, 2),
                threshold_speed = threshold_speed,
-               percent_congested = case_when(is.na(percent_congested) ~ 0,
+               percent_congested = case_when(is.na(percent_congested) ~ 0, # if percent_congested is NA, assume 0% congested
                                              TRUE ~ percent_congested))
     }
     return(is_congested)
     
-  } else if(congestion_type == "delay"){ ## if using delay congestion
+  } else if(congestion_type == "delay"){ 
+    ## if using delay congestion ------
     dt <- dt %>% 
-      mutate(travel_time_observ = dhours(distance/as.numeric(speed.calc)),
-             travel_time_limit = dhours(distance/as.numeric(reference_speed)),
-             travel_time_diff = travel_time_observ - travel_time_limit,
+      mutate(travel_time_observ = dhours(distance/as.numeric(speed.calc)), # observed travel time
+             travel_time_ref = dhours(distance/as.numeric(reference_speed)), # travel time at reference speed
+             travel_time_diff = travel_time_observ - travel_time_ref, # difference between observed, reference travel times
+             delay_hours = travel_time_diff * volume.sum, # multiply by total volume
              reference_speed = reference_speed
       ) %>% 
-      select(travel_time_diff, everything())
+      select(travel_time_diff, everything()) # reorder columns
     
     return(dt)
   }
 }
 ```
 
-Now that we have a function, we will feed it three different speeds and find the proportion of 5-minute observations that are congested.  
+
+### Congestion definitions
+
+#### Speed (miles per hour)  
+
+Currently, the RTMC defines congestion as an operating speed under 45 miles per hour (@minnesota_department_of_transportation_mndot_2019). If we change this threshold to a different speed, we can dramatically affect how much of a given road is congested.  
+
+We will use `purrr::map()` and `is_congested()` to find the proportion of 5-minute observations that are congested using three different threshold speeds. 
 
 ```{r agg_five_congested}
 threshold_speeds <- c(25, 35, 45)
@@ -210,11 +221,31 @@ agg_five_congested <- purrr::map(
   reference_speed = 55,
   .sensor_config = sensor_config)
 
+# threshold speed = 45
 summary(agg_five_congested[[3]]$percent_congested)
 
 ```
 
-`percent_congested` indicates what percentage of the 5-minute observations can be classified as congested. If we go with a speed threshold of 60 miles per hour, about 18% of the five minute observations are congested.  
+`percent_congested` indicates what percentage of the 5-minute observations can be classified as congested. 
+
+```{r plot_agg_five_congested}
+
+rbindlist(agg_five_congested) %>% 
+ggplot() +
+  geom_density(mapping = aes(x = percent_congested ,
+                             group = as.factor(threshold_speed),
+                             color = as.factor(threshold_speed),
+                             fill = as.factor(threshold_speed)),
+               alpha = 0.5) +
+  scale_color_viridis_d(option = "magma", end = 0.8,
+                        aesthetics = c("fill", "color"),
+                        name = "Threshold speed") +
+  labs(x = "% Congested",
+       y = "Density",
+       title = "Congestion Distribution by Threshold Speed",
+       subtitle = "Five-minute observations") +
+  th
+```
 
 We can then look at the same measure, but for hourly aggregations.  
 
@@ -228,10 +259,28 @@ agg_hour_congested <- purrr::map(
   .sensor_config = sensor_config,
   replace_na_speeds = TRUE
 )
-agg_hour_congested
 
 summary(agg_hour_congested[[3]]$percent_congested)
 ```
+
+```{r plot_agg_hour_congested}
+rbindlist(agg_hour_congested) %>% 
+ggplot() +
+  geom_density(mapping = aes(x = percent_congested ,
+                             group = as.factor(threshold_speed),
+                             color = as.factor(threshold_speed),
+                             fill = as.factor(threshold_speed)),
+               alpha = 0.5) +
+  scale_color_viridis_d(option = "magma", end = 0.8,
+                        aesthetics = c("fill", "color"),
+                        name = "Threshold speed") +
+  labs(x = "% Congested",
+       y = "Density",
+       title = "Congestion Distribution by Threshold Speed",
+       subtitle = "Hourly observations") +
+  th
+```
+
 
 #### Daily hours of congestion  
 
@@ -264,7 +313,7 @@ agg_hour_delay_summaries <- purrr::map_dfr(
       arrange(-total_delay)})
 ```
 
-```{r}
+```{r plot_total_delay_distribution}
 ggplot() +
   geom_density(agg_hour_delay_summaries,
                mapping = aes(x = total_delay,
@@ -273,12 +322,18 @@ ggplot() +
                              fill = as.factor(reference_speed)),
                alpha = 0.5) +
   scale_color_viridis_d(option = "magma", end = 0.8,
-                        aesthetics = c("fill", "color")) 
+                        aesthetics = c("fill", "color"),
+                        name = "Reference Speed") +
+  labs(x = "Total delay (hours)",
+       y = "Density",
+       title = "Congestion Distribution by Threshold Speed",
+       subtitle = "Hourly observations") +
+  th
 ```
 
 ### Data treatments
 
-#### Sampled week days  
+#### Sample week days  
 
 Tuesdays, Wednesdays, and Thursdays are the typical study days, as they avoid most weekends and holidays. People travel every day of the week, so lets examine how changing which week days are sampled can affect congestion measures.  
 
@@ -306,18 +361,21 @@ summary(agg_five_congested[[3]]$percent_congested)
 summary(agg_five_congested_all_days[[3]]$percent_congested)
 ```
 
-```{r}
+```{r plot_percent_congested_distribution}
 ggplot() +
   geom_density(agg_five_congested[[3]],
                mapping = aes(x = percent_congested)) +
   geom_density(agg_five_congested_all_days[[3]],
                mapping = aes(x = percent_congested),
-               color = councilR::colors$councilBlue)
+               color = councilR::colors$councilBlue) +
+  labs(x = "% Congested",
+       y = "Density") +
+  th
 ```
 
 
 
-#### Sampled months   
+#### Sample months   
 
 October has historically been the sample month for congestion reports because it theoretically reflects regular traffic (@minnesota_department_of_transportation_mndot_2019). Computation limitations also contributed to this decision.  
 
@@ -350,25 +408,31 @@ agg_hour_all_months_congested <- purrr::map(
   congestion_type = "speed",
   reference_speed = NA,
   replace_na_speeds = TRUE,
-  join_config = FALSE,
   .sensor_config = sensor_config)
 ```
 
-```{r}
+```{r plot_monthly_congestion_distribution}
 ggplot() +
-  geom_boxplot(data = agg_hour_all_months_congested[[3]],
+  geom_boxplot(data = agg_hour_all_months_congested[[3]] %>% 
+                 mutate(season = case_when(`month(as.Date(date.x))` %in% c(12,1,2) ~ "Winter",
+                                           `month(as.Date(date.x))` %in% c(3,4,5) ~ "Spring",
+                                           `month(as.Date(date.x))` %in% c(6,7,8) ~ "Summer",
+                                           TRUE ~ "Fall")),
                mapping = aes(y = percent_congested,
-                             x = as.factor(`month(as.Date(date.x))`)
-                             )
-               ) +
+                             x = as.factor(`month(as.Date(date.x))`),
+                             color = season)) +
   scale_x_discrete(labels = month.abb) +
+  scale_color_brewer(type = "qual", palette = "Dark2") +
   labs(x = "",
        y = "% observations congested",
        title = "Monthly congestion distribution",
        subtitle  = "200 stations along I-94 corridor",
-       caption = stringr::str_wrap(paste0("Select I-94 stations, 2018 during morning and evening rush periods aggregated by hour. Congestion threshold  = 45mph. ", format(Sys.Date(), "%Y-%m-%d")), 75))
-                        
+       caption = stringr::str_wrap(
+         paste0("Select I-94 stations, 2018 during morning and evening rush periods aggregated by hour. Congestion threshold  = 45mph. ", format(Sys.Date(), "%Y-%m-%d")), 75)) +
+  th
 ```
+
+
 ```{r}
 dec_stations <- agg_hour_all_months_congested[[3]] %>% 
   filter(`month(as.Date(date.x))` ==12,
@@ -386,15 +450,13 @@ dec_stations <- agg_hour_all_months_congested[[3]] %>%
   unique()
 ```
 
-```{r}
-library(leaflet)
-
+```{r, eval = FALSE}
 leaflet() %>% 
   addProviderTiles(providers$OpenStreetMap) %>% 
   addCircleMarkers(lng = dec_stations$r_node_lon, lat = dec_stations$r_node_lat,radius = 4)
 ```
 
-#### Sampled hours  
+#### Sample hours  
 
 The standard sample hours (5am to 10am, 2pm to 7pm) reflect the traditional morning and evening peak volume periods. However, examining only these time periods can have equity implications. The travelers captured in these study periods are more likely to work during the day in centralized locations, such as downtown office spaces and subsequently have a higher income than travelers who work in the evening and early morning. By limiting the study hours to the morning and evening peak only, we explicitly prioritize these travelers over others.  
 
@@ -424,12 +486,16 @@ agg_five_congested_all_hours <- purrr::map(
 summary(agg_five_congested[[3]]$percent_congested)
 summary(agg_five_congested_all_hours[[3]]$percent_congested)
 ```
-```{r}
+```{r plot_percent_congested_all_hours_distribution}
 ggplot() +
   geom_density(agg_five_congested[[3]],
                mapping = aes(x = percent_congested)) +
   geom_density(agg_five_congested_all_hours[[3]],
                mapping = aes(x = percent_congested),
-               color = councilR::colors$councilBlue)
+               color = councilR::colors$councilBlue) +
+  labs(x = "% Congested",
+       y = "Density") +
+  th
 ```
 
+## References

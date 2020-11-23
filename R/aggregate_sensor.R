@@ -136,6 +136,9 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
   }
 
 
+  interval_length_min <- interval_length * 60
+  n_rows_expected <- interval_length_min * 2 # two scans/observations per minute
+
   # there are 60 scans/second
   # 60*30 = 1,800 scans/ 30 sec (the interval we are given)
   # 60*60 = 3,600 scans/minute
@@ -144,8 +147,6 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
 
   if (interval_length < 1) { # if the interval length is less than an hour
     # browser()
-    interval_length_min <- interval_length * 60
-    n_rows_expected <- interval_length_min * 2 # two scans per minute
 
     bins <- seq(0, 60, interval_length * 60)
 
@@ -167,14 +168,12 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
       , occupancy.pct := (occupancy.sum / interval_scans)
     ][
       , speed := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
-        (volume.sum * (60 / interval_length_min) * field_length)
-        / (5280 * occupancy.pct), NA
+                        (volume.sum * (60 / interval_length_min) * field_length)
+                        / (5280 * occupancy.pct), NA
       )
     ]
   } else { # if the interval length is greater than or equal to 1 hour
-
     bins <- seq(0, 24, interval_length)
-    n_rows_expected <- 60 * 2 # two scans per minute
 
     sensor_data[, date := data.table::as.IDate(date)][
       , year := data.table::year(date)
@@ -197,8 +196,8 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
       , occupancy.pct := (occupancy.sum / interval_scans)
     ][
       , speed := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
-        ((volume.sum * field_length) /
-          (5280 * occupancy.pct)) / interval_length, NA
+                        ((volume.sum * field_length) /
+                           (5280 * occupancy.pct)) / interval_length, NA
       )
     ]
   }

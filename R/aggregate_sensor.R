@@ -157,7 +157,7 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
       list(
-        sum =  round(mean(x, na.rm = T) * n_rows_expected),
+        sum = round(mean(x, na.rm = T) * n_rows_expected),
         mean = mean(x, na.rm = T),
         pct.null = round(100 * sum(is.na(x)) / length(x))
       )
@@ -168,8 +168,8 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
       , occupancy.pct := (occupancy.sum / interval_scans)
     ][
       , speed := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
-                        (volume.sum * (60 / interval_length_min) * field_length)
-                        / (5280 * occupancy.pct), NA
+        (volume.sum * (60 / interval_length_min) * field_length)
+        / (5280 * occupancy.pct), NA
       )
     ]
   } else { # if the interval length is greater than or equal to 1 hour
@@ -185,7 +185,7 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
       list(
-        sum = round(mean(x, na.rm = T)*n_rows_expected),
+        sum = round(mean(x, na.rm = T) * n_rows_expected),
         mean = mean(x, na.rm = T),
         pct.null = round(100 * sum(is.na(x)) / length(x))
       )
@@ -196,8 +196,8 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
       , occupancy.pct := (occupancy.sum / interval_scans)
     ][
       , speed := ifelse(volume.sum != 0 & occupancy.pct >= occupancy_pct_threshold,
-                        ((volume.sum * field_length) /
-                           (5280 * occupancy.pct)) / interval_length, NA
+        ((volume.sum * field_length) /
+          (5280 * occupancy.pct)) / interval_length, NA
       )
     ]
   }

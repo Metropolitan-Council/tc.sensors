@@ -275,30 +275,6 @@ ggplot() +
                  y = speed.inrix,
                  color = volume.sum),
              alpha = 0.5) +
-  geom_smooth(data = massive_join_clean %>% 
-                filter(speed.loop <= 99
-                       # speed.loop > 10,
-                       # late_night == FALSE
-                       ),
-              aes(x = speed.loop,
-                  y = speed.inrix)) +
-  # scale_color_viridis_c(option = "magma", direction = -1) +
-  theme_minimal() +
-  labs(x = "Loop detector speed (mph)",
-       y = "INRIX speed (mph)",
-       # color = "Volume",
-       title = "INRIX and loop detector speeds")
-```
-
-To get a better picture of data periods with low volumes, we will mark late night observations as those starting between midnight and 4am and 10pm to 11pm.
-
-```{r}
-ggplot() +
-  geom_jitter(data = massive_join_clean,
-             aes(x = speed.loop,
-                 y = speed.inrix,
-                 color = volume.sum),
-             alpha = 0.5) +
   geom_smooth(data = massive_join_clean,
               aes(x = speed.loop,
                   y = speed.inrix)) +

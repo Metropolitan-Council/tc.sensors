@@ -23,8 +23,8 @@ test_that("Aggregation functions as expected", {
     )
     testthat::expect_equal(dim(agg)[[1]], 96)
 
-    testthat::expect_equivalent(sum(sensor_results$volume, na.rm = T), sum(agg$volume.sum, na.rm = T))
-    testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg$occupancy.sum, na.rm = T))
+    testthat::expect_equivalent(round(mean(sensor_results$volume, na.rm = T)),
+                                round(mean(agg$volume.mean, na.rm = T)))
 
     # test aggregation at 1 hour--------------------------------------------------
     agg_hour <- aggregate_sensor(sensor_results,
@@ -32,8 +32,8 @@ test_that("Aggregation functions as expected", {
       config = config_sample
     )
     testthat::expect_equal(dim(agg_hour)[[1]], 24)
-    testthat::expect_equal(sum(sensor_results$volume, na.rm = T), sum(agg_hour$volume.sum))
-    testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg_hour$occupancy.sum))
+    testthat::expect_equal(round(mean(sensor_results$volume, na.rm = T)),
+                           round(mean(agg_hour$volume.mean)))
     ifelse(!is.na(agg$speed),
       testthat::expect_true(round(mean(agg$speed, na.rm = T)) - round(mean(agg_hour$speed, na.rm = T)) < 3), NA
     )
@@ -43,8 +43,8 @@ test_that("Aggregation functions as expected", {
       config = config_sample
     )
     testthat::expect_equal(dim(agg_day)[[1]], 1)
-    testthat::expect_equal(sum(sensor_results$volume, na.rm = T), sum(agg_day$volume.sum))
-    testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg_day$occupancy.sum))
+    testthat::expect_equal(round(mean(sensor_results$volume, na.rm = T)),
+                           round(mean(agg_day$volume.mean)))
     ifelse(!is.na(agg$speed),
       testthat::expect_true(round(mean(agg$speed, na.rm = T)) - round(mean(agg_day$speed, na.rm = T)) < 3), no = NA
     )

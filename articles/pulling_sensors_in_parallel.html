@@ -85,7 +85,8 @@
 
       
 
-      </header><script src="pulling_sensors_in_parallel_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="pulling_sensors_in_parallel_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="pulling_sensors_in_parallel_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+<script src="pulling_sensors_in_parallel_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Pull multiple sensors using parallel processing</h1>
@@ -101,12 +102,12 @@
 <div id="pull-data-for-select-sensors-for-all-2019" class="section level2">
 <h2 class="hasAnchor">
 <a href="#pull-data-for-select-sensors-for-all-2019" class="anchor"></a>Pull data for select sensors for all 2019</h2>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tc.sensors</span><span class="op">)</span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tc.sensors</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">doParallel</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RevolutionAnalytics/foreach">foreach</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">magrittr</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org">magrittr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/collectivemedia/tictoc">tictoc</a></span><span class="op">)</span> <span class="co"># If you want to benchmark - but you shouldn't have to; I already did (:</span>
 
 <span class="va">sensor_config</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_configuration.html">pull_configuration</a></span><span class="op">(</span><span class="op">)</span>
@@ -130,13 +131,13 @@
   <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fwrite.html">fwrite</a></span><span class="op">(</span><span class="va">loops_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"../../MnDOT_Loop_Detectors/Volume-Occupancy/2019/Sensor "</span>, <span class="va">j</span>, <span class="st">".csv"</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 <span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">toc</a></span><span class="op">(</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">stopCluster</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">stopCluster</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="save-to-microsoft-access-database" class="section level2">
 <h2 class="hasAnchor">
 <a href="#save-to-microsoft-access-database" class="anchor"></a>Save to Microsoft Access Database</h2>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">RODBC</span><span class="op">)</span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">RODBC</span><span class="op">)</span>
 
 <span class="va">test_conn</span> <span class="op">&lt;-</span> <span class="fu">odbcConnectAccess2007</span><span class="op">(</span><span class="st">"../LoopDBTest.accdb"</span><span class="op">)</span>
 <span class="fu">sqlTables</span><span class="op">(</span><span class="va">test_conn</span>, tableType <span class="op">=</span> <span class="st">"TABLE"</span><span class="op">)</span><span class="op">$</span><span class="va">TABLE_NAME</span> <span class="co"># Check available tables</span>
@@ -147,7 +148,7 @@
         tablename <span class="op">=</span> <span class="st">"testtable"</span>,
         rownames <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="co"># Prevents RStudio from crashing</span>
 
-<span class="va">check</span> <span class="op">&lt;-</span> <span class="fu">RODBC</span><span class="fu">::</span><span class="fu">sqlQuery</span><span class="op">(</span><span class="va">test_conn</span>, <span class="st">"SELECT * from testtable WHERE date = 20191231"</span><span class="op">)</span></pre></div>
+<span class="va">check</span> <span class="op">&lt;-</span> <span class="fu">RODBC</span><span class="fu">::</span><span class="fu">sqlQuery</span><span class="op">(</span><span class="va">test_conn</span>, <span class="st">"SELECT * from testtable WHERE date = 20191231"</span><span class="op">)</span></code></pre></div>
 </div>
   </div>
 

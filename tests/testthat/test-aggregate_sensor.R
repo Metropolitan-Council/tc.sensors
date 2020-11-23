@@ -35,7 +35,7 @@ test_that("Aggregation functions as expected", {
     testthat::expect_equal(sum(sensor_results$volume, na.rm = T), sum(agg_hour$volume.sum))
     testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg_hour$occupancy.sum))
     ifelse(!is.na(agg$speed),
-      testthat::expect_equivalent(mean(agg$speed, na.rm = T), mean(agg_hour$speed, na.rm = T)), NA
+      testthat::expect_true(round(mean(agg$speed, na.rm = T)) - round(mean(agg_hour$speed, na.rm = T)) < 3), NA
     )
     # test aggregation at 24 hours------------------------------------------------
     agg_day <- aggregate_sensor(sensor_results,
@@ -46,7 +46,7 @@ test_that("Aggregation functions as expected", {
     testthat::expect_equal(sum(sensor_results$volume, na.rm = T), sum(agg_day$volume.sum))
     testthat::expect_equal(sum(sensor_results$occupancy, na.rm = T), sum(agg_day$occupancy.sum))
     ifelse(!is.na(agg$speed),
-      testthat::expect_equivalent(mean(agg$speed, na.rm = T), mean(agg_day$speed, na.rm = T)), no = NA
+      testthat::expect_true(round(mean(agg$speed, na.rm = T)) - round(mean(agg_day$speed, na.rm = T)) < 3), no = NA
     )
 
     # test argument checks--------------------------------------------------------

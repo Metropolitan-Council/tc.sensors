@@ -164,7 +164,8 @@ is_congested <- function(dt,
           , congested.any := ifelse(congested.prov == TRUE | congested.calc == TRUE, TRUE, FALSE)] # congested using either speed?
     
     is_congested <- is_congested %>% 
-      group_by(r_node_station_id, month(as.Date(date.x))) %>% # group by station and month
+      mutate(obs_month = month(as.Date(date.x))) %>% 
+      group_by(r_node_station_id, obs_month) %>% # group by station and month
       count(corridor_route, congested.any) %>% # get # congested/not-congested observations for each corridor_route
       spread(congested.any, n) # spread out congested.any to 2-3 columns with n as value
     
@@ -408,45 +409,61 @@ agg_hour_all_months_congested <- purrr::map(
   congestion_type = "speed",
   reference_speed = NA,
   replace_na_speeds = TRUE,
-  .sensor_config = sensor_config)
+  .sensor_config = sensor_config) %>% 
+  purrr::map(.f = function(d){
+    d %>% 
+    mutate(season = case_when(obs_month %in% c(12, 1 ,2) ~ "Winter",
+                                         obs_month %in% c(3, 4,5) ~ "Spring",
+                                         obs_month %in% c(6, 7, 8) ~ "Summer",
+                                         obs_month %in% c(9, 10, 11) ~ "Fall"))
+  })
 ```
 
-```{r plot_monthly_congestion_distribution}
-ggplot() +
-  geom_boxplot(data = agg_hour_all_months_congested[[3]] %>% 
-                 mutate(season = case_when(`month(as.Date(date.x))` %in% c(12,1,2) ~ "Winter",
-                                           `month(as.Date(date.x))` %in% c(3,4,5) ~ "Spring",
-                                           `month(as.Date(date.x))` %in% c(6,7,8) ~ "Summer",
-                                           TRUE ~ "Fall")),
-               mapping = aes(y = percent_congested,
-                             x = as.factor(`month(as.Date(date.x))`),
-                             color = season)) +
-  scale_x_discrete(labels = month.abb) +
-  scale_color_brewer(type = "qual", palette = "Dark2") +
-  labs(x = "",
-       y = "% observations congested",
-       title = "Monthly congestion distribution",
-       subtitle  = "200 stations along I-94 corridor",
-       caption = stringr::str_wrap(
-         paste0("Select I-94 stations, 2018 during morning and evening rush periods aggregated by hour. Congestion threshold  = 45mph. ", format(Sys.Date(), "%Y-%m-%d")), 75)) +
-  th
+```{r}
+purrr::map(agg_hour_all_months_congested, 
+           .f = function(da) {
+             dat <- da %>% 
+               mutate(season = case_when(obs_month %in% c(12, 1 ,2) ~ "Winter",
+                                         obs_month %in% c(3, 4,5) ~ "Spring",
+                                         obs_month %in% c(6, 7, 8) ~ "Summer",
+                                         obs_month %in% c(9, 10, 11) ~ "Fall"))
+
+             ggplot(data = dat) +
+               geom_boxplot(
+                 mapping = aes(y = percent_congested,
+                               x = as.factor(obs_month),
+                               color = season),
+                 alpha = 0.5) +
+               scale_x_discrete(labels = month.abb) +
+               scale_color_brewer(type = "qual", palette = "Dark2") +
+               labs(x = "",
+                    color = "Season",
+                    y = "% observations congested",
+                    title = "Monthly congestion distribution",
+                    subtitle  = "200 stations along I-94 corridor",
+                    caption = stringr::str_wrap(
+                      paste0("Select I-94 stations, 2018 during morning and evening rush periods aggregated by hour. 
+                             Congestion threshold = ", unique(da$threshold_speed), "mph. ", format(Sys.Date(), "%Y-%m-%d")), 75)) +
+               th
+           })
+
 ```
 
 
 ```{r}
 dec_stations <- agg_hour_all_months_congested[[3]] %>% 
-  filter(`month(as.Date(date.x))` ==12,
+  filter(obs_month == 12,
         percent_congested > 80) %>% 
   left_join(pull_configuration()[
   detector_category == "",][
     r_node_n_type == "Station",][
       corridor_route == "I-94",]) %>% 
-  select(r_node_station_id,
-         corridor_route, 
-         percent_congested, 
-         threshold_speed,
-         r_node_lat,
-         r_node_lon) %>% 
+  # select(r_node_station_id,
+  #        corridor_route, 
+  #        percent_congested, 
+  #        threshold_speed,
+  #        r_node_lat,
+  #        r_node_lon) %>% 
   unique()
 ```
 

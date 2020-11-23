@@ -12,3 +12,9 @@ Meta
 vignettes/calculate_speed_delay_cache/
 
 vignettes/data_cache/
+
+vignettes/.DS_Store
+
+vignettes/key_congestion_metrics_cache/
+
+.DS_Store

@@ -1,0 +1,135 @@
+---
+title: "Congestion and Vehicle Density"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{density_congestion}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  cache = TRUE,
+  fig.width = 8,
+  fig.height = 4,
+  # dev = "CairoPNG",
+  fig.path = "../man/figures/density_congestion-"
+)
+
+options(scipen = 9999)
+
+th <- ggplot2::theme_minimal() +
+  councilR::council_theme(use_showtext = TRUE,
+                          size_header = 16,
+                          size_axis_title = 12) +
+  ggplot2::theme(legend.position = "bottom")
+```
+
+```{r setup}
+library(tc.sensors)
+library(purrr)
+library(furrr)
+library(tictoc)
+library(data.table)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(leaflet)
+library(lubridate)
+library(sf)
+```
+
+
+## Data  
+
+```{r}
+sensor_config <- pull_configuration()[
+  detector_category == "",][
+    r_node_n_type == "Station",][
+      corridor_route == "I-35E",] %>% 
+  add_distance()
+# only include mainline, station sensors on I-94
+
+```
+
+We will then fetch sensor data from October 1-31, 2018.  
+
+
+```{r}
+# sensor_data <- pull_sensor_range("2018-10-01",
+#                                  "2018-10-31",
+#                                  sensor_config)
+# saveRDS(sensor_data, "data_cache/october_2018_i35E.RDS")
+sensor_data <- readRDS("data_cache/october_2018_i35E.RDS")
+```
+
+```{r agg_hour}
+# agg_hour <- furrr::future_map(sensor_data,
+#                               aggregate_sensor,
+#                               config = sensor_config,
+#                               interval_length = 1,
+#                               occupancy_pct_threshold = 0.002,
+#                               interpolate_missing = TRUE
+# )  %>%
+#   furrr::future_map(add_day_type)
+# saveRDS(agg_hour, "data_cache/october_2018_i35E_agg_hour.RDS")
+# 
+# agg_hour_midweek <- agg_hour %>%
+#   furrr::future_map_dfr(.f = function(x){
+#     x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
+#       interval_bin %in% c(seq(5,10), seq(14,19)),][
+#         , period := ifelse(interval_bin > 10, "PM", "AM")]
+#   })
+# saveRDS(agg_hour_midweek, "data_cache/october_2018_i35E_agg_hour_midweek.RDS")
+
+agg_hour <- readRDS("data_cache/october_2018_i35E_agg_hour.RDS")
+agg_hour_midweek <- readRDS("data_cache/october_2018_i35E_agg_hour_midweek.RDS")
+
+```
+
+
+
+```{r}
+# node density
+agg_hour_midweek %>% 
+  left_join(sensor_config,by = c("sensor" = "detector_name")) %>% 
+  mutate(density = round((occupancy.pct * 5280)/as.numeric(detector_field), 2)) %>% 
+  ggplot() +
+  geom_point(aes(y = volume.sum,
+                  x = density,
+                  color = volume.sum),
+              alpha = 0.5) +
+  geom_smooth(aes(y = volume.sum,
+                  x = density)) +
+  scale_color_viridis_c(option = "magma") +
+  # scale_x_continuous(limits = c(0, 180)) +
+  # scale_y_continuous(limits = c(0,100)) +
+  th
+```
+
+```{r}
+# station density
+agg_hour_midweek %>% 
+  left_join(sensor_config,by = c("sensor" = "detector_name")) %>% 
+  mutate(density = round((occupancy.pct * 5280)/as.numeric(detector_field), 2)) %>% 
+  group_by(r_node_station_id, date.x, interval_bin) %>% 
+  summarize(median_density = median(density, na.rm = T),
+            median_speed = median(speed.median, na.rm = T),
+            volume_sum = sum(volume.sum, na.rm = T)) %>% 
+  ggplot() +
+  geom_point(aes(y = median_speed,
+                  x = median_density,
+                  color = volume_sum),
+              alpha = 0.5) +
+  geom_smooth(aes(y = median_speed,
+                  x = median_density,)) +
+  scale_color_viridis_c(option = "magma") +
+  th
+```
+
+

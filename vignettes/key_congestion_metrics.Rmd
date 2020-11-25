@@ -245,7 +245,10 @@ ggplot() +
   labs(x = "% Congested",
        y = "Density",
        title = "Congestion Distribution by Threshold Speed",
-       subtitle = "Five-minute observations") +
+       subtitle = "Five-minute observations",
+       caption = stringr::str_wrap(
+                      paste0("Select I-94 stations, 2018 during morning and evening rush periods. ",
+                             format(Sys.Date(), "%Y-%m-%d")), 50)) +
   th
 ```
 
@@ -279,7 +282,10 @@ ggplot() +
   labs(x = "% Congested",
        y = "Density",
        title = "Congestion Distribution by Threshold Speed",
-       subtitle = "Hourly observations") +
+       subtitle = "Hourly observations",
+       caption = stringr::str_wrap(
+                      paste0("Select I-94 stations, 2018 during morning and evening rush periods. ",
+                             format(Sys.Date(), "%Y-%m-%d")), 50)) +
   th
 ```
 
@@ -315,6 +321,7 @@ agg_hour_delay_summaries <- purrr::map_dfr(
       arrange(-total_delay)})
 ```
 
+
 ```{r plot_total_delay_distribution}
 ggplot() +
   geom_density(agg_hour_delay_summaries,
@@ -329,7 +336,10 @@ ggplot() +
   labs(x = "Total delay (hours)",
        y = "Density",
        title = "Congestion Distribution by Threshold Speed",
-       subtitle = "Hourly observations") +
+       subtitle = "Hourly observations",
+       caption = stringr::str_wrap(
+                      paste0("Select I-94 stations, 2018 during morning and evening rush periods. ",
+                             format(Sys.Date(), "%Y-%m-%d")), 50)) +
   th
 ```
 
@@ -371,7 +381,12 @@ ggplot() +
                mapping = aes(x = percent_congested),
                color = councilR::colors$councilBlue) +
   labs(x = "% Congested",
-       y = "Density") +
+       y = "Density",
+       title = "Congestion distribution",
+       subtitle = "All days vs. midweek days",
+       caption = stringr::str_wrap(
+                      paste0("Select I-94 stations, 2018 aggregated by hour. 
+                             Congestion threshold = ", unique(agg_five_congested_all_days[[3]]$threshold_speed), "mph. ", format(Sys.Date(), "%Y-%m-%d")), 50)) +
   th
 ```
 
@@ -486,7 +501,8 @@ Lets examine how changing the sample hours can affect overall congestion.
 ```{r agg_five_all_hours}
 # agg_five_all_hours <- agg_five %>%
 #   furrr::future_map_dfr(.f = function(x){
-#     x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")]
+#     x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
+#       hour %in% c(seq(5,19)),]
 #   })
 # 
 # saveRDS(agg_five_all_hours, "data_cache/october_2018_i94_agg_five_all_hours.RDS")
@@ -507,6 +523,7 @@ summary(agg_five_congested[[3]]$percent_congested)
 summary(agg_five_congested_all_hours[[3]]$percent_congested)
 ```
 ```{r plot_percent_congested_all_hours_distribution}
+
 ggplot() +
   geom_density(agg_five_congested[[3]],
                mapping = aes(x = percent_congested)) +
@@ -514,7 +531,14 @@ ggplot() +
                mapping = aes(x = percent_congested),
                color = councilR::colors$councilBlue) +
   labs(x = "% Congested",
-       y = "Density") +
+       y = "Density",
+       title = "Congestion distribution",
+       subtitle = "Daytime hours vs. peak hours",
+       caption = stringr::str_wrap(
+                      paste0("Select I-94 stations, 2018 aggregated by hour. 
+                             Congestion threshold = ", 
+                             unique(agg_five_congested_all_hours[[3]]$threshold_speed), "mph. ",
+                             format(Sys.Date(), "%Y-%m-%d")), 50)) +
   th
 ```
 

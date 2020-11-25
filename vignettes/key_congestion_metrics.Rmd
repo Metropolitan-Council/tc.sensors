@@ -14,7 +14,7 @@ vignette: >
 knitr::opts_chunk$set(
 collapse = TRUE,
 comment = "#>",
-eval = FALSE,
+# eval = FALSE,
 warning = FALSE,
 message = FALSE,
 cache = TRUE,
@@ -146,11 +146,10 @@ is_congested <- function(dt,
                          replace_na_speeds = TRUE){
   
   if(!"r_node_n_type" %in% names(dt)) {
-    dt <- dt %>% 
-      left_join(.sensor_config, by = c("sensor" = "detector_name"))
+    dt <- merge(dt, .sensor_config,  by.x = "sensor", by.y = "detector_name")
   }
   
-  # replace NA speeds with the station speed limit?
+  # replace NA speeds with the posted station speed limit?
   if(replace_na_speeds){
     dt <- dt[
       , `:=`(speed.median = ifelse(is.na(speed.median), r_node_s_limit, speed.median),
@@ -160,42 +159,43 @@ is_congested <- function(dt,
   if(congestion_type == "speed"){
     ## if speed congestion -------
     is_congested <- dt[
-      , congested.prov := ifelse(speed.median <= threshold_speed, TRUE, FALSE)][ # congested based on provided speed?
-        , congested.calc := ifelse(speed.calc <= threshold_speed, TRUE, FALSE)][ # congested based on calculated speed?
-          , congested.any := ifelse(congested.prov == TRUE | congested.calc == TRUE, TRUE, FALSE)] # congested using either speed?
-    
-    is_congested <- is_congested %>% 
-      mutate(obs_month = month(as.Date(date.x))) %>% 
+      # congested based on provided speed?
+      , congested.prov := ifelse(speed.median <= threshold_speed, TRUE, FALSE)][ 
+        # congested based on calculated speed?
+        , congested.calc := ifelse(speed.calc <= threshold_speed, TRUE, FALSE)][ 
+          # congested using either speed?
+          , congested.any := ifelse(congested.prov == TRUE | congested.calc == TRUE, TRUE, FALSE)][
+            , obs_month := month(as.Date(date.x))] %>% 
       group_by(r_node_station_id, obs_month) %>% # group by station and month
       count(corridor_route, congested.any) %>% # get # congested/not-congested observations for each corridor_route
       spread(congested.any, n) # spread out congested.any to 2-3 columns with n as value
     
     if(replace_na_speeds == FALSE){
       # calculate percent congested using ALL observations
-      is_congested <- is_congested %>% 
-        mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, `<NA>`, na.rm = T) * 100, 2),
-               threshold_speed = threshold_speed)
+      is_congested <- is_congested[, `:=` (
+        percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, `<NA>`, na.rm = T) * 100, 2),
+        threshold_speed = threshold_speed)]
       
     } else if(replace_na_speeds == TRUE){
       # calculate percent congested only TRUE/FALSE observations
       is_congested <- is_congested %>% 
         mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, na.rm = T) * 100, 2),
                threshold_speed = threshold_speed,
-               percent_congested = case_when(is.na(percent_congested) ~ 0, # if percent_congested is NA, assume 0% congested
+               # if percent_congested is NA, assume 0% congested
+               percent_congested = case_when(is.na(percent_congested) ~ 0, 
                                              TRUE ~ percent_congested))
     }
     return(is_congested)
     
   } else if(congestion_type == "delay"){ 
     ## if using delay congestion ------
-    dt <- dt %>% 
-      mutate(travel_time_observ = dhours(distance/as.numeric(speed.calc)), # observed travel time
-             travel_time_ref = dhours(distance/as.numeric(reference_speed)), # travel time at reference speed
-             travel_time_diff = travel_time_observ - travel_time_ref, # difference between observed, reference travel times
-             delay_hours = travel_time_diff * volume.sum, # multiply by total volume
-             reference_speed = reference_speed
-      ) %>% 
-      select(travel_time_diff, everything()) # reorder columns
+    dt <- dt[
+      , `:=` (travel_time_observ = dhours(distance/as.numeric(speed.calc)), # observed travel time
+              travel_time_ref = dhours(distance/as.numeric(reference_speed)))][ # travel time at reference speed
+                , travel_time_diff := travel_time_observ - travel_time_ref][ # difference observed, reference travel times
+                  , `:=` (delay_hours = travel_time_diff * volume.sum, # multiply by total volume
+                          reference_speed = reference_speed
+    )]
     
     return(dt)
   }

@@ -12,25 +12,25 @@ vignette: >
 ---
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-collapse = TRUE,
-comment = "#>",
-# eval = FALSE,
-warning = FALSE,
-message = FALSE,
-cache = TRUE,
-fig.width = 8,
-fig.height = 4,
-# dev = "CairoPNG",
-fig.path = "../man/figures/key_congestion_metrics-"
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  cache = TRUE,
+  fig.width = 8,
+  fig.height = 4,
+  # dev = "CairoPNG",
+  fig.path = "../man/figures/key_congestion_metrics-"
 )
 
 options(scipen = 9999)
 
 th <- ggplot2::theme_minimal() +
-                     councilR::council_theme(use_showtext = TRUE,
-                                             size_header = 16,
-                                             size_axis_title = 12) +
-                     ggplot2::theme(legend.position = "bottom")
+  councilR::council_theme(use_showtext = TRUE,
+                          size_header = 16,
+                          size_axis_title = 12) +
+  ggplot2::theme(legend.position = "bottom")
 
 ```
 
@@ -68,8 +68,8 @@ We will then fetch sensor data from October 1-31, 2018.
 
 ```{r}
 # sensor_data <- pull_sensor_range("2018-10-01",
-                                 # "2018-10-31",
-                                 # sensor_config)
+# "2018-10-31",
+# sensor_config)
 # saveRDS(sensor_data, "data_cache/october_2018_i94_44_99.RDS")
 sensor_data <- readRDS("data_cache/october_2018_i94_44_99.RDS")
 ```

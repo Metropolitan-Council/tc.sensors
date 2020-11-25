@@ -257,7 +257,7 @@ ggplot() +
                         aesthetics = c("fill", "color"),
                         name = "Threshold speed") +
   labs(x = "% Congested",
-       y = "Density",
+       y = "",
        title = "Congestion Distribution by Threshold Speed",
        subtitle = "Five-minute observations",
        caption = stringr::str_wrap(
@@ -294,7 +294,7 @@ ggplot() +
                         aesthetics = c("fill", "color"),
                         name = "Threshold speed") +
   labs(x = "% Congested",
-       y = "Density",
+       y = "",
        title = "Congestion Distribution by Threshold Speed",
        subtitle = "Hourly observations",
        caption = stringr::str_wrap(
@@ -348,7 +348,7 @@ ggplot() +
                         aesthetics = c("fill", "color"),
                         name = "Reference Speed") +
   labs(x = "Total delay (hours)",
-       y = "Density",
+       y = "",
        title = "Congestion Distribution by Threshold Speed",
        subtitle = "Hourly observations",
        caption = stringr::str_wrap(
@@ -441,7 +441,7 @@ ggplot() +
                mapping = aes(x = percent_congested),
                color = councilR::colors$councilBlue) +
   labs(x = "% Congested",
-       y = "Density",
+       y = "",
        title = "Congestion distribution",
        subtitle = "All days vs. midweek days",
        caption = stringr::str_wrap(

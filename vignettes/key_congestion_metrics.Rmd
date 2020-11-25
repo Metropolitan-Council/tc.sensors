@@ -468,29 +468,6 @@ purrr::map(agg_hour_all_months_congested,
 
 ```
 
-
-```{r}
-super_congested_stations <- agg_hour_all_months_congested[[3]] %>% 
-  filter(percent_congested > 80) %>% 
-  left_join(pull_configuration()[
-  detector_category == "",][
-    r_node_n_type == "Station",][
-      corridor_route == "I-94",]) %>% 
-  select(r_node_station_id,
-         corridor_route,
-         percent_congested,
-         threshold_speed,
-         r_node_lat,
-         r_node_lon) %>%
-  unique()
-```
-
-```{r, eval = FALSE}
-leaflet() %>% 
-  addProviderTiles(providers$OpenStreetMap) %>% 
-  addCircleMarkers(lng = super_congested_stations$r_node_lon, lat = super_congested_stations$r_node_lat,radius = 4)
-```
-
 ### Sample hours  
 
 The standard sample hours (5am to 10am, 2pm to 7pm) reflect the traditional morning and evening peak volume periods. However, examining only these time periods can have equity implications. The travelers captured in these study periods are more likely to work during the day in centralized locations, such as downtown office spaces and subsequently have a higher income than travelers who work in the evening and early morning. By limiting the study hours to the morning and evening peak only, we explicitly prioritize these travelers over others.  

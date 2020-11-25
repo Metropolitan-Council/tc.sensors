@@ -143,6 +143,7 @@ is_congested <- function(dt,
                          .sensor_config = sensor_config,
                          reference_speed = 55,
                          threshold_speed = 45,
+                         threshold_density = 33,
                          replace_na_speeds = TRUE){
   
   if(!"r_node_n_type" %in% names(dt)) {
@@ -198,6 +199,19 @@ is_congested <- function(dt,
     )]
     
     return(dt)
+  } else if(congestion_type == "density"){
+    is_congested <- dt[
+      , `:=`  (density = round((occupancy.pct * 5280)/as.numeric(detector_field), 2),
+               threshold_density = threshold_density)][
+                 , congested_density := ifelse(density >= threshold_density, TRUE, FALSE)][
+                   , obs_month := month(as.Date(date.x))] %>% 
+      group_by(r_node_station_id, obs_month) %>% # group by station and month
+      count(corridor_route, congested_density) %>% # get # congested/not-congested observations for each corridor_route
+      spread(congested_density, n) %>%  # spread out congested.any to 2-3 columns with n as value
+      mutate(percent_congested = round(`TRUE`/sum(`FALSE`, `TRUE`, na.rm = T) * 100, 2),
+               threshold_density = threshold_density)
+    
+    return(is_congested)
   }
 }
 ```
@@ -343,6 +357,52 @@ ggplot() +
   th
 ```
 
+
+#### Vehicle density  
+
+Density is a measure of the number of vehicles per lane per mile. Generally speaking, densities from 0-36 mean that traffic demand is less than capacity, 36-48 indicates optimum density, and anything higher than 180 indicates a jam. ([source](https://lost-contact.mit.edu/afs/eos.ncsu.edu/info/ce400_info/www2/flow1.html)).
+
+```{r}
+threshold_densities <- c(37, 75, 100)
+
+agg_five_density_congested <- purrr::map(
+  threshold_densities,
+  is_congested, 
+  dt = agg_five_midweek, 
+  congestion_type = "density",
+  replace_na_speeds = TRUE,
+  reference_speed = 55,
+  threshold_speed = 45,
+  .sensor_config = sensor_config)
+
+# threshold speed = 45
+# summary(agg_five_congested[[3]]$percent_congested)
+
+summary(agg_five_density_congested[[1]]$percent_congested)
+summary(agg_five_density_congested[[2]]$percent_congested)
+
+```
+
+```{r}
+rbindlist(agg_five_density_congested) %>% 
+ggplot() +
+  geom_density(mapping = aes(x = percent_congested ,
+                             group = as.factor(threshold_density),
+                             color = as.factor(threshold_density),
+                             fill = as.factor(threshold_density)),
+               alpha = 0.5) +
+  scale_color_viridis_d(option = "magma", end = 0.8,
+                        aesthetics = c("fill", "color"),
+                        name = "Threshold vehicle density") +
+  labs(x = "% Congested",
+       y = "",
+       title = "Congestion Distribution by Threshold Vehicle Density",
+       subtitle = "Five-minute observations",
+       caption = stringr::str_wrap(
+                      paste0("Select I-94 stations, 2018 during morning and evening rush periods. ",
+                             format(Sys.Date(), "%Y-%m-%d")), 50)) +
+  th
+```
 ## Data treatments
 
 ### Sample week days  

@@ -34,3 +34,5 @@ vignettes/data_cache/
 .DS_Store
 
 vignettes/key_congestion_metrics_cache/
+
+vignettes/compare_congestion_metrics_cache/

@@ -1,0 +1,150 @@
+---
+title: "Compare RTMC Congestion Report with loop detector data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{compare_congestion_metrics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  cache = TRUE,
+  # fig.width = 8,
+  # fig.height = 4,
+  # dev = "CairoPNG",
+  fig.path = "../man/figures/compare_congestion_metrics-"
+)
+
+options(scipen = 9999)
+
+th <- ggplot2::theme_minimal() +
+  councilR::council_theme(use_showtext = TRUE,
+                          size_header = 16,
+                          size_axis_title = 12) +
+  ggplot2::theme(legend.position = "bottom")
+
+```
+
+```{r setup}
+library(tc.sensors)
+library(sf)
+library(data.table)
+library(dplyr)
+library(tidyr)
+library(janitor)
+library(leaflet)
+library(htmltools)
+library(reactable)
+```
+
+Our goal is to link the freeway congestion report shapefile with our stations.  
+
+## Regional Traffic Management Center (RTMC) 2019 Congestion report data  
+
+The freeway congestion data represents the average of non-holiday Tuesdays, Wednesdays, and Thursdays in October 2019.  
+
+- `am_sbc` indicates the number of five-minute increments where average speeds fell below 45mph from 5am to 10am  
+- `pm_sbc` indicates the number of five minute increments where average speeds fell below 45mph between 2pm to 7pm
+- `am_pm_full` sum of AM and PM
+
+There are (60 minutes) * 5 hours = 300 minutes minutes in each time period. This means there are 300 min./5 min. = 60 five-minute increments in each 5-hour period. 
+
+- AM = 60 five-minute increments 
+- PM = 60 five-minute increments  
+- Daytime (5am-7pm) = 168 five-minute increments
+
+```{r}
+rtmc_congest <- read_sf("data_cache/2019_freeway_congestion/2019_freeway_congestion.shp") %>%   clean_names() %>% 
+  sf::st_set_crs(26915) %>% 
+  st_transform(4326) %>% 
+  mutate(hover_text = stringr::str_wrap(paste0(
+                            roadway, " ", direction1, 
+                             " | Station: ", sta_1), 3)) %>% 
+  mutate(am_perc = round(am_sbc/60, 4),
+         pm_perc = round(pm_sbc/60, 4),
+         am_pm_perc = round(am_pm_full/120, 4)) %>% 
+    select(station = sta_1,
+    roadway, direction = direction1,
+         am_perc, pm_perc, am_pm_perc, 
+    hover_text)
+
+  
+  
+
+reactable(rtmc_congest, highlight = TRUE, bordered = TRUE,
+          compact = TRUE)
+```
+
+```{r}
+congest_pal <- colorNumeric(palette = "viridis", domain = rtmc_congest$am_pm_full)
+
+leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addPolygons(data = rtmc_congest,
+              fillColor = ~congest_pal(am_pm_full),
+              fillOpacity = 0.8, 
+              smoothFactor = 0.2,
+              stroke = FALSE,
+              label = ~(hover_text),
+              labelOptions = labelOptions(textsize = 30))
+```
+
+## Link stations with sensors  
+
+```{r}
+sensor_config <- pull_configuration() %>% 
+  filter(detector_abandoned == "f",
+         r_node_n_type == "Station",
+         detector_category == "",
+         r_node_staton_id %in% rtmc_congest$station) 
+```
+
+```{r}
+# sensor_data <- pull_sensor_range("2019-10-01",
+# "2019-10-31", sensor_config)
+# saveRDS(sensor_data, "data_cache/october_2019_stations.RDS")
+sensor_data <- readRDS("data_cache/october_2019_stations.RDS")
+```
+
+
+```{r}
+# agg_five <- furrr::future_map(sensor_data,
+#                                       aggregate_sensor,
+#                                       config = sensor_config,
+#                                       interval_length = 5 / 60,
+#                                       occupancy_pct_threshold = 0.002,
+#                                       interpolate_missing = TRUE
+# )  %>%
+#   furrr::future_map(add_day_type)
+# saveRDS(agg_five, "data_cache/october_2019_agg_five.RDS")
+# # 
+# agg_five_midweek <- agg_five %>%
+#   furrr::future_map_dfr(.f = function(x){
+#     x[day_of_week %in% c("Tuesday", "Wednesday", "Thursday")][
+#       hour %in% c(seq(5,10), seq(14,19)),][
+#         , period := ifelse(hour > 10, "PM", "AM")]
+#   })
+# 
+# saveRDS(agg_five_midweek, "data_cache/october_2019_agg_five_midweek.RDS")
+
+agg_five <- readRDS("data_cache/october_2019_agg_five.RDS")
+agg_five_midweek <- readRDS("data_cache/october_2019_agg_five_midweek.RDS")
+```
+
+
+
+```{r}
+length(unique(sensor_config$r_node_station_id))
+
+sensor_rtmc <- right_join(rtmc_congest,
+                          sensor_config, by = c("station" = "r_node_station_id",
+                                              "direction" = "corridor_dir" ))
+
+```
+

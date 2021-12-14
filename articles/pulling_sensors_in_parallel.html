@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9002</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -70,8 +66,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Metropolitan-Council/tc.sensors/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/Metropolitan-Council/tc.sensors/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -85,59 +81,58 @@
 
       
 
-      </header><script src="pulling_sensors_in_parallel_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="pulling_sensors_in_parallel_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="pulling_sensors_in_parallel_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="pulling_sensors_in_parallel_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Pull multiple sensors using parallel processing</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Metropolitan-Council/tc.sensors/blob/master/vignettes/pulling_sensors_in_parallel.Rmd"><code>vignettes/pulling_sensors_in_parallel.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Metropolitan-Council/tc.sensors/blob/HEAD/vignettes/pulling_sensors_in_parallel.Rmd" class="external-link"><code>vignettes/pulling_sensors_in_parallel.Rmd</code></a></small>
       <div class="hidden name"><code>pulling_sensors_in_parallel.Rmd</code></div>
 
     </div>
 
     
     
-<div id="pull-data-for-select-sensors-for-all-2019" class="section level2">
-<h2 class="hasAnchor">
-<a href="#pull-data-for-select-sensors-for-all-2019" class="anchor"></a>Pull data for select sensors for all 2019</h2>
+<div class="section level2">
+<h2 id="pull-data-for-select-sensors-for-all-2019">Pull data for select sensors for all 2019<a class="anchor" aria-label="anchor" href="#pull-data-for-select-sensors-for-all-2019"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tc.sensors</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">doParallel</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RevolutionAnalytics/foreach">foreach</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org">magrittr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/collectivemedia/tictoc">tictoc</a></span><span class="op">)</span> <span class="co"># If you want to benchmark - but you shouldn't have to; I already did (:</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">tc.sensors</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">doParallel</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RevolutionAnalytics/foreach" class="external-link">foreach</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/collectivemedia/tictoc" class="external-link">tictoc</a></span><span class="op">)</span> <span class="co"># If you want to benchmark - but you shouldn't have to; I already did (:</span>
 
 <span class="va">sensor_config</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_configuration.html">pull_configuration</a></span><span class="op">(</span><span class="op">)</span>
 <span class="va">sensor_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_sensor_ids.html">pull_sensor_ids</a></span><span class="op">(</span><span class="op">)</span>
 
-<span class="va">cores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">cl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">makeCluster</a></span><span class="op">(</span><span class="va">cores</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/doParallel/man/registerDoParallel.html">registerDoParallel</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">tic</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># Start the timer</span>
+<span class="va">cores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">cl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">makeCluster</a></span><span class="op">(</span><span class="va">cores</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/doParallel/man/registerDoParallel.html" class="external-link">registerDoParallel</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">tic</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># Start the timer</span>
 
-<span class="fu"><a href="https://rdrr.io/pkg/foreach/man/foreach.html">foreach</a></span><span class="op">(</span>j <span class="op">=</span> <span class="va">sensor_ids</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">633</span><span class="op">:</span><span class="fl">714</span><span class="op">]</span><span class="op">)</span> <span class="op">%dopar%</span> <span class="op">{</span>
-  <span class="va">date_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2019/01/01"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2019/12/31"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"days"</span><span class="op">)</span>
-  <span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">date_range</span><span class="op">)</span>
-  <span class="va">loops_ls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="va">n</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/foreach/man/foreach.html" class="external-link">foreach</a></span><span class="op">(</span>j <span class="op">=</span> <span class="va">sensor_ids</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">633</span><span class="op">:</span><span class="fl">714</span><span class="op">]</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/foreach/man/foreach.html" class="external-link">%dopar%</a></span> <span class="op">{</span>
+  <span class="va">date_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2019/01/01"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2019/12/31"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"days"</span><span class="op">)</span>
+  <span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">date_range</span><span class="op">)</span>
+  <span class="va">loops_ls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="va">n</span><span class="op">)</span>
   
   <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span>
     <span class="va">loops_ls</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">tc.sensors</span><span class="fu">::</span><span class="fu"><a href="../reference/pull_sensor.html">pull_sensor</a></span><span class="op">(</span><span class="va">j</span>, <span class="va">date_range</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
   <span class="op">}</span>
   
-  <span class="va">loops_df</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html">rbindlist</a></span><span class="op">(</span><span class="va">loops_ls</span><span class="op">)</span>
-  <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fwrite.html">fwrite</a></span><span class="op">(</span><span class="va">loops_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"../../MnDOT_Loop_Detectors/Volume-Occupancy/2019/Sensor "</span>, <span class="va">j</span>, <span class="st">".csv"</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">loops_df</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">loops_ls</span><span class="op">)</span>
+  <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fwrite.html" class="external-link">fwrite</a></span><span class="op">(</span><span class="va">loops_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"../../MnDOT_Loop_Detectors/Volume-Occupancy/2019/Sensor "</span>, <span class="va">j</span>, <span class="st">".csv"</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
-<span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">toc</a></span><span class="op">(</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">stopCluster</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">stopCluster</a></span><span class="op">(</span><span class="va">cl</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="save-to-microsoft-access-database" class="section level2">
-<h2 class="hasAnchor">
-<a href="#save-to-microsoft-access-database" class="anchor"></a>Save to Microsoft Access Database</h2>
+<div class="section level2">
+<h2 id="save-to-microsoft-access-database">Save to Microsoft Access Database<a class="anchor" aria-label="anchor" href="#save-to-microsoft-access-database"></a>
+</h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">RODBC</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">RODBC</span><span class="op">)</span>
 
 <span class="va">test_conn</span> <span class="op">&lt;-</span> <span class="fu">odbcConnectAccess2007</span><span class="op">(</span><span class="st">"../LoopDBTest.accdb"</span><span class="op">)</span>
 <span class="fu">sqlTables</span><span class="op">(</span><span class="va">test_conn</span>, tableType <span class="op">=</span> <span class="st">"TABLE"</span><span class="op">)</span><span class="op">$</span><span class="va">TABLE_NAME</span> <span class="co"># Check available tables</span>
@@ -163,11 +158,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Liz Roten, Nicole Sullivan.</p>
+  <p></p>
+<p>Developed by Liz Roten, Nicole Sullivan.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -175,6 +172,8 @@
 
   
 
+
+  
 
   </body>
 </html>

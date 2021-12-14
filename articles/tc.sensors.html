@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9002</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -70,8 +66,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Metropolitan-Council/tc.sensors/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/Metropolitan-Council/tc.sensors/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -85,14 +81,13 @@
 
       
 
-      </header><script src="tc.sensors_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="tc.sensors_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="tc.sensors_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="tc.sensors_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>tc.sensors</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Metropolitan-Council/tc.sensors/blob/master/vignettes/tc.sensors.Rmd"><code>vignettes/tc.sensors.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Metropolitan-Council/tc.sensors/blob/HEAD/vignettes/tc.sensors.Rmd" class="external-link"><code>vignettes/tc.sensors.Rmd</code></a></small>
       <div class="hidden name"><code>tc.sensors.Rmd</code></div>
 
     </div>
@@ -100,66 +95,66 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tc.sensors</span><span class="op">)</span></code></pre></div>
-<div id="introduction" class="section level2">
-<h2 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h2>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">tc.sensors</span><span class="op">)</span></code></pre></div>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
 <p><code>{tc.sensors}</code> is an R package for processing data collected from Minnesota Department of Transportation (MnDOT) loop detectors installed on the Minnesota Freeway system in 30-second interval measurements of occupancy and volume, data which are pushed daily to a public JSON feed. Occupancy and volume data can be used to calculate speed and delay.</p>
 </div>
-<div id="primary-terms-and-definitions" class="section level2">
-<h2 class="hasAnchor">
-<a href="#primary-terms-and-definitions" class="anchor"></a>Primary terms and definitions</h2>
+<div class="section level2">
+<h2 id="primary-terms-and-definitions">Primary terms and definitions<a class="anchor" aria-label="anchor" href="#primary-terms-and-definitions"></a>
+</h2>
 <p>Raw data is accessed at the sensor level. Sensors are generally spaced in half mile intervals along a corridor.</p>
-<div id="volume" class="section level3">
-<h3 class="hasAnchor">
-<a href="#volume" class="anchor"></a>Volume</h3>
+<div class="section level3">
+<h3 id="volume">Volume<a class="anchor" aria-label="anchor" href="#volume"></a>
+</h3>
 <p>Volume represents the number of vehicles that pass through a detector in a given time period. Flow represents the number of vehicles that pass through a detector per hour (<code>Volume * Samples per Hour</code>).</p>
 </div>
-<div id="occupancy" class="section level3">
-<h3 class="hasAnchor">
-<a href="#occupancy" class="anchor"></a>Occupancy</h3>
+<div class="section level3">
+<h3 id="occupancy">Occupancy<a class="anchor" aria-label="anchor" href="#occupancy"></a>
+</h3>
 <p>The term ‘occupancy’ does not here refer to the occupants of a vehicle but rather the occupancy of the sensor, or how long the sensor was ‘occupied’. In a 30-second time period, 1800 scans are produced (60 per second), and each scan is binary: either the sensor is occupied or not. Therefore, a sensor occupied for 1 second within the 30-second time period would have a value of 60. Raw occupancy values can be converted to percentages:</p>
 <p><span class="math display">\[\frac{Occupancy}{1800}*100% \]</span> The resulting percentage is the percentage of time in that 30 seconds that the sensor was ‘occupied’.</p>
 </div>
-<div id="interpolating-null-values" class="section level3">
-<h3 class="hasAnchor">
-<a href="#interpolating-null-values" class="anchor"></a>Interpolating null values</h3>
+<div class="section level3">
+<h3 id="interpolating-null-values">Interpolating null values<a class="anchor" aria-label="anchor" href="#interpolating-null-values"></a>
+</h3>
 <p>Where nulls exist (vs. a zero measurement), it is assumed the connection was disrupted and no measurement was taken. For 15-minute intervals where other values exist, the nulls are interpolated with the <strong>average</strong> of the other values within the interval. Impossible values are also interpolated with the mean of the interval. Impossible values are raw occupancy values greater than 1800 (given that only 1800 scans are taken in a 30-second period). If an entire interval contains only nulls, it is converted to ‘NA’ and no values within the interval are interpolated.</p>
 <p>Note that a variable is created containing the percentage of nulls/impossible values in that interval; therefore, one can choose to exclude intervals with interpolation rates above a certain threshold of choice (eg if more than, say, 30% of the data is missing).</p>
 </div>
 </div>
-<div id="calculations" class="section level2">
-<h2 class="hasAnchor">
-<a href="#calculations" class="anchor"></a>Calculations</h2>
+<div class="section level2">
+<h2 id="calculations">Calculations<a class="anchor" aria-label="anchor" href="#calculations"></a>
+</h2>
 <p>Calculations for speed, flow, headway, density and lost/spare capacity must be conducted for a given time aggregation. Common time intervals include 10, 15, and 30 minutes, hourly, peak traffic periods, and daily.</p>
-<div id="density" class="section level3">
-<h3 class="hasAnchor">
-<a href="#density" class="anchor"></a>Density</h3>
-<p>The number of vehicles per mile (<code>Flow / Speed</code>). See <a href="http://data.dot.state.mn.us/datatools/Density.html">full calculation method</a> for additional context.</p>
+<div class="section level3">
+<h3 id="density">Density<a class="anchor" aria-label="anchor" href="#density"></a>
+</h3>
+<p>The number of vehicles per mile (<code>Flow / Speed</code>). See <a href="http://data.dot.state.mn.us/datatools/Density.html" class="external-link">full calculation method</a> for additional context.</p>
 </div>
-<div id="speed" class="section level3">
-<h3 class="hasAnchor">
-<a href="#speed" class="anchor"></a>Speed</h3>
+<div class="section level3">
+<h3 id="speed">Speed<a class="anchor" aria-label="anchor" href="#speed"></a>
+</h3>
 <p>Speed is calculated</p>
 <p><span class="math display">\[\frac{Vehicles Per Hour*Vehicle Length}{5280*Occupancy Percentage} \]</span></p>
 <p>or</p>
 <p><span class="math display">\[\frac{Flow}{Density} \]</span></p>
 <p>‘Vehicles Per Hour’ is calculated by summing all the vehicles over the 15-minute interval, and then multiplying that by four. ‘Vehicle Length’ is a static field in the sensor configuration dataset. ‘Occupancy Percentage’ is calculated by summing all the occupancy values over the 15-minute interval, and then dividing by 54,000 (1,800 scans in 30 seconds*30 periods in 15-minute interval).</p>
 </div>
-<div id="lost-or-spare-capacity" class="section level3">
-<h3 class="hasAnchor">
-<a href="#lost-or-spare-capacity" class="anchor"></a>Lost or Spare Capacity</h3>
+<div class="section level3">
+<h3 id="lost-or-spare-capacity">Lost or Spare Capacity<a class="anchor" aria-label="anchor" href="#lost-or-spare-capacity"></a>
+</h3>
 <p>The average flow that a roadway is losing, either due to low traffic or high congestion, throughout the sampling period.</p>
 </div>
-<div id="vehicle-miles-traveled-vmt" class="section level3">
-<h3 class="hasAnchor">
-<a href="#vehicle-miles-traveled-vmt" class="anchor"></a>Vehicle Miles Traveled (VMT)</h3>
+<div class="section level3">
+<h3 id="vehicle-miles-traveled-vmt">Vehicle Miles Traveled (VMT)<a class="anchor" aria-label="anchor" href="#vehicle-miles-traveled-vmt"></a>
+</h3>
 </div>
 </div>
-<div id="additional-documentation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#additional-documentation" class="anchor"></a>Additional documentation</h2>
-<p>The Regional Traffic Management Center (RTMC) maintains the Intelligent Roadway Information System (IRIS) with an <a href="https://github.com/mnit-rtmc/iris">open-source repository on GitHub</a>. IRIS <a href="https://mnit-rtmc.github.io/iris/index.html">documentation</a> is served from the GitHub repo, as well.</p>
+<div class="section level2">
+<h2 id="additional-documentation">Additional documentation<a class="anchor" aria-label="anchor" href="#additional-documentation"></a>
+</h2>
+<p>The Regional Traffic Management Center (RTMC) maintains the Intelligent Roadway Information System (IRIS) with an <a href="https://github.com/mnit-rtmc/iris" class="external-link">open-source repository on GitHub</a>. IRIS <a href="https://mnit-rtmc.github.io/iris/index.html" class="external-link">documentation</a> is served from the GitHub repo, as well.</p>
 </div>
   </div>
 
@@ -174,11 +169,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Liz Roten, Nicole Sullivan.</p>
+  <p></p>
+<p>Developed by Liz Roten, Nicole Sullivan.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -186,6 +183,8 @@
 
   
 
+
+  
 
   </body>
 </html>

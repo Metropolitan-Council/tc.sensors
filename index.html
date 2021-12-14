@@ -23,6 +23,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -35,18 +37,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9002</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -74,8 +70,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Metropolitan-Council/tc.sensors/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/Metropolitan-Council/tc.sensors/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -91,32 +87,32 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="tcsensors" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#tcsensors" class="anchor"></a>tc.sensors</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="tcsensors">tc.sensors<a class="anchor" aria-label="anchor" href="#tcsensors"></a>
+</h1></div>
 <!-- badges: start -->
 
 <!-- badges: end -->
-<div id="overview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h2>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
 <p>A package for pulling data for Minnesota Department of Transportation (MnDOT) loop detectors installed on the Minnesota Freeway system in 30-second interval measurements of occupancy and volume, data which are pushed daily to a public JSON feed.</p>
 </div>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"Metropolitan-Council/tc.sensors"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"Metropolitan-Council/tc.sensors"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="documentation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#documentation" class="anchor"></a>Documentation</h2>
+<div class="section level2">
+<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
+</h2>
 <p>To access documentation and for help on how to use the package, run <code>?&lt;FUNCTION-NAME&gt;</code> (e.g. <code><a href="reference/pull_sensor.html">?pull_sensor</a></code>, <code><a href="reference/pull_configuration.html">?pull_configuration</a></code>, <code><a href="reference/pull_sensor_ids.html">?pull_sensor_ids</a></code>). Access vignettes in the vignettes file to see examples of end-to-end workflows for pulling and storing data locally en masse. Check back for a vignettes for calculating speeds, reference speeds, delay, and VMT from the resulting files.</p>
 </div>
-<div id="relevant-definitions" class="section level2">
-<h2 class="hasAnchor">
-<a href="#relevant-definitions" class="anchor"></a>Relevant definitions</h2>
-<p>Definitions come from MnDOT Data Extract <a href="http://data.dot.state.mn.us/datatools/dataextract.html">documentation</a></p>
+<div class="section level2">
+<h2 id="relevant-definitions">Relevant definitions<a class="anchor" aria-label="anchor" href="#relevant-definitions"></a>
+</h2>
+<p>Definitions come from MnDOT Data Extract <a href="http://data.dot.state.mn.us/datatools/dataextract.html" class="external-link">documentation</a></p>
 <ul>
 <li>
 <strong>Volume</strong> The number of vehicles that pass through a detector in a given time period.<br>
@@ -131,7 +127,7 @@
 <strong>Headway</strong> The number of seconds between each vehicle (<code>Seconds_per_Hour / Flow</code>).<br>
 </li>
 <li>
-<strong>Density</strong> The number of vehicles per mile (<code>Flow / Speed</code>). See <a href="http://data.dot.state.mn.us/datatools/Density.html">full calculation method</a> for additional context.<br>
+<strong>Density</strong> The number of vehicles per mile (<code>Flow / Speed</code>). See <a href="http://data.dot.state.mn.us/datatools/Density.html" class="external-link">full calculation method</a> for additional context.<br>
 </li>
 <li>
 <strong>Speed</strong> The average speed of the vehicles that pass in a sampling period (<code>Flow / Density</code>).<br>
@@ -146,29 +142,30 @@
 </li>
 </ul>
 </div>
-<div id="associated-repositories-and-projects" class="section level2">
-<h2 class="hasAnchor">
-<a href="#associated-repositories-and-projects" class="anchor"></a>Associated repositories and projects</h2>
+<div class="section level2">
+<h2 id="associated-repositories-and-projects">Associated repositories and projects<a class="anchor" aria-label="anchor" href="#associated-repositories-and-projects"></a>
+</h2>
 <ul>
 <li>
-<strong><a href="https://github.com/Metropolitan-Council/loop-sensor-trends">loop-sensor-trends</a></strong> Data analysis and interactive R Shiny app for examining changes in regional traffic levels in response to the COVID-19 pandemic.<br>
+<strong><a href="https://github.com/Metropolitan-Council/loop-sensor-trends" class="external-link">loop-sensor-trends</a></strong> Data analysis and interactive R Shiny app for examining changes in regional traffic levels in response to the COVID-19 pandemic.<br>
 </li>
 <li>
-<strong><a href="https://github.com/sullivannicole/Twin-Cities-Loop-Detectors">Twin-Cities-Loop-Detectors</a></strong> A pre-cursor to <code>{tc.sensors}</code>. Contains extensive documentation and code samples that will be integrated into this package.</li>
+<strong><a href="https://github.com/sullivannicole/Twin-Cities-Loop-Detectors" class="external-link">Twin-Cities-Loop-Detectors</a></strong> A pre-cursor to <code>{tc.sensors}</code>. Contains extensive documentation and code samples that will be integrated into this package.</li>
 </ul>
 </div>
-<div id="contributors" class="section level2">
-<h2 class="hasAnchor">
-<a href="#contributors" class="anchor"></a>Contributors</h2>
+<div class="section level2">
+<h2 id="contributors">Contributors<a class="anchor" aria-label="anchor" href="#contributors"></a>
+</h2>
 <p><strong>Maintainer</strong> Liz Roten (<a href="mailto:liz.roten@metc.state.mn.us" class="email">liz.roten@metc.state.mn.us</a>)</p>
-<p><a href="https://github.com/ashleyasmus">@ashleyasmus</a>, <a href="https://github.com/eroten">@eroten</a>, and <a href="https://github.com/sullivannicole">@sullivannicole</a>.</p>
+<p><a href="https://github.com/ashleyasmus" class="external-link">@ashleyasmus</a>, <a href="https://github.com/eroten" class="external-link">@eroten</a>, and <a href="https://github.com/sullivannicole" class="external-link">@sullivannicole</a>.</p>
 </div>
-<div id="code-of-conduct" class="section level2">
-<h2 class="hasAnchor">
-<a href="#code-of-conduct" class="anchor"></a>Code of Conduct</h2>
-<p>Please note that the <code>{tc.sensors}</code> project is released with a <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
-<p><a href="https://metrocouncil.org" target="_blank"><img src="reference/figures/main-logo.png" style="margin-left: 50%;margin-right: 50%;"></a></p>
+<div class="section level2">
+<h2 id="code-of-conduct">Code of Conduct<a class="anchor" aria-label="anchor" href="#code-of-conduct"></a>
+</h2>
+<p>Please note that the <code>{tc.sensors}</code> project is released with a <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+<p><a href="https://metrocouncil.org" target="_blank" class="external-link"><img src="reference/figures/main-logo.png" style="margin-left: 50%;margin-right: 50%;"></a></p>
 <div>
+
 </div>
 <p></p>
 </div>
@@ -177,56 +174,66 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/Metropolitan-Council/tc.sensors/">https://​github.com/​Metropolitan-Council/​tc.sensors/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/Metropolitan-Council/tc.sensors/issues">
-    https://​github.com/​Metropolitan-Council/​tc.sensors/​issues</a>
-</li>
+<li><a href="https://github.com/Metropolitan-Council/tc.sensors/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/Metropolitan-Council/tc.sensors/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
+<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
+
 <div class="community">
-<h2>Community</h2>
+<h2 data-toc-skip>Community</h2>
 <ul class="list-unstyled">
 <li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
 </ul>
 </div>
-<div class="developers">
-<h2>Developers</h2>
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li>Liz Roten <br><small class="roles"> Maintainer, author </small>  </li>
-<li>Nicole Sullivan <br><small class="roles"> Author </small>  </li>
-<li><a href="authors.html">All authors...</a></li>
+<li><a href="authors.html#citation">Citing tc.sensors</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/Metropolitan-Council/tc.sensors/actions"><img src="https://github.com/Metropolitan-Council/tc.sensors/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
-<li><a href="https://www.tidyverse.org/lifecycle/#maturing"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle: maturing"></a></li>
-<li><a href="http://data.dot.state.mn.us/trafdat/metro/2018/20181021/5474.c30.json"><img src="https://img.shields.io/website?label=MnDOT&amp;up_color=olivedrab&amp;up_message=online&amp;url=http%3A%2F%2Fdata.dot.state.mn.us%2Ftrafdat%2Fmetro%2F2018%2F20181021%2F5474.c30.json" alt="Website MnDOT JSON"></a></li>
-<li><a href="http://mesonet.agron.iastate.edu/request/download.phtml?network=MN_ASOS"><img src="https://img.shields.io/website?label=IEM%20ASOS&amp;up_color=seagreen&amp;up_message=online&amp;url=http%3A%2F%2Fmesonet.agron.iastate.edu%2Frequest%2Fdownload.phtml%3Fnetwork%3DMN_ASOS" alt="Website IEM ASOS"></a></li>
+<li>Liz Roten <br><small class="roles"> Maintainer, author </small>  </li>
+<li>Nicole Sullivan <br><small class="roles"> Author </small>  </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/Metropolitan-Council/tc.sensors/actions" class="external-link"><img src="https://github.com/Metropolitan-Council/tc.sensors/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://www.tidyverse.org/lifecycle/#maturing" class="external-link"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle: maturing"></a></li>
+<li><a href="http://data.dot.state.mn.us/trafdat/metro/2018/20181021/5474.c30.json" class="external-link"><img src="https://img.shields.io/website?label=MnDOT&amp;up_color=olivedrab&amp;up_message=online&amp;url=http%3A%2F%2Fdata.dot.state.mn.us%2Ftrafdat%2Fmetro%2F2018%2F20181021%2F5474.c30.json" alt="Website MnDOT JSON"></a></li>
+<li><a href="http://mesonet.agron.iastate.edu/request/download.phtml?network=MN_ASOS" class="external-link"><img src="https://img.shields.io/website?label=IEM%20ASOS&amp;up_color=seagreen&amp;up_message=online&amp;url=http%3A%2F%2Fmesonet.agron.iastate.edu%2Frequest%2Fdownload.phtml%3Fnetwork%3DMN_ASOS" alt="Website IEM ASOS"></a></li>
+</ul>
 </div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Liz Roten, Nicole Sullivan.</p>
+  <p></p>
+<p>Developed by Liz Roten, Nicole Sullivan.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -234,6 +241,8 @@
 
   
 
+
+  
 
   </body>
 </html>

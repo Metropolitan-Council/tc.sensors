@@ -58,9 +58,10 @@ Definitions come from MnDOT Data Extract
   - **Lost/Spare Capacity** The average flow that a roadway is losing,
     either due to low traffic or high congestion, throughout the
     sampling period.
+ 
       - `Flow > 1800: 0`
-      - `Density < 43: Spare Capacity: Flow - 1800`
-      - `Density >= 43: Lost Capacity: 1800 - Flow`
+      - `Density > 43: Spare Capacity: Flow - 1800`
+      - `Density <= 43: Lost Capacity: 1800 - Flow`
 
 ## Associated repositories and projects
 

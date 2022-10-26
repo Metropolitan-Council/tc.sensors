@@ -48,7 +48,6 @@ For additional Minnesota station ID codes, see
 the \href{http://mesonet.agron.iastate.edu/sites/networks.php?network=MN_ASOS}{Mesonet station directory}.
 }
 \examples{
-
 \dontrun{
 
 library(tc.sensors)

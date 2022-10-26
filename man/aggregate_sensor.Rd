@@ -51,7 +51,9 @@ values for the given measure
 Aggregate raw sensor data to a chosen level
 }
 \details{
-\subsection{Calculating speed}{\preformatted{There are 60 scans per second, which means there are 60*60 = 1,800 scans per
+\subsection{Calculating speed}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{There are 60 scans per second, which means there are 60*60 = 1,800 scans per
 30-second interval. The occupancy value in the 30-second interval data
 represents the number of scans that were occupied of the 1,800 scans in that
 interval.
@@ -59,10 +61,12 @@ interval.
 With 60 scans per second, 60 seconds per minute there are 3,600 scans per minute.
 With 3,600 scans per minute, 60 minutes per hour there are 216,000 scans per hour.
 To find the number of scans in 15 minutes, we can multiply 0.25 * 216000 = 54,000 scans.
-}
+}\if{html}{\out{</div>}}
 }
 
-\subsection{Impossible values}{\preformatted{Any observation with a volume that exceeds 20 vehicles or an occupancy that exceeds 1,800 scans
+\subsection{Impossible values}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Any observation with a volume that exceeds 20 vehicles or an occupancy that exceeds 1,800 scans
 will be replaced with `NA`. It is impossible for more than twenty vehicles to pass over a sensor
 in only 30 seconds, and the maximum number of scans in 30 seconds is 1,800 (60 scans/second * 30 seconds).
 
@@ -72,7 +76,7 @@ in only 30 seconds, and the maximum number of scans in 30 seconds is 1,800 (60 s
   at the raw data level. The interpolated value for a given observation is the mean of
   the two observations on either side of the observation. This method preserves the variable's
   overall distribution.
-}
+}\if{html}{\out{</div>}}
 }
 }
 \examples{

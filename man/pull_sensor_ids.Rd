@@ -2,9 +2,7 @@
 % Please edit documentation in R/pull_sensor_ids.R
 \name{pull_sensor_ids}
 \alias{pull_sensor_ids}
-\title{Function to pull all sensor IDs in the Twin Cities metro
-
-Create a tidy dataframe containing sensor IDs for MnDOT metro district, mainly to be used with pull_sensor}
+\title{Function to pull all sensor IDs in the Twin Cities metro}
 \usage{
 pull_sensor_ids(.quiet = TRUE)
 }
@@ -15,8 +13,6 @@ pull_sensor_ids(.quiet = TRUE)
 dataframe containing variable "detector"
 }
 \description{
-Function to pull all sensor IDs in the Twin Cities metro
-
 Create a tidy dataframe containing sensor IDs for MnDOT metro district, mainly to be used with pull_sensor
 }
 \examples{

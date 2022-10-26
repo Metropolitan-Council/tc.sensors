@@ -22,11 +22,14 @@ values. Default is \code{TRUE}}
 data frame containing variables volume, occupancy, sensor, date, time.
 }
 \description{
-Create a tidy data frame, containing volume and occupancy, for a single date and sensor.
+Create a tidy data frame, containing volume and occupancy,
+for a single date and sensor.
 Use \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
 }
 \details{
-\subsection{Output}{\preformatted{A complete year's worth of data for volume or occupancy for one sensor
+\subsection{Output}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{A complete year's worth of data for volume or occupancy for one sensor
  usually results in a file that is around ~30-31KB.
 
 Approximate time to pull one sensor's and one extension's
@@ -35,12 +38,14 @@ Approximate time to pull one sensor's and one extension's
 
 Also note that if you assign `pull_sensor()`'s output, the result is returned in-memory,
 and there must be sufficient space in-memory to do so.
-}
+}\if{html}{\out{</div>}}
 }
 
-\subsection{Missing data}{\preformatted{Occupancy *can* be missing while volume data exists and vice versa.
+\subsection{Missing data}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Occupancy *can* be missing while volume data exists and vice versa.
 It is unknown how a loop could be monitoring volume and not occupancy.
-}
+}\if{html}{\out{</div>}}
 }
 }
 \examples{

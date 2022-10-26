@@ -26,7 +26,7 @@
 #' @export
 #'
 #' @import data.table
-#' @importFrom curl has_internet
+#' @importFrom curl nslookup
 #' @importFrom tis day
 #' @importFrom utils read.csv
 #' @importFrom cli cli_abort cli_alert
@@ -59,7 +59,7 @@ add_weather <- function(sensor_data,
                         interval_length = 1,
                         station = "MSP",
                         time_zone = "America%2FChicago") {
-  if (curl::has_internet() == FALSE) {
+  if (curl::nslookup("metrocouncil.org") == FALSE) {
     cli::cli_abort("You must be connected to the internet to access weather data")
   }
 

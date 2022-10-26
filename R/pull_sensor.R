@@ -61,6 +61,7 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom dplyr bind_cols rename
 #' @importFrom rlang .data
+#' @importFrom cli cli_alert
 #'
 #' @family loop sensor functions
 #'
@@ -83,7 +84,7 @@ pull_sensor <- function(sensor, pull_date,
   if (nrow(loop_date_sensor) == 1) {
     if (fill_gaps == TRUE) {
       if (.quiet == FALSE) {
-        message("Filling gaps...")
+        cli::cli_alert("Filling gaps...")
       }
 
       loop_date_sensor <- data.table::as.data.table(

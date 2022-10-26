@@ -1,5 +1,6 @@
 
-testthat::skip_if_offline()
+testthat::skip_if_offline(host = "metrocouncil.org")
+testthat::skip_on_ci()
 
 test_that("Weather data functions as expected", {
   config <- pull_configuration()

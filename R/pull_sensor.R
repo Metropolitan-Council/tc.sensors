@@ -1,8 +1,8 @@
 #' @title Pull sensor volume and occupancy
 #'
-#'
-#' @description Create a tidy data frame, containing volume and occupancy, for a single date and sensor.
-#'   Use \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
+#' @description Create a tidy data frame, containing volume and occupancy,
+#'     for a single date and sensor.
+#'     Use \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
 #'
 #' @param pull_date character, the date of data to pull.
 #'   Needs to by in "YYYY-MM-DD" format.

@@ -4,9 +4,6 @@
     <loc>/404.html</loc>
   </url>
   <url>
-    <loc>/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
     <loc>/LICENSE-text.html</loc>
   </url>
   <url>
@@ -77,5 +74,8 @@
   </url>
   <url>
     <loc>/reference/scrub_sensor.html</loc>
+  </url>
+  <url>
+    <loc>/reference/tc.sensors-package.html</loc>
   </url>
 </urlset>

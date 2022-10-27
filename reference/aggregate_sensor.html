@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -69,43 +69,56 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">aggregate_sensor</span><span class="op">(</span>
-  <span class="va">sensor_data</span>,
-  <span class="va">config</span>,
-  <span class="va">interval_length</span>,
-  replace_impossible <span class="op">=</span> <span class="cn">TRUE</span>,
-  interpolate_missing <span class="op">=</span> <span class="cn">FALSE</span>,
-  occupancy_pct_threshold <span class="op">=</span> <span class="fl">0.002</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">aggregate_sensor</span><span class="op">(</span></span>
+<span>  <span class="va">sensor_data</span>,</span>
+<span>  <span class="va">config</span>,</span>
+<span>  <span class="va">interval_length</span>,</span>
+<span>  replace_impossible <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  interpolate_missing <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  occupancy_pct_threshold <span class="op">=</span> <span class="fl">0.002</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>sensor_data</dt>
 <dd><p>data frame for single sensor returned from <code><a href="pull_sensor.html">pull_sensor()</a></code></p></dd>
+
+
 <dt>config</dt>
 <dd><p>data.table, a configuration file for the given sensor</p></dd>
+
+
 <dt>interval_length</dt>
 <dd><p>numeric, the interval length in hours.
 <code>NA</code> indicates no aggregation (30 second data)
 <code>0.25</code> indicates 15 minutes.
 Default is <code>1</code>.</p></dd>
+
+
 <dt>replace_impossible</dt>
 <dd><p>logical, whether to replace impossible values with <code>NA</code>.
 Default is <code>TRUE</code> and <em>highly</em> recommended.</p></dd>
+
+
 <dt>interpolate_missing</dt>
 <dd><p>logical, whether to interpolate missing volume and occupancy
 values at the raw data level. Only applies if <code>replace_impossible</code> is <code>TRUE</code>. Note
 that this option increases the function runtime.</p></dd>
+
+
 <dt>occupancy_pct_threshold</dt>
 <dd><p>numeric, the lowest possible occupancy percentage
 to use when calculating speed. Default is <code>0.0020</code> or 0.2%. Increasing the threshold
 results in more stable speed values, while lowering it may increase speed variability.
 A higher occupancy threshold is recommended for shorter interval lengths</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a data.table with values for volume, occupancy, and speed</p><ul><li><p><code>date</code> IDate, the given date</p></li>
+    
+
+<p>a data.table with values for volume, occupancy, and speed</p><ul><li><p><code>date</code> IDate, the given date</p></li>
 <li><p><code>interval_bin</code> numeric, the observations interval bin</p></li>
 <li><p><code>{measure}.pct_null</code> numeric, the percentage of observations with null
 values for the given measure</p></li>
@@ -118,58 +131,58 @@ values for the given measure</p></li>
     
 <div class="section">
 <h3 id="calculating-speed">Calculating speed<a class="anchor" aria-label="anchor" href="#calculating-speed"></a></h3>
-<div class="sourceCode"><pre><code>There are 60 scans per second, which means there are 60*60 = 1,800 scans per
-30-second interval. The occupancy value in the 30-second interval data
-represents the number of scans that were occupied of the 1,800 scans in that
-interval.
 
-With 60 scans per second, 60 seconds per minute there are 3,600 scans per minute.
-With 3,600 scans per minute, 60 minutes per hour there are 216,000 scans per hour.
-To find the number of scans in 15 minutes, we can multiply 0.25 * 216000 = 54,000 scans.
-</code></pre></div>
 
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>There are <span class="dv">60</span> scans per second, which means there are <span class="dv">60</span><span class="sc">*</span><span class="dv">60</span> <span class="ot">=</span> <span class="dv">1</span>,<span class="dv">800</span> scans per</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="dv">30</span><span class="sc">-</span>second interval. The occupancy value <span class="cf">in</span> the <span class="dv">30</span><span class="sc">-</span>second interval data</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>represents the number of scans that were occupied of the <span class="dv">1</span>,<span class="dv">800</span> scans <span class="cf">in</span> that</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>interval.</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>With <span class="dv">60</span> scans per second, <span class="dv">60</span> seconds per minute there are <span class="dv">3</span>,<span class="dv">600</span> scans per minute.</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>With <span class="dv">3</span>,<span class="dv">600</span> scans per minute, <span class="dv">60</span> minutes per hour there are <span class="dv">216</span>,<span class="dv">000</span> scans per hour.</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>To find the number of scans <span class="cf">in</span> <span class="dv">15</span> minutes, we can multiply <span class="fl">0.25</span> <span class="sc">*</span> <span class="dv">216000</span> <span class="ot">=</span> <span class="dv">54</span>,<span class="dv">000</span> scans.</span></code></pre><p></p></div>
 </div>
 
 <div class="section">
 <h3 id="impossible-values">Impossible values<a class="anchor" aria-label="anchor" href="#impossible-values"></a></h3>
-<div class="sourceCode"><pre><code>Any observation with a volume that exceeds 20 vehicles or an occupancy that exceeds 1,800 scans
-will be replaced with `NA`. It is impossible for more than twenty vehicles to pass over a sensor
-in only 30 seconds, and the maximum number of scans in 30 seconds is 1,800 (60 scans/second * 30 seconds).
 
-### Interpolating missing values
 
-  `interpolate_missing` indicates whether to interpolate missing volume and occupancy values
-  at the raw data level. The interpolated value for a given observation is the mean of
-  the two observations on either side of the observation. This method preserves the variable's
-  overall distribution.
-</code></pre></div>
-
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Any observation with a volume that exceeds <span class="dv">20</span> vehicles or an occupancy that exceeds <span class="dv">1</span>,<span class="dv">800</span> scans</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>will be replaced with <span class="st">`</span><span class="at">NA</span><span class="st">`</span>. It is impossible <span class="cf">for</span> more than twenty vehicles to pass over a sensor</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">in</span> only <span class="dv">30</span> seconds, and the maximum number of scans <span class="cf">in</span> <span class="dv">30</span> seconds is <span class="dv">1</span>,<span class="dv">800</span> (<span class="dv">60</span> scans<span class="sc">/</span>second <span class="sc">*</span> <span class="dv">30</span> seconds).</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="do">### Interpolating missing values</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">interpolate_missing</span><span class="st">`</span> indicates whether to interpolate missing volume and occupancy values</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  at the raw data level. The interpolated value <span class="cf">for</span> a given observation is the mean of</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  the two observations on either side of the observation. This method preserves the variable<span class="st">'s</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="st">  overall distribution.</span></span></code></pre><p></p></div>
 </div>
 
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">tc.sensors</span><span class="op">)</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu"><a href="pull_configuration.html">pull_configuration</a></span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">config_sample</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">config</span>, <span class="va">config</span><span class="op">$</span><span class="va">detector_abandoned</span> <span class="op">==</span> <span class="st">"f"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span>
-<span class="r-in">  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample_n.html" class="external-link">sample_n</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">yesterday</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">365</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">sensor_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="pull_sensor.html">pull_sensor</a></span><span class="op">(</span></span>
-<span class="r-in">  sensor <span class="op">=</span> <span class="va">config_sample</span><span class="op">$</span><span class="va">detector_name</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
-<span class="r-in">  pull_date <span class="op">=</span> <span class="va">yesterday</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">aggregate_sensor</span><span class="op">(</span><span class="va">sensor_results</span>,</span>
-<span class="r-in">  interval_length <span class="op">=</span> <span class="fl">1</span>,</span>
-<span class="r-in">  config <span class="op">=</span> <span class="va">config_sample</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">tc.sensors</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu"><a href="pull_configuration.html">pull_configuration</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">config_sample</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">config</span>, <span class="va">config</span><span class="op">$</span><span class="va">detector_abandoned</span> <span class="op">==</span> <span class="st">"f"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample_n.html" class="external-link">sample_n</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">yesterday</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">365</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">sensor_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="pull_sensor.html">pull_sensor</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  sensor <span class="op">=</span> <span class="va">config_sample</span><span class="op">$</span><span class="va">detector_name</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>  pull_date <span class="op">=</span> <span class="va">yesterday</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">aggregate_sensor</span><span class="op">(</span><span class="va">sensor_results</span>,</span></span>
+<span class="r-in"><span>  interval_length <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  config <span class="op">=</span> <span class="va">config_sample</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -184,7 +197,7 @@ in only 30 seconds, and the maximum number of scans in 30 seconds is 1,800 (60 s
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

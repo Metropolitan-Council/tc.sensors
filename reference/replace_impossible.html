@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.9002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -69,22 +69,27 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">replace_impossible</span><span class="op">(</span><span class="va">sensor_data</span>, interval_length <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">replace_impossible</span><span class="op">(</span><span class="va">sensor_data</span>, interval_length <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>sensor_data</dt>
 <dd><p>data frame for single sensor returned from <code><a href="pull_sensor.html">pull_sensor()</a></code></p></dd>
+
+
 <dt>interval_length</dt>
 <dd><p>numeric, the interval length in hours.
 <code>NA</code> indicates no aggregation (30 second data)
 <code>0.25</code> indicates 15 minutes.
 Default is <code>1</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>the original data.table with impossible volume and occupancy values
+    
+
+<p>the original data.table with impossible volume and occupancy values
 replaced with <code>NA</code>.</p>
     </div>
     <div id="details">
@@ -92,15 +97,15 @@ replaced with <code>NA</code>.</p>
     
 <div class="section">
 <h3 id="criteria">Criteria<a class="anchor" aria-label="anchor" href="#criteria"></a></h3>
-<div class="sourceCode"><pre><code>- Hourly
-  - total hourly occupancy exceeds 216,000 scans
-  - total hourly volume exceeds 2,300 cars
-- 30-sec
-  - total 30-second volume exceeds 20 cars
-  - total 30-second occupancy exceed 1,800 scans
-- Percent nulls &gt; 10.
-</code></pre></div>
 
+
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span> Hourly</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span> total hourly occupancy exceeds <span class="dv">216</span>,<span class="dv">000</span> scans</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span> total hourly volume exceeds <span class="dv">2</span>,<span class="dv">300</span> cars</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span> <span class="dv">30</span><span class="sc">-</span>sec</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span> total <span class="dv">30</span><span class="sc">-</span>second volume exceeds <span class="dv">20</span> cars</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span> total <span class="dv">30</span><span class="sc">-</span>second occupancy exceed <span class="dv">1</span>,<span class="dv">800</span> scans</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span> Percent nulls <span class="sc">&gt;</span> <span class="fl">10.</span></span></code></pre><p></p></div>
 </div>
 
     </div>
@@ -122,7 +127,7 @@ person("Liz", "Roten"))</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

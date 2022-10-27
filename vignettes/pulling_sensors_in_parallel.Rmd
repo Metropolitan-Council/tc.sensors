@@ -11,51 +11,42 @@ vignette: >
 
 ```{r, eval = FALSE}
 library(tc.sensors)
-library(doParallel)
-library(foreach)
 library(dplyr)
 library(magrittr)
-library(tictoc) # If you want to benchmark - but you shouldn't have to; I already did (:
+library(furrr)
+library(tictoc) 
 
+# pull sensor configuration and IDs
 sensor_config <- pull_configuration()
 sensor_ids <- pull_sensor_ids()
 
-cores <- detectCores()
-cl <- makeCluster(cores)
-registerDoParallel(cl)
 tic() # Start the timer
 
-foreach(j = sensor_ids[[1]][633:714]) %dopar% {
-  date_range <- seq(as.Date("2019/01/01"), as.Date("2019/12/31"), by = "days")
-  n <- length(date_range)
-  loops_ls <- vector("list", n)
-  
-  for (i in 1:n) {
-    loops_ls[[i]] <- tc.sensors::pull_sensor(j, date_range[[i]])
-  }
-  
-  loops_df <- data.table::rbindlist(loops_ls)
-  data.table::fwrite(loops_df, paste0("../../MnDOT_Loop_Detectors/Volume-Occupancy/2019/Sensor ", j, ".csv"))
-}
-toc()
-stopCluster(cl)
+# set up parallel processing
+future::plan(multisession)
 
-```
+# define date range
+date_range <- seq(as.Date("2019/01/01"),
+                  as.Date("2019/12/31"), by = "days")
 
-## Save to Microsoft Access Database  
+# iterate through each sensor
+sensor_data <- furrr::future_map_dfr(
+  sensor_ids[[1]][633:640],
+  function(x){
+    
+    # iterate through each date
+    purrr::map_dfr(date_range,
+                   function(d){
+                     pull_sensor(
+                       sensor = x,
+                       pull_date = d
+                     )
+                   })
+    
+  })
 
-```{r, eval=FALSE}
-library(RODBC)
+tictoc::toc()
 
-test_conn <- odbcConnectAccess2007("../LoopDBTest.accdb")
-sqlTables(test_conn, tableType = "TABLE")$TABLE_NAME # Check available tables
-
-sqlSave(channel = test_conn,
-        dat = loops_df,
-        append = T,
-        tablename = "testtable",
-        rownames = F) # Prevents RStudio from crashing
-
-check <- RODBC::sqlQuery(test_conn, "SELECT * from testtable WHERE date = 20191231")
+head(sensor_data)
 
 ```

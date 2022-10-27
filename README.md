@@ -41,34 +41,33 @@ speeds, delay, and VMT from the resulting files.
 Definitions come from MnDOT Data Extract
 [documentation](http://data.dot.state.mn.us/datatools/dataextract.html)
 
-  - **Volume** The number of vehicles that pass through a detector in a
+-   **Volume** The number of vehicles that pass through a detector in a
     given time period.  
-  - **Occupancy** The percentage of time a detector’s field is occupied
+-   **Occupancy** The percentage of time a detector’s field is occupied
     by a vehicle.  
-  - **Flow** The number of vehicles that pass through a detector per
+-   **Flow** The number of vehicles that pass through a detector per
     hour (`Volume * Samples per Hour`).  
-  - **Headway** The number of seconds between each vehicle
+-   **Headway** The number of seconds between each vehicle
     (`Seconds_per_Hour / Flow`).  
-  - **Density** The number of vehicles per mile (`Flow / Speed`). See
+-   **Density** The number of vehicles per mile (`Flow / Speed`). See
     [full calculation
     method](http://data.dot.state.mn.us/datatools/Density.html) for
     additional context.  
-  - **Speed** The average speed of the vehicles that pass in a sampling
+-   **Speed** The average speed of the vehicles that pass in a sampling
     period (`Flow / Density`).  
-  - **Lost/Spare Capacity** The average flow that a roadway is losing,
+-   **Lost/Spare Capacity** The average flow that a roadway is losing,
     either due to low traffic or high congestion, throughout the
     sampling period.
- 
-      - `Flow > 1800: 0`
-      - `Density > 43: Spare Capacity: Flow - 1800`
-      - `Density <= 43: Lost Capacity: 1800 - Flow`
+    -   `Flow > 1800: 0`
+    -   `Density > 43: Lost Capacity: Flow - 1800`
+    -   `Density >= 43: Lost Capacity: 1800 - Flow`
 
 ## Associated repositories and projects
 
-  - **[loop-sensor-trends](https://github.com/Metropolitan-Council/loop-sensor-trends)**
+-   **[loop-sensor-trends](https://github.com/Metropolitan-Council/loop-sensor-trends)**
     Data analysis and interactive R Shiny app for examining changes in
     regional traffic levels in response to the COVID-19 pandemic.  
-  - **[Twin-Cities-Loop-Detectors](https://github.com/sullivannicole/Twin-Cities-Loop-Detectors)**
+-   **[Twin-Cities-Loop-Detectors](https://github.com/sullivannicole/Twin-Cities-Loop-Detectors)**
     A pre-cursor to `{tc.sensors}`. Contains extensive documentation and
     code samples that will be integrated into this package.
 
@@ -79,13 +78,6 @@ Definitions come from MnDOT Data Extract
 [@ashleyasmus](https://github.com/ashleyasmus),
 [@eroten](https://github.com/eroten), and
 [@sullivannicole](https://github.com/sullivannicole).
-
-## Code of Conduct
-
-Please note that the `{tc.sensors}` project is released with a
-[Contributor Code of
-Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
-By contributing to this project, you agree to abide by its terms.
 
 <a href="https://metrocouncil.org" target="_blank"><img src="man/figures/main-logo.png" style="margin-left: 50%;margin-right: 50%;">
 

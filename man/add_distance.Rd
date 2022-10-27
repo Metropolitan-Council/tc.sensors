@@ -27,7 +27,9 @@ Find the distance between all sensors based on corridor and direction. Essential
 It is best to call this function on the entire sensor configuration data table;
 you can access the table with \code{pull_configuration()}. Non-station node types
 will be
-\subsection{Interpolation}{\preformatted{Where upstream detector does not exist, or where distance is
+\subsection{Interpolation}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Where upstream detector does not exist, or where distance is
 beyond 3 miles, interpolate so as not to assume large VMT
 merely because vehicles crossed an isolated detector.
 
@@ -39,7 +41,7 @@ missing (i.e. NA for entire corridor), or distance attributed is
  greater than 3 miles (want a conservative assumption for how
  many miles of travel volume at a particular sensor depicts),
  interpolate with metro-wide network median.
-}
+}\if{html}{\out{</div>}}
 }
 }
 \examples{

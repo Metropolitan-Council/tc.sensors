@@ -1,8 +1,8 @@
 #' @title Pull sensor volume and occupancy
 #'
-#'
-#' @description Create a tidy data frame, containing volume and occupancy, for a single date and sensor.
-#'   Use \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
+#' @description Create a tidy data frame, containing volume and occupancy,
+#'     for a single date and sensor.
+#'     Use \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
 #'
 #' @param pull_date character, the date of data to pull.
 #'   Needs to by in "YYYY-MM-DD" format.
@@ -61,6 +61,7 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom dplyr bind_cols rename
 #' @importFrom rlang .data
+#' @importFrom cli cli_alert
 #'
 #' @family loop sensor functions
 #'
@@ -83,7 +84,7 @@ pull_sensor <- function(sensor, pull_date,
   if (nrow(loop_date_sensor) == 1) {
     if (fill_gaps == TRUE) {
       if (.quiet == FALSE) {
-        message("Filling gaps...")
+        cli::cli_alert("Filling gaps...")
       }
 
       loop_date_sensor <- data.table::as.data.table(

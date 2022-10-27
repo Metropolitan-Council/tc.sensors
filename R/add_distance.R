@@ -50,18 +50,18 @@ add_distance <- function(config,
 
   # input checks ---------------------------------------------------------------
   if (nrow(.config) < 1) {
-    stop("There must be more than one sensor in the configuration")
+    cli::cli_abort("There must be more than one sensor in the configuration")
   }
 
   if (min(.config[, .(n = .N), keyby = .(corridor_route)][, n]) < 2) {
-    stop("There must be at least two sensors for each corridor in the configuration")
+    cli::cli_abort("There must be at least two sensors for each corridor in the configuration")
   }
 
   # Select stations (want distance between stations, not between ramps etc.)
   config_stations <- as.data.table(.config)[r_node_n_type == "Station", ]
 
   if (nrow(config_stations) == 0) {
-    stop("There must be station node types in the configuration")
+    cli::cli_abort("There must be station node types in the configuration")
   }
 
 

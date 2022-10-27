@@ -1,6 +1,6 @@
-testthat::skip_if_offline()
+testthat::skip_if_offline("metrocouncil.org")
 
-test_that("Impossible values are replaced", {
+testthat::test_that("Impossible values are replaced", {
   config <- pull_configuration()
 
   yesterday <- as.Date(Sys.Date() - 3)

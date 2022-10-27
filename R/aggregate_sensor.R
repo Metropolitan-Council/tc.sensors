@@ -54,6 +54,7 @@
 #' @export
 #'
 #' @import data.table
+#' @importFrom cli cli_abort
 #'
 #' @examples
 #' \dontrun{
@@ -82,24 +83,24 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
                              occupancy_pct_threshold = 0.0020) {
   # input checks ---------------------------------------------------------------
   if (is.na(interval_length)) {
-    stop("No aggregation to do!")
+    cli::cli_abort("No aggregation to do!")
   }
 
   if (interval_length > 24) {
-    stop("Interval cannot exceed 24 hours.")
+    cli::cli_abort("Interval cannot exceed 24 hours.")
 
     if (length(unique(sensor_data$date)) <= 1) {
-      stop("For intervals greater than 24 hours, you must have data for more than one date")
+      cli::cli_abort("For intervals greater than 24 hours, you must have data for more than one date")
     }
   }
 
   if (nrow(sensor_data) != 2880 * length(unique(sensor_data$date))) {
-    stop("For multiple dates, you must have at least 2,880 rows for each date you want covered.")
+    cli::cli_abort("For multiple dates, you must have at least 2,880 rows for each date you want covered.")
   }
 
 
   if (length(unique(sensor_data$sensor)) > 1) {
-    stop("More than one sensor is in this dataset.")
+    cli::cli_abort("More than one sensor is in this dataset.")
   }
 
   # format data ----------------------------------------------------------------

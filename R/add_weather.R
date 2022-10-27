@@ -26,12 +26,12 @@
 #' @export
 #'
 #' @import data.table
-#' @importFrom curl has_internet
+#' @importFrom curl nslookup
 #' @importFrom tis day
 #' @importFrom utils read.csv
+#' @importFrom cli cli_abort cli_alert
 #'
 #' @examples
-#'
 #' \dontrun{
 #'
 #' library(tc.sensors)
@@ -59,12 +59,12 @@ add_weather <- function(sensor_data,
                         interval_length = 1,
                         station = "MSP",
                         time_zone = "America%2FChicago") {
-  if (curl::has_internet() == FALSE) {
-    stop("You must be connected to the internet to access weather data")
+  if (curl::nslookup("metrocouncil.org") == FALSE) {
+    cli::cli_abort("You must be connected to the internet to access weather data")
   }
 
   if (interval_length < 1) {
-    stop("Choose an interval length of at least one hour")
+    cli::cli_abort("Choose an interval length of at least one hour")
   }
 
   min_date <- min(sensor_data$date)
@@ -99,7 +99,7 @@ add_weather <- function(sensor_data,
   # meta <- str_c("https://mesonet.agron.iastate.edu/geojson/network/", network, ".geojson", sep="")
   # jdict <- fromJSON(url(meta))
 
-  message(paste("Downloading:", station, "for", min_date, "to", max_date - 1, sep = " "))
+  cli::cli_alert(paste("Downloading:", station, "for", min_date, "to", max_date - 1, sep = " "))
   data <- data.table::data.table(utils::read.csv(request, na.strings = "null"))
 
   if (save_raw == TRUE) {

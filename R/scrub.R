@@ -6,6 +6,7 @@
 #' @export
 #'
 scrub_sensor <- function(sensor_data, interval_length = NA) {
+
   sensor_data[!duplicated(sensor_data, by = c("date", "hour", "min", "sensor"), fromLast = TRUE)]
 }
 
@@ -19,6 +20,7 @@ scrub_sensor <- function(sensor_data, interval_length = NA) {
 #' @export
 #'
 #' @import data.table
+#' @importFrom cli cli_abort
 #'
 #' @details
 #'   ## Criteria
@@ -36,18 +38,18 @@ scrub_sensor <- function(sensor_data, interval_length = NA) {
 replace_impossible <- function(sensor_data,
                                interval_length = NA) {
   if (length(unique(sensor_data$sensor)) > 1) {
-    stop("More than one sensor is in this dataset.")
+    cli::cli_abort("More than one sensor is in this dataset.")
   }
 
   if (is.na(interval_length)) {
     if (nrow(sensor_data) != 2880 * length(unique(sensor_data$date))) {
-      stop("For multiple dates, you must have at least 2,880 rows for each date you want covered.")
+      cli::cli_abort("For multiple dates, you must have at least 2,880 rows for each date you want covered.")
     }
 
     sensor_data[, volume := ifelse(volume >= 20, NA, volume)][, occupancy := ifelse(occupancy >= 1800, NA, occupancy)]
   } else {
     if (interval_length > 24) {
-      stop("Interval cannot exceed 24 hours.")
+      cli::cli_abort("Interval cannot exceed 24 hours.")
     }
 
     sensor_data[, volume.sum := ifelse(volume.sum >= (interval_length * 2300), NA, volume.sum)][, occupancy.sum := ifelse(occupancy.sum >= (interval_length * 216000), NA, occupancy.sum)][, volume.sum := ifelse(volume.pct.null >= 10, NA, volume.sum)][, occupancy.sum := ifelse(occupancy.pct.null >= 10, NA, occupancy.sum)][, speed := ifelse(is.na(volume.sum), NA, speed)][, speed := ifelse(is.na(occupancy.sum), NA, speed)]

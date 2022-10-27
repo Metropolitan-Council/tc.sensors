@@ -10,3 +10,6 @@
 ^Meta$
 ^README\.Rmd$
 ^vignettes/calculate_speed_delay_cache$
+^vignettes/data_cache/$
+^vignettes/data_cache$
+^vignettes/compare_congestion_metrics_cache$

@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 [![Website IEM ASOS](https://img.shields.io/website?label=IEM%20ASOS&up_color=seagreen&up_message=online&url=http%3A%2F%2Fmesonet.agron.iastate.edu%2Frequest%2Fdownload.phtml%3Fnetwork%3DMN_ASOS)](http://mesonet.agron.iastate.edu/request/download.phtml?network=MN_ASOS)
 
 <!-- badges: end -->
-  
+# tc.sensors <img src="man/figures/logo.png" align="right" height="300" />
 ## Overview
 A package for pulling data for Minnesota Department of Transportation (MnDOT) loop detectors installed on the Minnesota Freeway system in 30-second interval measurements of occupancy and volume, data which are pushed daily to a public JSON feed.  
 

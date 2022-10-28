@@ -14,6 +14,8 @@ ASOS](https://img.shields.io/website?label=IEM%20ASOS&up_color=seagreen&up_messa
 
 <!-- badges: end -->
 
+# tc.sensors <img src="man/figures/logo.png" align="right" height="300" />
+
 ## Overview
 
 A package for pulling data for Minnesota Department of Transportation

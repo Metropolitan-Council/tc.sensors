@@ -1,5 +1,3 @@
-testthat::skip_if_offline()
-
 
 test_that("distance is calculated correctly", {
   config <- as.data.table(pull_configuration())
@@ -24,5 +22,5 @@ test_that("distance is calculated correctly", {
   testthat::expect_true(nrow(th22) == nrow(pulled))
 
   # max distance no greater than 3 miles
-  testthat::expect_true(max(pulled$distance, na.rm = T) < 3)
+  testthat::expect_true(max(pulled$distance, na.rm = TRUE) < 3)
 })

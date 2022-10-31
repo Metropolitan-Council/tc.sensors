@@ -66,7 +66,6 @@
 #' @importFrom purrr map2
 #' @importFrom data.table fwrite
 #' @importFrom utils download.file
-#' @importFrom rlang .data
 #'
 #' @export
 pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
@@ -85,42 +84,42 @@ pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
       xml2::xml_find_all(metro_config, "//detector")
     )
   ) %>%
-    dplyr::mutate(detector_path = .data$value) %>%
-    tidyr::separate(.data$detector_path, into = c(
+    dplyr::mutate(detector_path = value) %>%
+    tidyr::separate(detector_path, into = c(
       "front", "tms_config",
       "device", "rnode",
       "detector"
     ), sep = "/") %>%
-    tidyr::unite(rnode_path, .data$front,
-      .data$tms_config, .data$device,
-      .data$rnode,
+    tidyr::unite(rnode_path, front,
+      tms_config, device,
+      rnode,
       sep = "/"
     ) %>%
-    dplyr::mutate(rnode_path = trimws(.data$rnode_path)) %>%
-    dplyr::mutate(corridor_path = .data$rnode_path) %>%
-    tidyr::separate(.data$corridor_path, into = c(
+    dplyr::mutate(rnode_path = trimws(rnode_path)) %>%
+    dplyr::mutate(corridor_path = rnode_path) %>%
+    tidyr::separate(corridor_path, into = c(
       "front", "tms_config",
       "device", "rnode"
     ), sep = "/") %>%
-    tidyr::unite(corridor_path, .data$front,
-      .data$tms_config, .data$device,
+    tidyr::unite(corridor_path, front,
+      tms_config, device,
       sep = "/"
     ) %>%
-    dplyr::mutate(corridor_path = trimws(.data$corridor_path)) %>%
-    dplyr::select(-.data$name) %>%
-    dplyr::rename(detector_path = .data$value)
+    dplyr::mutate(corridor_path = trimws(corridor_path)) %>%
+    dplyr::select(-name) %>%
+    dplyr::rename(detector_path = value)
 
   # Rnode paths
   rnode_paths <- tibble::enframe(
     xml2::xml_path(xml2::xml_find_all(metro_config, "//r_node"))
   ) %>%
-    dplyr::transmute(rnode_path = .data$value)
+    dplyr::transmute(rnode_path = value)
 
   # Corridor paths
   corridor_paths <- tibble::enframe(
     xml2::xml_path(xml2::xml_find_all(metro_config, "//corridor"))
   ) %>%
-    dplyr::transmute(corridor_path = .data$value)
+    dplyr::transmute(corridor_path = value)
 
   # ------------------
   # ATTRIBUTES (rnodes & detectors)
@@ -178,9 +177,9 @@ pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
 
   config_tidy <- configuration %>%
     dplyr::select(
-      -.data$rnode, -.data$rnode_path,
-      -.data$detector, -.data$detector_path,
-      -.data$corridor_path
+      -rnode, -rnode_path,
+      -detector, -detector_path,
+      -corridor_path
     ) %>%
     dplyr::mutate(date = Sys.Date())
 

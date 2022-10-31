@@ -124,8 +124,8 @@ add_weather <- function(sensor_data,
 
   weather_sensor_agg <- clean_weather[, as.list(unlist(lapply(.SD, function(x) {
     list(
-      sum = sum(x, na.rm = T),
-      mean = round(mean(x, na.rm = T), 1)
+      sum = sum(x, na.rm = TRUE),
+      mean = round(mean(x, na.rm = TRUE), 1)
     )
   }))),
   by = .(date, interval_bin),

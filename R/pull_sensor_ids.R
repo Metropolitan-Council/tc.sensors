@@ -14,7 +14,6 @@
 #' @importFrom dplyr transmute
 #' @importFrom tibble enframe
 #' @importFrom utils download.file
-#' @importFrom rlang .data
 #'
 #' @export
 pull_sensor_ids <- function(.quiet = TRUE) {
@@ -24,5 +23,5 @@ pull_sensor_ids <- function(.quiet = TRUE) {
   metro_config <- xml2::read_xml(gzfile(tmp))
 
   tibble::enframe(trimws(xml2::xml_attr(xml2::xml_find_all(metro_config, "//detector"), "name"))) %>%
-    dplyr::transmute(detector = .data$value)
+    dplyr::transmute(detector = value)
 }

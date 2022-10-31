@@ -6,7 +6,6 @@
 #' @export
 #'
 scrub_sensor <- function(sensor_data, interval_length = NA) {
-
   sensor_data[!duplicated(sensor_data, by = c("date", "hour", "min", "sensor"), fromLast = TRUE)]
 }
 

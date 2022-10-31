@@ -1,4 +1,3 @@
-testthat::skip_if_offline()
 test_that("pull_sensor_ids works", {
   sensor_ids <- pull_sensor_ids()
 

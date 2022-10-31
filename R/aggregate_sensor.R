@@ -120,14 +120,20 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
     if (interpolate_missing == TRUE) {
       sensor_data <- sensor_data[
         , `:=`(volume.rollmean = data.table::shift(
-          data.table::frollapply(volume, 3, mean, align = "center", na.rm = T, hasNA = T)
+          data.table::frollapply(volume, 3, mean,
+            align = "center",
+            na.rm = TRUE, hasNA = TRUE
+          )
         )),
         by = .(sensor)
       ][
         , volume := ifelse(is.na(volume), volume.rollmean, volume)
       ][
         , `:=`(occupancy.rollmean = data.table::shift(
-          data.table::frollapply(occupancy, 3, mean, align = "center", na.rm = T, hasNA = T)
+          data.table::frollapply(occupancy, 3, mean,
+            align = "center", na.rm = TRUE,
+            hasNA = TRUE
+          )
         )),
         by = .(sensor)
       ][
@@ -158,8 +164,8 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
       list(
-        sum = round(mean(x, na.rm = T) * n_rows_expected),
-        mean = mean(x, na.rm = T),
+        sum = round(mean(x, na.rm = TRUE) * n_rows_expected),
+        mean = mean(x, na.rm = TRUE),
         pct.null = round(100 * sum(is.na(x)) / length(x))
       )
     }))),
@@ -186,8 +192,8 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
       list(
-        sum = round(mean(x, na.rm = T) * n_rows_expected),
-        mean = mean(x, na.rm = T),
+        sum = round(mean(x, na.rm = TRUE) * n_rows_expected),
+        mean = mean(x, na.rm = TRUE),
         pct.null = round(100 * sum(is.na(x)) / length(x))
       )
     }))),

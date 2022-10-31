@@ -27,7 +27,6 @@ Imports:
     jsonlite (>= 1.6.1),
     magrittr (>= 1.5),
     purrr (>= 0.3.4),
-    rlang (>= 0.4.6),
     sf (>= 0.9.5),
     tibble (>= 3.0.1),
     tidyr (>= 1.1.0),

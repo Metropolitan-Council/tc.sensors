@@ -77,7 +77,7 @@ generate_spatial_lines <- function(config) {
     dplyr::summarise(do_union = FALSE, .groups = "keep") %>%
     sf::st_cast("LINESTRING") %>%
     sf::st_set_crs(4326) %>%
-    dplyr::mutate(length_miles = as.numeric(sf::st_length(.data$geometry)) * 0.00062137)
+    dplyr::mutate(length_miles = as.numeric(sf::st_length(geometry)) * 0.00062137)
 
   return(lines_sf)
 }

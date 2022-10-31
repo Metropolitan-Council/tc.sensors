@@ -60,7 +60,6 @@
 #' @importFrom tibble enframe as_tibble
 #' @importFrom jsonlite fromJSON
 #' @importFrom dplyr bind_cols rename
-#' @importFrom rlang .data
 #' @importFrom cli cli_alert
 #'
 #' @family loop sensor functions
@@ -151,7 +150,7 @@ extension_pull <- function(ext, ext_name, sensor, pull_date, quiet = TRUE) {
       )
     )
   ) %>%
-    dplyr::select(.data$value),
+    dplyr::select(value),
   silent = quiet
   )
   names(df_default) <- ext_name

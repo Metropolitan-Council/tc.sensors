@@ -1,5 +1,3 @@
-testthat::skip_if_offline()
-
 
 test_that("distance is calculated correctly", {
   config <- as.data.table(pull_configuration())

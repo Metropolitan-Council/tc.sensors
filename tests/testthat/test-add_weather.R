@@ -1,13 +1,7 @@
 
-testthat::skip_if_offline(host = "metrocouncil.org")
 testthat::skip_on_ci()
 
 test_that("Weather data functions as expected", {
-  config <- pull_configuration()
-
-
-  yesterday <- as.Date(Sys.Date() - 3)
-
 
   config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
     dplyr::sample_n(1)

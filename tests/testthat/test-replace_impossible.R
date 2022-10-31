@@ -1,9 +1,6 @@
-testthat::skip_if_offline("metrocouncil.org")
 
 testthat::test_that("Impossible values are replaced", {
-  config <- pull_configuration()
 
-  yesterday <- as.Date(Sys.Date() - 3)
 
   config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
     dplyr::sample_n(1)

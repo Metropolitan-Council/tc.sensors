@@ -24,5 +24,5 @@ test_that("distance is calculated correctly", {
   testthat::expect_true(nrow(th22) == nrow(pulled))
 
   # max distance no greater than 3 miles
-  testthat::expect_true(max(pulled$distance, na.rm = T) < 3)
+  testthat::expect_true(max(pulled$distance, na.rm = TRUE) < 3)
 })

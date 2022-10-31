@@ -27,13 +27,13 @@ testthat::test_that("Aggregation functions as expected", {
       testthat::expect_equal(
         round(mean(sensor_results$volume, na.rm = TRUE)),
         round(mean(agg$volume.mean, na.rm = TRUE)),
-        tolerance = 10
+        tolerance = 12
       )
 
       testthat::expect_equal(
         sum(sensor_results$occupancy, na.rm = TRUE),
         sum(agg$occupancy.sum, na.rm = TRUE),
-        tolerance = 10
+        tolerance = 12
       )
 
       # test aggregation at 1 hour--------------------------------------------------

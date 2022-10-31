@@ -6,6 +6,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Retrieve Loop Detector Data from the MnDOT JSON Feed • tc.sensors</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/simplex/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -17,6 +23,7 @@
     Freeway system in 30-second interval measurements of occupancy and
     volume, data which are pushed daily to a public JSON feed.  Occupancy
     and volume data can be used to calculate speed and delay.">
+<meta property="og:image" content="https://github.com/Metropolitan-Council/tc.sensors/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -70,7 +77,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Metropolitan-Council/tc.sensors/" class="external-link">
+  <a href="https://github.com/Metropolitan-Council/tc.sensors/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -87,12 +94,17 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
+
 <div class="section level1">
 <div class="page-header"><h1 id="tcsensors">tc.sensors<a class="anchor" aria-label="anchor" href="#tcsensors"></a>
 </h1></div>
 <!-- badges: start -->
 
 <!-- badges: end -->
+</div>
+<div class="section level1">
+<h1 id="tcsensors-">tc.sensors <img src="reference/figures/logo.png" align="right" height="300"><a class="anchor" aria-label="anchor" href="#tcsensors-"></a>
+</h1>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -165,14 +177,15 @@
 <p></p>
 </div>
 </div>
+
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/Metropolitan-Council/tc.sensors/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/Metropolitan-Council/tc.sensors/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/Metropolitan-Council/tc.sensors/">Browse source code</a></li>
+<li><a href="https://github.com/Metropolitan-Council/tc.sensors/issues">Report a bug</a></li>
 </ul>
 </div>
 
@@ -204,7 +217,7 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/Metropolitan-Council/tc.sensors/actions" class="external-link"><img src="https://github.com/Metropolitan-Council/tc.sensors/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://github.com/Metropolitan-Council/tc.sensors/actions"><img src="https://github.com/Metropolitan-Council/tc.sensors/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
 <li><a href="https://www.tidyverse.org/lifecycle/#maturing" class="external-link"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle: maturing"></a></li>
 <li><a href="http://data.dot.state.mn.us/trafdat/metro/2018/20181021/5474.c30.json" class="external-link"><img src="https://img.shields.io/website?label=MnDOT&amp;up_color=olivedrab&amp;up_message=online&amp;url=http%3A%2F%2Fdata.dot.state.mn.us%2Ftrafdat%2Fmetro%2F2018%2F20181021%2F5474.c30.json" alt="Website MnDOT JSON"></a></li>
 <li><a href="http://mesonet.agron.iastate.edu/request/download.phtml?network=MN_ASOS" class="external-link"><img src="https://img.shields.io/website?label=IEM%20ASOS&amp;up_color=seagreen&amp;up_message=online&amp;url=http%3A%2F%2Fmesonet.agron.iastate.edu%2Frequest%2Fdownload.phtml%3Fnetwork%3DMN_ASOS" alt="Website IEM ASOS"></a></li>

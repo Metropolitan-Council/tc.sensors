@@ -1,5 +1,4 @@
 testthat::test_that("Test that data can be pulled from a random sensor id for yesterday's date", {
-
   config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
     dplyr::sample_n(1)
 

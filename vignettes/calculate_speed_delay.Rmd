@@ -110,24 +110,24 @@ The NA values here aren't evenly distributed across all starting hours and day t
 ```{r}
 #> 10min speed summary
 summary(agg_ten$speed)
-#> Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-#> 0.35   54.93   61.98   60.79   68.22  166.91   37879 
+#> Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's
+#> 0.35   54.93   61.98   60.79   68.22  166.91   37879
 
 #> 10 minute speed NA percentage
 summary(agg_ten$speed)[7] / nrow(agg_ten)
-#> NA's 
-#> 0.3296349 
+#> NA's
+#> 0.3296349
 
 
 #> 1 hour speed summary
 summary(agg_hour$speed)
-#> Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#> Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's
 #> 1.716  54.950  61.352  60.436  67.139  92.156    6088
 
 #> 1 hour minute speed NA percentage
 summary(agg_hour$speed)[7] / nrow(agg_hour)
-#> NA's 
-#> 0.317878 
+#> NA's
+#> 0.317878
 ```
 
 We also see this by plotting.  
@@ -209,7 +209,8 @@ plot_ten <- ggplot() +
     size = 3
   ) +
   scale_fill_viridis_c(stringr::str_wrap("Relative volume", 5),
-                       option = "magma", aesthetics = c("fill", "color")) +
+    option = "magma", aesthetics = c("fill", "color")
+  ) +
   scale_y_continuous("Occupancy %",
     labels = scales::percent,
     limits = range(agg_ten$occupancy.pct)
@@ -235,7 +236,8 @@ plot_hour <- ggplot() +
     size = 3
   ) +
   scale_fill_viridis_c(stringr::str_wrap("Relative volume", 5),
-                       option = "magma", aesthetics = c("fill", "color")) +
+    option = "magma", aesthetics = c("fill", "color")
+  ) +
   scale_y_continuous("",
     labels = scales::percent,
     limits = range(agg_ten$occupancy.pct)
@@ -313,8 +315,11 @@ ggplot() +
     title = "Imputed and original speed density by day type",
     caption = stringr::str_wrap(
       paste0(
-        "Mainline sensors on T.H.610 corridor, March 3-16, 2019. 
-        Random forest speed imputation at one hour interval. "), width = 60)
+        "Mainline sensors on T.H.610 corridor, March 3-16, 2019.
+        Random forest speed imputation at one hour interval. "
+      ),
+      width = 60
+    )
   ) +
   theme_minimal()
 ```
@@ -374,54 +379,71 @@ $Time = \frac{Distance}{Speed}$
 
 
 ```{r}
-time_test <- complete(rf_imp_day_type) %>% 
-  # sample_n(1000) %>% 
-  left_join(sensor_config_distance %>% 
-              select(detector_name,
-                     distance, 
-                     r_node_s_limit), by = c("sensor" = "detector_name")) %>% 
-  mutate(travel_time_speed = dhours(distance/speed),
-         travel_time_limit = dhours(distance/as.numeric(r_node_s_limit)),
-         vehicle_miles_traveled = volume.sum * distance)
+time_test <- complete(rf_imp_day_type) %>%
+  # sample_n(1000) %>%
+  left_join(sensor_config_distance %>%
+    select(
+      detector_name,
+      distance,
+      r_node_s_limit
+    ), by = c("sensor" = "detector_name")) %>%
+  mutate(
+    travel_time_speed = dhours(distance / speed),
+    travel_time_limit = dhours(distance / as.numeric(r_node_s_limit)),
+    vehicle_miles_traveled = volume.sum * distance
+  )
 
-ref_speed <- time_test %>% 
-  ungroup() %>% 
-  filter(interval_bin %in% c(1:5, 20:24)) %>% 
-  group_by(sensor, day_type) %>% 
-  summarize(ref_time_speed = dseconds(mean(travel_time_speed)),
-            ref_time_limit = dseconds(mean(travel_time_limit)),
-            ref_speed = median(speed),
-            .groups = "keep") %>% 
+ref_speed <- time_test %>%
+  ungroup() %>%
+  filter(interval_bin %in% c(1:5, 20:24)) %>%
+  group_by(sensor, day_type) %>%
+  summarize(
+    ref_time_speed = dseconds(mean(travel_time_speed)),
+    ref_time_limit = dseconds(mean(travel_time_limit)),
+    ref_speed = median(speed),
+    .groups = "keep"
+  ) %>%
   unique()
-
 ```
 
 ```{r}
-time_compare <- left_join(time_test, ref_speed, by = c("sensor",
-                                                       "day_type")) %>% 
+time_compare <- left_join(time_test, ref_speed, by = c(
+  "sensor",
+  "day_type"
+)) %>%
   group_by(sensor, interval_bin, day_type) %>%
-  mutate(time_diff_speed =  ref_time_speed - travel_time_speed,
-         time_diff_limit = ref_time_limit - travel_time_speed,
-            .groups = "keep")
+  mutate(
+    time_diff_speed = ref_time_speed - travel_time_speed,
+    time_diff_limit = ref_time_limit - travel_time_speed,
+    .groups = "keep"
+  )
 ```
 
 ### Plot delay
 
 ```{r}
 ggplot() +
-  geom_jitter(data = time_compare, 
-              aes(x = interval_bin,
-                  y = time_diff_speed/ 60,
-                  color = speed)) +
-  scale_color_viridis_c(option = "magma", direction = -1) + 
-  # facet_wrap(~day_type, nrow = 2) + 
-  labs(title = "Speed and median speed delay by hour",
-       x = "Hour",
-       y = "Delay (minutes)",
-       color = "Speed (mph)",
-       caption = stringr::str_wrap(
+  geom_jitter(
+    data = time_compare,
+    aes(
+      x = interval_bin,
+      y = time_diff_speed / 60,
+      color = speed
+    )
+  ) +
+  scale_color_viridis_c(option = "magma", direction = -1) +
+  # facet_wrap(~day_type, nrow = 2) +
+  labs(
+    title = "Speed and median speed delay by hour",
+    x = "Hour",
+    y = "Delay (minutes)",
+    color = "Speed (mph)",
+    caption = stringr::str_wrap(
       "Mainline sensors on T.H.610 corridor, March 3-16, 2019.
-      Random forest speed imputation at one hour interval. ", width = 60)) +
+      Random forest speed imputation at one hour interval. ",
+      width = 60
+    )
+  ) +
   theme_minimal()
 ```
 ![](plot_delay_hour_speed.png)

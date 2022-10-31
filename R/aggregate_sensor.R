@@ -120,16 +120,20 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
     if (interpolate_missing == TRUE) {
       sensor_data <- sensor_data[
         , `:=`(volume.rollmean = data.table::shift(
-          data.table::frollapply(volume, 3, mean, align = "center",
-                                 na.rm = TRUE, hasNA = TRUE)
+          data.table::frollapply(volume, 3, mean,
+            align = "center",
+            na.rm = TRUE, hasNA = TRUE
+          )
         )),
         by = .(sensor)
       ][
         , volume := ifelse(is.na(volume), volume.rollmean, volume)
       ][
         , `:=`(occupancy.rollmean = data.table::shift(
-          data.table::frollapply(occupancy, 3, mean, align = "center", na.rm = TRUE,
-                                 hasNA = TRUE)
+          data.table::frollapply(occupancy, 3, mean,
+            align = "center", na.rm = TRUE,
+            hasNA = TRUE
+          )
         )),
         by = .(sensor)
       ][

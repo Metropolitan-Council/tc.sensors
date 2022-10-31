@@ -1,7 +1,5 @@
 
 testthat::test_that("Impossible values are replaced", {
-
-
   config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
     dplyr::sample_n(1)
 
@@ -72,18 +70,19 @@ testthat::test_that("Impossible values are replaced", {
   ))
 
   testthat::expect_error(
-    replace_impossible(rbind(
-      sensor_results,
-      data.table::data.table(
-        volume = 10,
-        occupancy = 12,
-        date = Sys.Date(),
-        sensor = config_sample$detector_name,
-        hour = 0,
-        min = 30
-      )
-    ),
-    interval_length = 24
+    replace_impossible(
+      rbind(
+        sensor_results,
+        data.table::data.table(
+          volume = 10,
+          occupancy = 12,
+          date = Sys.Date(),
+          sensor = config_sample$detector_name,
+          hour = 0,
+          min = 30
+        )
+      ),
+      interval_length = 24
     )
   )
 })

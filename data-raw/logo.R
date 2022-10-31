@@ -29,43 +29,54 @@ counties <- tigris::counties(
     "Washington"
   ))
 
-roads_sf <- roads(state = "MN",
-                  year = 2020,
-                  county = c(
-                    "Hennepin",
-                    "Dakota",
-                    "Carver",
-                    "Ramsey",
-                    "Anoka",
-                    "Scott",
-                    "Washington")) %>%
+roads_sf <- roads(
+  state = "MN",
+  year = 2020,
+  county = c(
+    "Hennepin",
+    "Dakota",
+    "Carver",
+    "Ramsey",
+    "Anoka",
+    "Scott",
+    "Washington"
+  )
+) %>%
   sf::st_simplify()
 
 
 map_plot <- ggplot() +
-  geom_sf(data = counties,
-          color = "gray80",
-          fill = "white",
-          lwd = 0) +
-  geom_sf(data = roads_sf %>%
-            filter(RTTYP %in% c(
-              "U",
-              "I",
-              "S"
-            )),
-          mapping = aes(color = MTFCC),
-          size = 0.7,
-          show.legend = F) +
-  scale_color_brewer(direction = -1,
-                     palette = "PuBu") +
+  geom_sf(
+    data = counties,
+    color = "gray80",
+    fill = "white",
+    lwd = 0
+  ) +
+  geom_sf(
+    data = roads_sf %>%
+      filter(RTTYP %in% c(
+        "U",
+        "I",
+        "S"
+      )),
+    mapping = aes(color = MTFCC),
+    size = 0.7,
+    show.legend = F
+  ) +
+  scale_color_brewer(
+    direction = -1,
+    palette = "PuBu"
+  ) +
   theme_void() +
   theme_transparent()
 
 map_plot
-ggsave(plot = map_plot,
-       width = 7.36,
-       height = 6.92,
-       filename = "data-raw/subplot.png", device = "png", dpi = 300)
+ggsave(
+  plot = map_plot,
+  width = 7.36,
+  height = 6.92,
+  filename = "data-raw/subplot.png", device = "png", dpi = 300
+)
 
 print(sticker(
   subplot = "data-raw/subplot.png",

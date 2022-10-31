@@ -133,25 +133,26 @@ extension_pull <- function(ext, ext_name, sensor, pull_date, quiet = TRUE) {
 
   df_default <- tibble::as_tibble(NA)
 
-  try(df_default <- tibble::enframe(
-    jsonlite::fromJSON(
-      txt = paste0(
-        "http://data.dot.state.mn.us/trafdat/metro/",
-        pull_year,
-        "/",
-        pull_year,
-        pull_month,
-        pull_day,
-        "/",
-        sensor,
-        ".",
-        ext,
-        "30.json"
+  try(
+    df_default <- tibble::enframe(
+      jsonlite::fromJSON(
+        txt = paste0(
+          "http://data.dot.state.mn.us/trafdat/metro/",
+          pull_year,
+          "/",
+          pull_year,
+          pull_month,
+          pull_day,
+          "/",
+          sensor,
+          ".",
+          ext,
+          "30.json"
+        )
       )
-    )
-  ) %>%
-    dplyr::select(value),
-  silent = quiet
+    ) %>%
+      dplyr::select(value),
+    silent = quiet
   )
   names(df_default) <- ext_name
 

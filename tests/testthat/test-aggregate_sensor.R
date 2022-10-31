@@ -3,8 +3,9 @@ testthat::test_that("Aggregation functions as expected", {
   testthat::try_again(
     # some sensors might not pull correctly.
     # re-try this code with different sensors if it fails
-    times = 4,
+    times = 5,
     code = {
+
 
       config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
         dplyr::sample_n(1)
@@ -67,7 +68,8 @@ testthat::test_that("Aggregation functions as expected", {
       )
 
       ifelse(!is.na(agg$speed),
-             testthat::expect_true(round(mean(agg$speed, na.rm = T)) - round(mean(agg_day$speed, na.rm = T)) < 3), no = NA
+             testthat::expect_true(round(mean(agg$speed, na.rm = T)) -
+                                     round(mean(agg_day$speed, na.rm = T)) < 3), no = NA
       )
 
       # test argument checks--------------------------------------------------------
@@ -82,7 +84,8 @@ testthat::test_that("Aggregation functions as expected", {
       ))
 
 
-      testthat::expect_error(aggregate_sensor(rbind(
+      testthat::expect_error(
+        aggregate_sensor(rbind(
         sensor_results,
         data.table::data.table(
           volume = 10,
@@ -96,7 +99,8 @@ testthat::test_that("Aggregation functions as expected", {
       config = config_sample, interval_length = 24
       ))
 
-      testthat::expect_error(aggregate_sensor(rbind(
+      testthat::expect_error(
+        aggregate_sensor(rbind(
         sensor_results,
         data.table::data.table(
           volume = 10,

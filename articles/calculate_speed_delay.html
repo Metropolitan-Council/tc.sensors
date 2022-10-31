@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
       </span>
     </div>
 
@@ -191,24 +191,24 @@ knowledge that there is relatively low traffic during these hours.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#&gt; 10min speed summary</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">agg_ten</span><span class="op">$</span><span class="va">speed</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's </span></span>
-<span><span class="co">#&gt; 0.35   54.93   61.98   60.79   68.22  166.91   37879 </span></span>
+<span><span class="co">#&gt; Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's</span></span>
+<span><span class="co">#&gt; 0.35   54.93   61.98   60.79   68.22  166.91   37879</span></span>
 <span></span>
 <span><span class="co">#&gt; 10 minute speed NA percentage</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">agg_ten</span><span class="op">$</span><span class="va">speed</span><span class="op">)</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">agg_ten</span><span class="op">)</span></span>
-<span><span class="co">#&gt; NA's </span></span>
-<span><span class="co">#&gt; 0.3296349 </span></span>
+<span><span class="co">#&gt; NA's</span></span>
+<span><span class="co">#&gt; 0.3296349</span></span>
 <span></span>
 <span></span>
 <span><span class="co">#&gt; 1 hour speed summary</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">agg_hour</span><span class="op">$</span><span class="va">speed</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's </span></span>
+<span><span class="co">#&gt; Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's</span></span>
 <span><span class="co">#&gt; 1.716  54.950  61.352  60.436  67.139  92.156    6088</span></span>
 <span></span>
 <span><span class="co">#&gt; 1 hour minute speed NA percentage</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">agg_hour</span><span class="op">$</span><span class="va">speed</span><span class="op">)</span><span class="op">[</span><span class="fl">7</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">agg_hour</span><span class="op">)</span></span>
-<span><span class="co">#&gt; NA's </span></span>
-<span><span class="co">#&gt; 0.317878 </span></span></code></pre></div>
+<span><span class="co">#&gt; NA's</span></span>
+<span><span class="co">#&gt; 0.317878</span></span></code></pre></div>
 <p>We also see this by plotting.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span></span>
@@ -283,7 +283,8 @@ larger interval size seems to stabilize speed values.</p>
 <span>    size <span class="op">=</span> <span class="fl">3</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_wrap.html" class="external-link">str_wrap</a></span><span class="op">(</span><span class="st">"Relative volume"</span>, <span class="fl">5</span><span class="op">)</span>,</span>
-<span>                       option <span class="op">=</span> <span class="st">"magma"</span>, aesthetics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fill"</span>, <span class="st">"color"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    option <span class="op">=</span> <span class="st">"magma"</span>, aesthetics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fill"</span>, <span class="st">"color"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span><span class="st">"Occupancy %"</span>,</span>
 <span>    labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org/reference/percent_format.html" class="external-link">percent</a></span>,</span>
 <span>    limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">agg_ten</span><span class="op">$</span><span class="va">occupancy.pct</span><span class="op">)</span></span>
@@ -309,7 +310,8 @@ larger interval size seems to stabilize speed values.</p>
 <span>    size <span class="op">=</span> <span class="fl">3</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_wrap.html" class="external-link">str_wrap</a></span><span class="op">(</span><span class="st">"Relative volume"</span>, <span class="fl">5</span><span class="op">)</span>,</span>
-<span>                       option <span class="op">=</span> <span class="st">"magma"</span>, aesthetics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fill"</span>, <span class="st">"color"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    option <span class="op">=</span> <span class="st">"magma"</span>, aesthetics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fill"</span>, <span class="st">"color"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span><span class="st">""</span>,</span>
 <span>    labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org/reference/percent_format.html" class="external-link">percent</a></span>,</span>
 <span>    limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">agg_ten</span><span class="op">$</span><span class="va">occupancy.pct</span><span class="op">)</span></span>
@@ -385,8 +387,11 @@ weekdays and weekends.</p>
 <span>    title <span class="op">=</span> <span class="st">"Imputed and original speed density by day type"</span>,</span>
 <span>    caption <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_wrap.html" class="external-link">str_wrap</a></span><span class="op">(</span></span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
-<span>        <span class="st">"Mainline sensors on T.H.610 corridor, March 3-16, 2019. </span></span>
-<span><span class="st">        Random forest speed imputation at one hour interval. "</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span>
+<span>        <span class="st">"Mainline sensors on T.H.610 corridor, March 3-16, 2019.</span></span>
+<span><span class="st">        Random forest speed imputation at one hour interval. "</span></span>
+<span>      <span class="op">)</span>,</span>
+<span>      width <span class="op">=</span> <span class="fl">60</span></span>
+<span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="plot_speed_imputation_density.png"></p>
@@ -457,50 +462,68 @@ speed (in miles per hour).</p>
 <p><span class="math inline">\(Time =
 \frac{Distance}{Speed}\)</span></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">time_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html" class="external-link">complete</a></span><span class="op">(</span><span class="va">rf_imp_day_type</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="co"># sample_n(1000) %&gt;% </span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">sensor_config_distance</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>              <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">detector_name</span>,</span>
-<span>                     <span class="va">distance</span>, </span>
-<span>                     <span class="va">r_node_s_limit</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sensor"</span> <span class="op">=</span> <span class="st">"detector_name"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>travel_time_speed <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/duration.html" class="external-link">dhours</a></span><span class="op">(</span><span class="va">distance</span><span class="op">/</span><span class="va">speed</span><span class="op">)</span>,</span>
-<span>         travel_time_limit <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/duration.html" class="external-link">dhours</a></span><span class="op">(</span><span class="va">distance</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">r_node_s_limit</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>         vehicle_miles_traveled <span class="op">=</span> <span class="va">volume.sum</span> <span class="op">*</span> <span class="va">distance</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">time_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html" class="external-link">complete</a></span><span class="op">(</span><span class="va">rf_imp_day_type</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="co"># sample_n(1000) %&gt;%</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">sensor_config_distance</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
+<span>      <span class="va">detector_name</span>,</span>
+<span>      <span class="va">distance</span>,</span>
+<span>      <span class="va">r_node_s_limit</span></span>
+<span>    <span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sensor"</span> <span class="op">=</span> <span class="st">"detector_name"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    travel_time_speed <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/duration.html" class="external-link">dhours</a></span><span class="op">(</span><span class="va">distance</span> <span class="op">/</span> <span class="va">speed</span><span class="op">)</span>,</span>
+<span>    travel_time_limit <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/duration.html" class="external-link">dhours</a></span><span class="op">(</span><span class="va">distance</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">r_node_s_limit</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    vehicle_miles_traveled <span class="op">=</span> <span class="va">volume.sum</span> <span class="op">*</span> <span class="va">distance</span></span>
+<span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="va">ref_speed</span> <span class="op">&lt;-</span> <span class="va">time_test</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">interval_bin</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">20</span><span class="op">:</span><span class="fl">24</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">sensor</span>, <span class="va">day_type</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span>ref_time_speed <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/duration.html" class="external-link">dseconds</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">travel_time_speed</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>            ref_time_limit <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/duration.html" class="external-link">dseconds</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">travel_time_limit</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>            ref_speed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">speed</span><span class="op">)</span>,</span>
-<span>            .groups <span class="op">=</span> <span class="st">"keep"</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<span><span class="va">ref_speed</span> <span class="op">&lt;-</span> <span class="va">time_test</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">interval_bin</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">20</span><span class="op">:</span><span class="fl">24</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">sensor</span>, <span class="va">day_type</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
+<span>    ref_time_speed <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/duration.html" class="external-link">dseconds</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">travel_time_speed</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    ref_time_limit <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/duration.html" class="external-link">dseconds</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">travel_time_limit</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    ref_speed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">speed</span><span class="op">)</span>,</span>
+<span>    .groups <span class="op">=</span> <span class="st">"keep"</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">time_compare</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">time_test</span>, <span class="va">ref_speed</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sensor"</span>,</span>
-<span>                                                       <span class="st">"day_type"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
+<code class="sourceCode R"><span><span class="va">time_compare</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">time_test</span>, <span class="va">ref_speed</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"sensor"</span>,</span>
+<span>  <span class="st">"day_type"</span></span>
+<span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">sensor</span>, <span class="va">interval_bin</span>, <span class="va">day_type</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>time_diff_speed <span class="op">=</span>  <span class="va">ref_time_speed</span> <span class="op">-</span> <span class="va">travel_time_speed</span>,</span>
-<span>         time_diff_limit <span class="op">=</span> <span class="va">ref_time_limit</span> <span class="op">-</span> <span class="va">travel_time_speed</span>,</span>
-<span>            .groups <span class="op">=</span> <span class="st">"keep"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    time_diff_speed <span class="op">=</span> <span class="va">ref_time_speed</span> <span class="op">-</span> <span class="va">travel_time_speed</span>,</span>
+<span>    time_diff_limit <span class="op">=</span> <span class="va">ref_time_limit</span> <span class="op">-</span> <span class="va">travel_time_speed</span>,</span>
+<span>    .groups <span class="op">=</span> <span class="st">"keep"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="plot-delay">Plot delay<a class="anchor" aria-label="anchor" href="#plot-delay"></a>
 </h3>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html" class="external-link">geom_jitter</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">time_compare</span>, </span>
-<span>              <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">interval_bin</span>,</span>
-<span>                  y <span class="op">=</span> <span class="va">time_diff_speed</span><span class="op">/</span> <span class="fl">60</span>,</span>
-<span>                  color <span class="op">=</span> <span class="va">speed</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_color_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span>, direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="co"># facet_wrap(~day_type, nrow = 2) + </span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Speed and median speed delay by hour"</span>,</span>
-<span>       x <span class="op">=</span> <span class="st">"Hour"</span>,</span>
-<span>       y <span class="op">=</span> <span class="st">"Delay (minutes)"</span>,</span>
-<span>       color <span class="op">=</span> <span class="st">"Speed (mph)"</span>,</span>
-<span>       caption <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_wrap.html" class="external-link">str_wrap</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html" class="external-link">geom_jitter</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">time_compare</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
+<span>      x <span class="op">=</span> <span class="va">interval_bin</span>,</span>
+<span>      y <span class="op">=</span> <span class="va">time_diff_speed</span> <span class="op">/</span> <span class="fl">60</span>,</span>
+<span>      color <span class="op">=</span> <span class="va">speed</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_color_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"magma"</span>, direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># facet_wrap(~day_type, nrow = 2) +</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Speed and median speed delay by hour"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Hour"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Delay (minutes)"</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"Speed (mph)"</span>,</span>
+<span>    caption <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_wrap.html" class="external-link">str_wrap</a></span><span class="op">(</span></span>
 <span>      <span class="st">"Mainline sensors on T.H.610 corridor, March 3-16, 2019.</span></span>
-<span><span class="st">      Random forest speed imputation at one hour interval. "</span>, width <span class="op">=</span> <span class="fl">60</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="st">      Random forest speed imputation at one hour interval. "</span>,</span>
+<span>      width <span class="op">=</span> <span class="fl">60</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="plot_delay_hour_speed.png"></p>
 </div>

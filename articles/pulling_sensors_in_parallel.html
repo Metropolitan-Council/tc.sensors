@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tc.sensors</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.2</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@ processing</h1>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/DavisVaughan/furrr" class="external-link">furrr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jabiru/tictoc" class="external-link">tictoc</a></span><span class="op">)</span> </span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jabiru/tictoc" class="external-link">tictoc</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># pull sensor configuration and IDs</span></span>
 <span><span class="va">sensor_config</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_configuration.html">pull_configuration</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -123,23 +123,26 @@ processing</h1>
 <span></span>
 <span><span class="co"># define date range</span></span>
 <span><span class="va">date_range</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2019/01/01"</span><span class="op">)</span>,</span>
-<span>                  <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2019/12/31"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"days"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2019/12/31"</span><span class="op">)</span>,</span>
+<span>  by <span class="op">=</span> <span class="st">"days"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># iterate through each sensor</span></span>
 <span><span class="va">sensor_data</span> <span class="op">&lt;-</span> <span class="fu">furrr</span><span class="fu">::</span><span class="fu"><a href="https://furrr.futureverse.org/reference/future_map.html" class="external-link">future_map_dfr</a></span><span class="op">(</span></span>
 <span>  <span class="va">sensor_ids</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">633</span><span class="op">:</span><span class="fl">640</span><span class="op">]</span>,</span>
-<span>  <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span></span>
-<span>    </span>
+<span>  <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="co"># iterate through each date</span></span>
-<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dfr</a></span><span class="op">(</span><span class="va">date_range</span>,</span>
-<span>                   <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">{</span></span>
-<span>                     <span class="fu"><a href="../reference/pull_sensor.html">pull_sensor</a></span><span class="op">(</span></span>
-<span>                       sensor <span class="op">=</span> <span class="va">x</span>,</span>
-<span>                       pull_date <span class="op">=</span> <span class="va">d</span></span>
-<span>                     <span class="op">)</span></span>
-<span>                   <span class="op">}</span><span class="op">)</span></span>
-<span>    </span>
-<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dfr</a></span><span class="op">(</span></span>
+<span>      <span class="va">date_range</span>,</span>
+<span>      <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="fu"><a href="../reference/pull_sensor.html">pull_sensor</a></span><span class="op">(</span></span>
+<span>          sensor <span class="op">=</span> <span class="va">x</span>,</span>
+<span>          pull_date <span class="op">=</span> <span class="va">d</span></span>
+<span>        <span class="op">)</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">tictoc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html" class="external-link">toc</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>

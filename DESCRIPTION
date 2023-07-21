@@ -1,15 +1,17 @@
 Type: Package
 Package: tc.sensors
 Title: Retrieve Loop Detector Data from the MnDOT JSON Feed
-Version: 0.2.2
-Date: 2022-10-31
+Version: 0.2.3
+Date: 2023-07-21
 Authors@R: c(
     person("Metropolitan Council", role = "cph"),
     person("Liz", "Roten", , "liz.roten@metc.state.mn.us", role = c("cre", "aut"),
            comment = c(ORCID = "0000-0002-5346-3549")),
     person("Nicole", "Sullivan", , "nicole.sullivan@metc.state.mn.us", role = "aut"),
     person("Ashley", "Asmus", , "ashley.asmus@metc.state.mn.us", role = "ctb",
-           comment = c(ORCID = "0000-0001-5505-1372"))
+           comment = c(ORCID = "0000-0001-5505-1372")),
+    person("Yaxuan", "Zhang", , "yaxuan.zhang@metc.state.mn.us", role = "ctb",
+           comment = c(ORCID = "0000-0003-2343-8307"))
   )
 Description: Process data collected from Minnesota Department of
     Transportation (MnDOT) loop detectors installed on the Minnesota

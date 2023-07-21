@@ -112,7 +112,7 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
   field_length <- as.numeric(config[, "detector_field"][[1]])
 
   if (replace_impossible == TRUE) {
-    sensor_data <- replace_impossible(
+    sensor_data <- tc.sensors::replace_impossible(
       sensor_data = sensor_data,
       interval_length = NA
     )
@@ -164,9 +164,10 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
       list(
-        sum = round(mean(x, na.rm = TRUE) * n_rows_expected),
+        #sum = round(mean(x, na.rm = TRUE) * n_rows_expected),
+        sum = round(sum(x, na.rm = TRUE)),
         mean = mean(x, na.rm = TRUE),
-        pct.null = round(100 * sum(is.na(x)) / length(x))
+        pct.null = round(100 * sum(is.na(x)) / length(x),1)
       )
     }))),
     by = .(date, hour, start_min, interval_min_bin, sensor),
@@ -192,9 +193,10 @@ aggregate_sensor <- function(sensor_data, config, interval_length,
 
     sensor_data_agg <- sensor_data[, as.list(unlist(lapply(.SD, function(x) {
       list(
-        sum = round(mean(x, na.rm = TRUE) * n_rows_expected),
+        #sum = round(mean(x, na.rm = TRUE) * n_rows_expected),
+        sum = round(sum(x, na.rm = TRUE)),
         mean = mean(x, na.rm = TRUE),
-        pct.null = round(100 * sum(is.na(x)) / length(x))
+        pct.null = round(100 * sum(is.na(x)) / length(x),1)
       )
     }))),
     by = .(date, interval_bin, sensor),

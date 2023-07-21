@@ -1,7 +1,6 @@
-
 testthat::skip_on_ci()
 
-test_that("Weather data functions as expected", {
+testthat::test_that("Weather data functions as expected", {
   config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
     dplyr::sample_n(1)
 

@@ -29,6 +29,7 @@ Other contributors:
 \itemize{
   \item Metropolitan Council [copyright holder]
   \item Ashley Asmus \email{ashley.asmus@metc.state.mn.us} (\href{https://orcid.org/0000-0001-5505-1372}{ORCID}) [contributor]
+  \item Yaxuan Zhang \email{yaxuan.zhang@metc.state.mn.us} (\href{https://orcid.org/0000-0003-2343-8307}{ORCID}) [contributor]
 }
 
 }

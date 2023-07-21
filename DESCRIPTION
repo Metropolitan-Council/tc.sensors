@@ -1,15 +1,17 @@
 Type: Package
 Package: tc.sensors
 Title: Retrieve Loop Detector Data from the MnDOT JSON Feed
-Version: 0.2.2
-Date: 2022-10-31
+Version: 0.2.3
+Date: 2023-07-21
 Authors@R: c(
     person("Metropolitan Council", role = "cph"),
     person("Liz", "Roten", , "liz.roten@metc.state.mn.us", role = c("cre", "aut"),
            comment = c(ORCID = "0000-0002-5346-3549")),
     person("Nicole", "Sullivan", , "nicole.sullivan@metc.state.mn.us", role = "aut"),
     person("Ashley", "Asmus", , "ashley.asmus@metc.state.mn.us", role = "ctb",
-           comment = c(ORCID = "0000-0001-5505-1372"))
+           comment = c(ORCID = "0000-0001-5505-1372")),
+    person("Yaxuan", "Zhang", , "yaxuan.zhang@metc.state.mn.us", role = "ctb",
+           comment = c(ORCID = "0000-0003-2343-8307"))
   )
 Description: Process data collected from Minnesota Department of
     Transportation (MnDOT) loop detectors installed on the Minnesota
@@ -19,20 +21,20 @@ Description: Process data collected from Minnesota Department of
 License: MIT + file LICENSE
 BugReports: https://github.com/Metropolitan-Council/tc.sensors/issues
 Imports: 
-    cli (>= 3.3.0),
-    curl (>= 4.3),
-    data.table (>= 1.12.8),
-    dplyr (>= 1.0.0),
-    geosphere (>= 1.5.10),
-    jsonlite (>= 1.6.1),
-    magrittr (>= 1.5),
-    purrr (>= 0.3.4),
-    sf (>= 0.9.5),
-    tibble (>= 3.0.1),
-    tidyr (>= 1.1.0),
-    tis (>= 1.38),
+    cli (>= 3.6.1),
+    curl (>= 5.0.1),
+    data.table (>= 1.14.8),
+    dplyr (>= 1.1.2),
+    geosphere (>= 1.5-18),
+    jsonlite (>= 1.8.7),
+    magrittr (>= 2.0.3),
+    purrr (>= 1.0.1),
+    sf (>= 1.0-14),
+    tibble (>= 3.2.1),
+    tidyr (>= 1.3.0),
+    tis (>= 1.39),
     utils,
-    xml2 (>= 1.3.2)
+    xml2 (>= 1.3.5)
 Suggests: 
     cowplot (>= 1.0.0),
     furrr (>= 0.1.0),
@@ -50,4 +52,4 @@ VignetteBuilder:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3

@@ -1,4 +1,3 @@
-
 testthat::test_that("Impossible values are replaced", {
   config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
     dplyr::sample_n(1)

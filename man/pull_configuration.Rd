@@ -74,7 +74,7 @@ pull_configuration("within_dir") # No assignment necessary
 }
 \seealso{
 Other loop sensor functions: 
-\code{\link{pull_sensor_ids}()},
-\code{\link{pull_sensor}()}
+\code{\link{pull_sensor}()},
+\code{\link{pull_sensor_ids}()}
 }
 \concept{loop sensor functions}

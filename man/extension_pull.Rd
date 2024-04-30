@@ -12,12 +12,12 @@ extension_pull(ext, ext_name, sensor, pull_date, quiet = TRUE)
 \item{ext_name}{string, either \code{"volume"} or \code{"occupancy"}}
 
 \item{sensor}{character, the sensor ID.
-See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.}
+See \code{\link[=pull_sensor_ids]{pull_sensor_ids()}} to obtain metro sensor IDs.}
 
 \item{pull_date}{character, the date of data to pull.
-Needs to by in "YYYY-MM-DD" format.}
+Needs to be in \code{"YYYY-MM-DD"} format.}
 
-\item{quiet}{logical, whether to hide messages. Default is TRUE}
+\item{quiet}{logical, whether to hide messages. Default is \code{TRUE}}
 }
 \value{
 a tibble

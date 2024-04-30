@@ -1,6 +1,4 @@
-test_that("spatial lines are generated", {
-  config <- as.data.table(pull_configuration())
-
+testthat::test_that("spatial lines are generated", {
   lines_sf <- generate_spatial_lines(config = config)
 
   testthat::expect_true("sf" %in% class(lines_sf))

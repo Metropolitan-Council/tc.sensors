@@ -4,7 +4,7 @@ testthat::test_that("Aggregation functions as expected", {
     # re-try this code with different sensors if it fails
     times = 5,
     code = {
-      config_sample <- dplyr::filter(config, config$detector_abandoned == "f") %>%
+      config_sample <- config %>%
         dplyr::sample_n(1)
 
       sensor_results <- pull_sensor(
@@ -12,7 +12,6 @@ testthat::test_that("Aggregation functions as expected", {
         pull_date = yesterday,
         fill_gaps = TRUE
       )
-
 
       # test aggregation at 15 minutes----------------------------------------------
       agg <- aggregate_sensor(sensor_results,
@@ -44,10 +43,12 @@ testthat::test_that("Aggregation functions as expected", {
         round(mean(agg_hour$volume.mean))
       )
 
-      testthat::expect_equal(sum(sensor_results$occupancy, na.rm = TRUE), sum(agg_hour$occupancy.sum, na.rm = TRUE))
+      testthat::expect_equal(sum(sensor_results$occupancy, na.rm = TRUE),
+                             sum(agg_hour$occupancy.sum, na.rm = TRUE))
 
       ifelse(!is.na(agg$speed),
-        testthat::expect_true(round(mean(agg$speed, na.rm = TRUE)) - round(mean(agg_hour$speed, na.rm = TRUE)) < 3), NA
+        testthat::expect_true(round(mean(agg$speed, na.rm = TRUE)) -
+                                round(mean(agg_hour$speed, na.rm = TRUE)) < 3), NA
       )
       # test aggregation at 24 hours------------------------------------------------
       agg_day <- aggregate_sensor(sensor_results,

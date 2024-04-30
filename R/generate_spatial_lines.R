@@ -41,7 +41,8 @@
 #' }
 #'
 #' @import data.table
-#' @importFrom sf st_as_sf st_cast st_set_crs st_length
+#' @importFrom sf st_as_sf st_cast st_set_crs st_length st_make_valid
+#' @importFrom units set_units
 #' @importFrom dplyr mutate group_by summarize
 generate_spatial_lines <- function(config) {
   # browser()
@@ -59,13 +60,14 @@ generate_spatial_lines <- function(config) {
   #     keyby = .(corridor_id)]
 
   config_coords <- as.data.table(config)[r_node_n_type == "Station", ][
-    , corridor_category := ifelse(corridor_route == "I-35" & r_node_lat > 45, "I35 north of cities",
-      ifelse(corridor_route == "I-35" & r_node_lat <= 45, "I35 south of cities",
-        ifelse(corridor_route == "T.H.5" & r_node_lon < -93.3, "5 west of cities",
-          ifelse(corridor_route == "T.H.5" & r_node_lon > -93.3, "5 east of cities", "Other")
-        )
+    , corridor_category :=
+      ifelse(corridor_route == "I-35" & r_node_lat > 45, "I35 north of cities",
+             ifelse(corridor_route == "I-35" & r_node_lat <= 45, "I35 south of cities",
+                    ifelse(corridor_route == "T.H.5" & r_node_lon < -93.3, "5 west of cities",
+                           ifelse(corridor_route == "T.H.5" & r_node_lon > -93.3, "5 east of cities", "Other")
+                    )
+             )
       )
-    )
   ][
     , corridor_id := paste(corridor_route, corridor_dir, corridor_category, sep = "_")
   ][
@@ -75,9 +77,12 @@ generate_spatial_lines <- function(config) {
   lines_sf <- sf::st_as_sf(config_coords, coords = c("r_node_lon", "r_node_lat")) %>%
     dplyr::group_by(corridor_id) %>%
     dplyr::summarise(do_union = FALSE, .groups = "keep") %>%
-    sf::st_cast("LINESTRING") %>%
+    sf::st_make_valid() %>%
+    suppressMessages(sf::st_cast("LINESTRING", warn = FALSE)) %>%
     sf::st_set_crs(4326) %>%
-    dplyr::mutate(length_miles = as.numeric(sf::st_length(geometry)) * 0.00062137)
+    dplyr::mutate(length_miles = sf::st_length(geometry) %>%
+                    units::set_units("mile") %>%
+                    as.numeric())
 
   return(lines_sf)
 }

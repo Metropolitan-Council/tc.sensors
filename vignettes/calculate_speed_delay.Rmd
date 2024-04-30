@@ -10,7 +10,6 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -22,15 +21,16 @@ knitr::opts_chunk$set(
 )
 
 options(scipen = 9999)
+sensor_year <- 2019
 ```
 
-**Warning: the following analysis has not yet been peer reviewed and is subject to change at any time without notice. The analysis pulls data from a single corridor over a two week period, and is intended to illustrate this package's features. This analysis cannot be used to draw conclusions on the corridor's overall performance or the performance of the system as a whole.**
+**Warning: the following analysis has not been peer reviewed and is subject to change at any time without notice. The analysis pulls data from a single corridor over a two week period, and is intended to illustrate this package's features. This analysis cannot be used to draw conclusions on the corridor's overall performance or the performance of the system as a whole.**
 
 ## Pull sensor data
 
-First, we will pull the data for three random sensors from March 3 to March 16, 2019. 
+First, we will pull the data for sensors on TH 610 from March 3 to March 16, `r sensor_year`.  
 
-```{r}
+```{r message=FALSE}
 library(tc.sensors)
 library(tictoc)
 library(dplyr)
@@ -45,20 +45,25 @@ library(scales)
 ```
 
 
-```{r, cache=TRUE}
+```{r pull-sensors, warning=FALSE}
 sensor_config <- pull_configuration() %>%
   dplyr::filter(
+    detector_abandoned == "f", # detectors that are NOT abandoned
     corridor_route == "T.H.610", # single out one corridor
     r_node_n_type == "Station", # only station node types
     detector_category == "" # only mainline detectors
   )
 
-date_range <- seq(as.Date("2019/03/03"), as.Date("2019/03/16"), by = "days")
+date_range <- seq(
+  as.Date(paste0(sensor_year, "/03/03")), 
+  as.Date(paste0(sensor_year, "/03/16")),
+  by = "days")
 
-plan(multiprocess)
+plan(future::multisession)
 
-tic() # Start the timer
-sensor_data <- future_map(sensor_config$detector_name,
+tic() 
+sensor_data <- future_map(
+  sensor_config$detector_name,
   .f = function(det_name) {
     future_map_dfr(seq(1:length(date_range)), .f = function(x) {
       tc.sensors::pull_sensor(det_name, date_range[[x]])
@@ -67,72 +72,75 @@ sensor_data <- future_map(sensor_config$detector_name,
 )
 toc()
 
-#> 11.92 sec elapsed
 ```
 
-Clean data
+## Clean data
 
-```{r}
-clean_sensor_data <- purrr::map(sensor_data,
+The following data cleaning steps and checks are taken in `scrub_sensor()`
+
+- Data is complete for all sensors (2,880 observations per sensor)
+- Make volume and occupancy values `NA` if
+    - vehicle volume >= 20 vehicles, or 2,300 vehicles per hour
+    - occupancy >= 1,800 scans, or 216,000 scans per hour [^ 60 scans per second \* 60 secs per min \* 60 mins per hour = 216,000 scans per hour]
+- The percentage of `NA` values is calculated for occupancy and volume. If the `NA` percentage is greater than a 10%, the values are replaced with `NA`
+    - If volume or occupancy are `NA`, speed is changed to `NA`
+
+Ongoing discussion on whether you can have valid occupancy with invalid volume, and vice versa. 
+
+```{r clean-sensors}
+clean_sensor_data <- purrr::map(
+  sensor_data,
   scrub_sensor,
   interval_length = NA
-) # replace
+)
 ```
 
-## Aggregate sensor data and calculate speed  
+## Aggregate and calculate speed  
 
 To calculate speed and evaluate our speed calculation, we are going to look at two different aggregation intervals:  10 minutes and 60 minutes (or 1 hour). 
 
 To avoid getting unreasonable speed values, we will set an occupancy percentage threshold at 0.002, or 0.2%. This functions somewhat like a sample size cut-off; if the occupancy is too low, its more likely that the speed value returned will be invalid. 
 
-```{r}
+```{r agg-sensors}
 agg_ten <- purrr::map(clean_sensor_data,
-  aggregate_sensor,
-  config = sensor_config,
-  interval_length = 10 / 60,
-  occupancy_pct_threshold = 0.002,
-  interpolate_missing = TRUE
+                      aggregate_sensor,
+                      config = sensor_config,
+                      interval_length = 10 / 60,
+                      occupancy_pct_threshold = 0.002,
+                      interpolate_missing = TRUE
 ) %>%
   purrr::map_dfr(add_day_type)
 
 agg_hour <- purrr::map(clean_sensor_data,
-  aggregate_sensor,
-  config = sensor_config,
-  interval_length = 1,
-  occupancy_pct_threshold = 0.002,
-  interpolate_missing = TRUE
+                       aggregate_sensor,
+                       config = sensor_config,
+                       interval_length = 1,
+                       occupancy_pct_threshold = 0.002,
+                       interpolate_missing = TRUE
 ) %>%
   purrr::map_dfr(add_day_type)
 ```
 
 The NA values here aren't evenly distributed across all starting hours and day types. There is a greater percentage of null values in the early morning on both weekdays and weekends, which aligns with our knowledge that there is relatively low traffic during these hours. 
 
-```{r}
+```{r sensor-summary}
 #> 10min speed summary
 summary(agg_ten$speed)
-#> Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's
-#> 0.35   54.93   61.98   60.79   68.22  166.91   37879
 
 #> 10 minute speed NA percentage
 summary(agg_ten$speed)[7] / nrow(agg_ten)
 #> NA's
-#> 0.3296349
-
 
 #> 1 hour speed summary
 summary(agg_hour$speed)
-#> Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's
-#> 1.716  54.950  61.352  60.436  67.139  92.156    6088
 
 #> 1 hour minute speed NA percentage
 summary(agg_hour$speed)[7] / nrow(agg_hour)
-#> NA's
-#> 0.317878
 ```
 
 We also see this by plotting.  
 
-```{r}
+```{r plot-null-obs}
 cowplot::plot_grid(
   agg_ten %>%
     group_by(day_type, hour) %>%
@@ -194,7 +202,7 @@ ggsave(device = "png", dpi = 72, filename = "plot_speed_nulls.png")
 
 Next, we will plot the relationship between speed, volume, and occupancy for both aggregation levels. The plots below show that the larger interval size seems to stabilize speed values.  
 
-```{r}
+```{r plot-ten-hour-agg}
 plot_ten <- ggplot() +
   geom_point(
     data = agg_ten %>%
@@ -209,11 +217,11 @@ plot_ten <- ggplot() +
     size = 3
   ) +
   scale_fill_viridis_c(stringr::str_wrap("Relative volume", 5),
-    option = "magma", aesthetics = c("fill", "color")
+                       option = "magma", aesthetics = c("fill", "color")
   ) +
   scale_y_continuous("Occupancy %",
-    labels = scales::percent,
-    limits = range(agg_ten$occupancy.pct)
+                     labels = scales::percent,
+                     limits = range(agg_ten$occupancy.pct)
   ) +
   scale_x_continuous("Speed (mph)", limits = range(agg_ten$speed)) +
   theme_minimal() +
@@ -235,10 +243,12 @@ plot_hour <- ggplot() +
     alpha = 0.5,
     size = 3
   ) +
-  scale_fill_viridis_c(stringr::str_wrap("Relative volume", 5),
+  scale_fill_viridis_c(
+    stringr::str_wrap("Relative volume", 5),
     option = "magma", aesthetics = c("fill", "color")
   ) +
-  scale_y_continuous("",
+  scale_y_continuous(
+    "",
     labels = scales::percent,
     limits = range(agg_ten$occupancy.pct)
   ) +
@@ -256,18 +266,18 @@ ggsave(device = "png", dpi = 72, filename = "plot_occupancy_speed_volume.png")
 
 ## Impute missing speeds  
 
-One option for handling NA values is imputation. We can use the `{mice}` package with a random forest method. A random forest model is relatively easy to understand, handles outliers well, and works with non-linear data well. The random forest also fits with what we know about how speed is dependent on factors like day type and time of day.  
+One option for handling `NA` values is imputation. We can use the `{mice}` package with a random forest method. A random forest model is relatively easy to understand, handles outliers well, and works with non-linear data well. The random forest also fits with what we know about how speed is dependent on factors like day type and time of day.  
 
-```{r}
+```{r impute-random-forest}
 library(mice)
 tictoc::tic()
 
 rf_imp_day_type <- mice(agg_hour,
-  method = "rf",
-  formulas = c(
-    as.formula("speed ~ volume.sum + occupancy.sum + interval_bin + day_type")
-  ),
-  maxit = 5, m = 5, print = F
+                        method = "rf",
+                        formulas = c(
+                          as.formula("speed ~ volume.sum + occupancy.sum + interval_bin + day_type")
+                        ),
+                        maxit = 5, m = 5, print = F
 )
 tictoc::toc()
 #> 98.71 sec elapsed
@@ -275,7 +285,7 @@ tictoc::toc()
 
 After we run our random forest, we are going to fetch the complete imputed data and plot the results. By fetching all the imputations, we are able to assess how the model behaves over time. 
 
-```{r}
+```{r compile-imps}
 all_imps <- complete(rf_imp_day_type, "all", include = T)
 
 agg_hour_imputed <- map_dfr(seq(1, 6), .f = function(x) {
@@ -287,7 +297,7 @@ agg_hour_imputed <- map_dfr(seq(1, 6), .f = function(x) {
 
 First, we will plot the speed density, taking care to examine weekdays and weekends.  
 
-```{r}
+```{r plot-imputed}
 ggplot() +
   geom_density(
     data = agg_hour_imputed,
@@ -315,7 +325,7 @@ ggplot() +
     title = "Imputed and original speed density by day type",
     caption = stringr::str_wrap(
       paste0(
-        "Mainline sensors on T.H.610 corridor, March 3-16, 2019.
+        "Mainline sensors on T.H.610 corridor, March 3-16, ", sensor_year, ".
         Random forest speed imputation at one hour interval. "
       ),
       width = 60
@@ -327,9 +337,10 @@ ggplot() +
 ```{r, include=FALSE}
 ggsave(device = "png", dpi = 72, filename = "plot_speed_imputation_density.png")
 ```
+
 Next, we will look at a scatter plot of the imputed speed and hour, again, by weekday and weekend. Here, the color indicates the imputation.  
 
-```{r}
+```{r plot-speed-imputed}
 ggplot() +
   geom_jitter(
     data = agg_hour_imputed,
@@ -348,21 +359,23 @@ ggplot() +
     y = "Speed",
     color = "Imputation",
     caption = stringr::str_wrap(paste0(
-      "Mainline sensors on T.H.610 corridor, March 3-16, 2019.
+      "Mainline sensors on T.H.610 corridor, March 3-16, ", sensor_year, ".
       Random forest speed imputation at one hour interval. "
     ), width = 60)
   ) +
   theme_minimal()
 ```
+
 ![](plot_speed_imputation_hourly.png)
 ```{r, include=FALSE}
 ggsave(device = "png", dpi = 72, filename = "plot_speed_imputation_hourly.png")
 ```
+
 ## Distance  
 
 In order to calculate delay, we need to calculate the distance between the upstream sensor and the sensor of interest. We can accomplish this using the sensor configuration table and `add_distance()`.  
 
-```{r}
+```{r config-distance}
 sensor_config_distance <- tc.sensors::add_distance(sensor_config, interpolate_missing = TRUE)
 ```
 
@@ -377,16 +390,15 @@ To calculate the amount of time (in hours) it takes to traverse a given distance
 
 $Time = \frac{Distance}{Speed}$
 
-
-```{r}
+```{r time-test}
 time_test <- complete(rf_imp_day_type) %>%
   # sample_n(1000) %>%
   left_join(sensor_config_distance %>%
-    select(
-      detector_name,
-      distance,
-      r_node_s_limit
-    ), by = c("sensor" = "detector_name")) %>%
+              select(
+                detector_name,
+                distance,
+                r_node_s_limit
+              ), by = c("sensor" = "detector_name")) %>%
   mutate(
     travel_time_speed = dhours(distance / speed),
     travel_time_limit = dhours(distance / as.numeric(r_node_s_limit)),
@@ -406,7 +418,7 @@ ref_speed <- time_test %>%
   unique()
 ```
 
-```{r}
+```{r time-compare}
 time_compare <- left_join(time_test, ref_speed, by = c(
   "sensor",
   "day_type"
@@ -419,9 +431,7 @@ time_compare <- left_join(time_test, ref_speed, by = c(
   )
 ```
 
-### Plot delay
-
-```{r}
+```{r plot-delay}
 ggplot() +
   geom_jitter(
     data = time_compare,
@@ -432,15 +442,14 @@ ggplot() +
     )
   ) +
   scale_color_viridis_c(option = "magma", direction = -1) +
-  # facet_wrap(~day_type, nrow = 2) +
   labs(
     title = "Speed and median speed delay by hour",
     x = "Hour",
     y = "Delay (minutes)",
     color = "Speed (mph)",
-    caption = stringr::str_wrap(
-      "Mainline sensors on T.H.610 corridor, March 3-16, 2019.
-      Random forest speed imputation at one hour interval. ",
+    caption = stringr::str_wrap(paste0(
+      "Mainline sensors on T.H.610 corridor, March 3-16, ", sensor_year,
+      ". Random forest speed imputation at one hour interval. "),
       width = 60
     )
   ) +
@@ -450,6 +459,7 @@ ggplot() +
 ```{r, include=FALSE}
 ggsave(device = "png", dpi = 72, filename = "plot_delay_hour_speed.png")
 ```
+
 ## Relevant reports and references  
 
 <div id="refs"></div>

@@ -49,6 +49,7 @@ library(scales)
 sensor_config <- pull_configuration() %>%
   dplyr::filter(
     detector_abandoned == "f", # detectors that are NOT abandoned
+    # abandoned indicates that the detector is no longer in use
     corridor_route == "T.H.610", # single out one corridor
     r_node_n_type == "Station", # only station node types
     detector_category == "" # only mainline detectors
@@ -272,7 +273,8 @@ One option for handling `NA` values is imputation. We can use the `{mice}` packa
 library(mice)
 tictoc::tic()
 
-rf_imp_day_type <- mice(agg_hour,
+rf_imp_day_type <- mice(agg_hour %>% 
+                          filter(!is.na(speed)),
                         method = "rf",
                         formulas = c(
                           as.formula("speed ~ volume.sum + occupancy.sum + interval_bin + day_type")
@@ -343,9 +345,10 @@ Next, we will look at a scatter plot of the imputed speed and hour, again, by we
 ```{r plot-speed-imputed}
 ggplot() +
   geom_jitter(
-    data = agg_hour_imputed,
+    data = agg_hour_imputed %>% 
+      filter(speed != 0),
     mapping = aes(
-      x = reorder(interval_bin, imp_n),
+      x = interval_bin, 
       y = speed,
       color = imp_n
     ),

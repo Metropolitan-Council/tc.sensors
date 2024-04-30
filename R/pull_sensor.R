@@ -2,12 +2,12 @@
 #'
 #' @description Create a tidy data frame, containing volume and occupancy,
 #'     for a single date and sensor.
-#'     Use \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
+#'     Use [pull_sensor_ids()] to obtain metro sensor IDs.
 #'
 #' @param pull_date character, the date of data to pull.
-#'   Needs to by in "YYYY-MM-DD" format.
+#'   Needs to be in `"YYYY-MM-DD"` format.
 #' @param sensor character, the sensor ID.
-#'   See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
+#'   See [pull_sensor_ids()] to obtain metro sensor IDs.
 #' @param fill_gaps logical, whether to fill gaps in the time series with `NA`
 #'   values. Default is `TRUE`
 #' @inheritParams pull_configuration
@@ -21,7 +21,7 @@
 #'      usually results in a file that is around ~30-31KB.
 #'
 #'     Approximate time to pull one sensor's and one extension's
-#'      (v or c for volume or occupancy, respectively) data across
+#'      ("v" or "c" for volume or occupancy, respectively) data across
 #'       a year on a Mac is 1.33 minutes.
 #'
 #'     Also note that if you assign `pull_sensor()`'s output, the result is returned in-memory,
@@ -69,8 +69,6 @@ pull_sensor <- function(sensor, pull_date,
                         fill_gaps = TRUE,
                         .quiet = TRUE) {
   # browser()
-  # exts <- c("v", "c")
-  # loops_ls <- map(exts, extension_pull)
 
   volume <- extension_pull("v", "volume", pull_date = pull_date, sensor = sensor, quiet = .quiet)
   occupancy <- extension_pull("c", "occupancy", pull_date = pull_date, sensor = sensor, quiet = .quiet)
@@ -97,12 +95,12 @@ pull_sensor <- function(sensor, pull_date,
         )
       )
     } else if (fill_gaps == FALSE) {
-      # Return essentially empty data.table if both volume and occupancy are missing for entire day
+      # Return empty data.table if both volume and occupancy are missing for entire day
       loop_date_sensor[, `:=`(hour = NA, min = NA)]
     }
   } else {
-    # Add hour and minutes if either volume or occupancy (or both) are available
 
+    # Add hour and minutes if either volume or occupancy (or both) are available
     loop_date_sensor[, `:=`(
       hour = rep(0:23, each = 120),
       min = rep(seq(0, 59.5, by = 0.5), 24)
@@ -116,9 +114,9 @@ pull_sensor <- function(sensor, pull_date,
 
 #' Pull extension
 #'
-#' @param ext string, either \code{"v"} for volume or \code{"c"} for occupancy
-#' @param ext_name string, either \code{"volume"} or \code{"occupancy"}
-#' @param quiet logical, whether to hide messages. Default is TRUE
+#' @param ext string, either `"v"` for volume or `"c"` for occupancy
+#' @param ext_name string, either `"volume"` or `"occupancy"`
+#' @param quiet logical, whether to hide messages. Default is `TRUE`
 #' @inheritParams pull_sensor
 #' @keywords internal
 #'
@@ -127,6 +125,7 @@ pull_sensor <- function(sensor, pull_date,
 #' @export
 extension_pull <- function(ext, ext_name, sensor, pull_date, quiet = TRUE) {
   # browser()
+
   pull_year <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%Y")
   pull_month <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%m")
   pull_day <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%d")

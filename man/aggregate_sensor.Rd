@@ -62,7 +62,9 @@ With 60 scans per second, 60 seconds per minute there are 3,600 scans per minute
 With 3,600 scans per minute, 60 minutes per hour there are 216,000 scans per hour.
 To find the number of scans in 15 minutes, we can multiply 0.25 * 216000 = 54,000 scans.
 
-Speed is calculate by multiplying
+Speed, in miles per hour, is calculate by multiplying the number of
+vehicles per hour by field length in miles, divided by the
+occupancy for the given interval.
 }\if{html}{\out{</div>}}
 }
 
@@ -70,7 +72,8 @@ Speed is calculate by multiplying
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{Any observation with a volume that exceeds 20 vehicles or an occupancy that exceeds 1,800 scans
 will be replaced with `NA`. It is impossible for more than twenty vehicles to pass over a sensor
-in only 30 seconds, and the maximum number of scans in 30 seconds is 1,800 (60 scans/second * 30 seconds).
+in only 30 seconds, and the maximum number of scans in 30 seconds is 1,800
+(60 scans/second * 30 seconds).
 }\if{html}{\out{</div>}}
 \subsection{Interpolating missing values}{
 

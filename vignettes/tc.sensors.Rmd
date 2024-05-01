@@ -83,6 +83,8 @@ $$\frac{Flow}{Density} $$
 
 The average flow that a roadway is losing, either due to low traffic or high congestion, throughout the sampling period. Capacity is calculated using Flow and Density.   
 
+If flow exceeds 1,800 vehicles per hour, the sensor is considered well performing. If flow is under 1,800 vehicles per hour and vehicle density is greater than 43 vehicles per mile, the sensor is at lost capacity; there is more traffic than the road can accommodate at free-flow speed. If the flow is under 1,800 vehicles per hour and vehicle density is less than 43 vehicles per mile, the sensor has spare capacity; there is less traffic than the road is built to handle.
+
 - Flow > 1800: 0, roadway operating at appropriate capacity
 - Density > 43: Lost Capacity: Flow - 1800
 - Density ≤ 43: Spare Capacity: 1800 - Flow

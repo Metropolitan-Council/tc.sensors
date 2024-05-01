@@ -1,13 +1,13 @@
 Type: Package
 Package: tc.sensors
 Title: Retrieve Loop Detector Data from the MnDOT JSON Feed
-Version: 0.2.3
-Date: 2023-07-21
+Version: 0.2.4
+Date: 2024-05-01
 Authors@R: c(
     person("Metropolitan Council", role = "cph"),
     person("Liz", "Roten", , "liz.roten@metc.state.mn.us", role = c("cre", "aut"),
            comment = c(ORCID = "0000-0002-5346-3549")),
-    person("Nicole", "Sullivan", , "nicole.sullivan@metc.state.mn.us", role = "aut"),
+    person("Nicole", "Sullivan", , "nicole.sullivan@metc.state.mn.us", role = "ctb"),
     person("Ashley", "Asmus", , "ashley.asmus@metc.state.mn.us", role = "ctb",
            comment = c(ORCID = "0000-0001-5505-1372")),
     person("Yaxuan", "Zhang", , "yaxuan.zhang@metc.state.mn.us", role = "ctb",
@@ -15,9 +15,9 @@ Authors@R: c(
   )
 Description: Process data collected from Minnesota Department of
     Transportation (MnDOT) loop detectors installed on the Minnesota
-    Freeway system in 30-second interval measurements of occupancy and
-    volume, data which are pushed daily to a public JSON feed.  Occupancy
-    and volume data can be used to calculate speed and delay.
+    Freeway system. Data are published to a public JSON feed in 30-second
+    interval measurements of occupancy and volume. Occupancy and volume
+    data can be used to calculate speed and delay.
 License: MIT + file LICENSE
 BugReports: https://github.com/Metropolitan-Council/tc.sensors/issues
 Imports: 
@@ -33,6 +33,7 @@ Imports:
     tibble (>= 3.2.1),
     tidyr (>= 1.3.1),
     tis (>= 1.39),
+    units (>= 0.8-5),
     utils,
     xml2 (>= 1.3.6)
 Suggests: 

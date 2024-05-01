@@ -31,7 +31,7 @@ values at the raw data level. Only applies if \code{replace_impossible} is \code
 that this option increases the function runtime.}
 
 \item{occupancy_pct_threshold}{numeric, the lowest possible occupancy percentage
-to use when calculating speed. Default is \code{0.0020} or 0.2\%. Increasing the threshold
+to use when calculating speed. Default is \code{0.0020} or 0.02\%. Increasing the threshold
 results in more stable speed values, while lowering it may increase speed variability.
 A higher occupancy threshold is recommended for shorter interval lengths}
 }
@@ -53,7 +53,7 @@ Aggregate raw sensor data to a chosen level
 \details{
 \subsection{Calculating speed}{
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{There are 60 scans per second, which means there are 60*60 = 1,800 scans per
+\if{html}{\out{<div class="sourceCode">}}\preformatted{There are 60 scans per second, which means there are 60 * 60 = 1,800 scans per
 30-second interval. The occupancy value in the 30-second interval data
 represents the number of scans that were occupied of the 1,800 scans in that
 interval.
@@ -61,6 +61,10 @@ interval.
 With 60 scans per second, 60 seconds per minute there are 3,600 scans per minute.
 With 3,600 scans per minute, 60 minutes per hour there are 216,000 scans per hour.
 To find the number of scans in 15 minutes, we can multiply 0.25 * 216000 = 54,000 scans.
+
+Speed, in miles per hour, is calculate by multiplying the number of
+vehicles per hour by field length in miles, divided by the
+occupancy for the given interval.
 }\if{html}{\out{</div>}}
 }
 
@@ -68,15 +72,18 @@ To find the number of scans in 15 minutes, we can multiply 0.25 * 216000 = 54,00
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{Any observation with a volume that exceeds 20 vehicles or an occupancy that exceeds 1,800 scans
 will be replaced with `NA`. It is impossible for more than twenty vehicles to pass over a sensor
-in only 30 seconds, and the maximum number of scans in 30 seconds is 1,800 (60 scans/second * 30 seconds).
-
-### Interpolating missing values
-
-  `interpolate_missing` indicates whether to interpolate missing volume and occupancy values
-  at the raw data level. The interpolated value for a given observation is the mean of
-  the two observations on either side of the observation. This method preserves the variable's
-  overall distribution.
+in only 30 seconds, and the maximum number of scans in 30 seconds is 1,800
+(60 scans/second * 30 seconds).
 }\if{html}{\out{</div>}}
+\subsection{Interpolating missing values}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{`interpolate_missing` indicates whether to interpolate missing volume and occupancy values
+at the raw data level. The interpolated value for a given observation is the mean of
+the two observations on either side of the observation. This method preserves the variable's
+overall distribution.
+}\if{html}{\out{</div>}}
+}
+
 }
 }
 \examples{

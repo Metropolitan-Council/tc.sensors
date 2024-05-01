@@ -4,9 +4,9 @@
 #'   Useful for mapping (contains lat/lons) and calculating performance measures (contains detector_field).
 #'
 #' @param return_opt character, indicate how to return the data.
-#'    \code{"within_dir"} will return the data within the directory as a csv entitled
+#'    `"within_dir"` will return the data within the directory as a csv entitled
 #'    "Configuration of Metro Detectors YYYY-MM-DD".
-#'     \code{"in-memory"} will return the data in R, but requires assignment.
+#'     `"in-memory"` will return the data in R, but requires assignment.
 #' @param .quiet logical, whether to hide messages. Default is `TRUE`
 #'
 #' @return dataframe containing 20 variables, including detector_field and lat/lons,

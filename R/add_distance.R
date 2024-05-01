@@ -131,7 +131,8 @@ add_distance <- function(config,
       ))
     ]
   }
-  config_final_joined <- config_final[as.data.table(config),
+  config_final_joined <- config_final[
+    as.data.table(config),
     on = .(
       detector_name, detector_label, detector_category,
       detector_lane, detector_field, detector_abandoned, r_node_name,

@@ -9,6 +9,8 @@ vignette: >
 
 ## Pull data for select sensors for all 2019  
 
+Functions in this package are designed to pull data for a single sensor on a single date. To get data spanning multiple sensors and dates efficiently, we can use vector and parallel processing to simultaneously access data.
+
 ```{r, eval = FALSE}
 library(tc.sensors)
 library(dplyr)
@@ -20,7 +22,8 @@ library(tictoc)
 sensor_config <- pull_configuration()
 sensor_ids <- pull_sensor_ids()
 
-tic() # Start the timer
+# start the timer
+tic()
 
 # set up parallel processing
 future::plan(multisession)

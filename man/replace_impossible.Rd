@@ -24,17 +24,14 @@ Replace impossible volume and occupancy values with \code{NA} at given interval
 \details{
 \subsection{Criteria}{
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{- Hourly
-  - total hourly occupancy exceeds 216,000 scans
-  - total hourly volume exceeds 2,300 cars
-- 30-sec
-  - total 30-second volume exceeds 20 cars
-  - total 30-second occupancy exceed 1,800 scans
-- Percent nulls > 10.
+\if{html}{\out{<div class="sourceCode">}}\preformatted{- 30-sec
+  - Total 30-second volume exceeds 20 cars
+  - Total 30-second occupancy exceed 1,800 scans
+- Hourly
+  - Total hourly occupancy exceeds 216,000 scans (60 scans per second \\* 60 secs per min \\*
+    60 mins per hour = 216,000 scans per hour)
+  - Total hourly volume exceeds 2,300 cars
+- Percent nulls >= 10\%
 }\if{html}{\out{</div>}}
 }
-}
-\author{
-@R c(person("Ashley", "Asmus"),
-person("Liz", "Roten"))
 }

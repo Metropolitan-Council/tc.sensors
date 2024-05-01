@@ -8,10 +8,10 @@ pull_sensor(sensor, pull_date, fill_gaps = TRUE, .quiet = TRUE)
 }
 \arguments{
 \item{sensor}{character, the sensor ID.
-See documentation for \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.}
+See \code{\link[=pull_sensor_ids]{pull_sensor_ids()}} to obtain metro sensor IDs.}
 
 \item{pull_date}{character, the date of data to pull.
-Needs to by in "YYYY-MM-DD" format.}
+Needs to be in \code{"YYYY-MM-DD"} format.}
 
 \item{fill_gaps}{logical, whether to fill gaps in the time series with \code{NA}
 values. Default is \code{TRUE}}
@@ -24,7 +24,7 @@ data frame containing variables volume, occupancy, sensor, date, time.
 \description{
 Create a tidy data frame, containing volume and occupancy,
 for a single date and sensor.
-Use \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
+Use \code{\link[=pull_sensor_ids]{pull_sensor_ids()}} to obtain metro sensor IDs.
 }
 \details{
 \subsection{Output}{
@@ -33,7 +33,7 @@ Use \code{\link{pull_sensor_ids}} to obtain metro sensor IDs.
  usually results in a file that is around ~30-31KB.
 
 Approximate time to pull one sensor's and one extension's
- (v or c for volume or occupancy, respectively) data across
+ ("v" or "c" for volume or occupancy, respectively) data across
   a year on a Mac is 1.33 minutes.
 
 Also note that if you assign `pull_sensor()`'s output, the result is returned in-memory,

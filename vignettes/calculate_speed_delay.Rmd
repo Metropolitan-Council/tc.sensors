@@ -26,6 +26,8 @@ sensor_year <- 2019
 
 **Warning: the following analysis has not been peer reviewed and is subject to change at any time without notice. The analysis pulls data from a single corridor over a two week period, and is intended to illustrate this package's features. This analysis cannot be used to draw conclusions on the corridor's overall performance or the performance of the system as a whole.**
 
+This vignette walks through steps to fetch data for a select number of sensors, clean the sensor data, and then calculate speed and delay. 
+
 ## Pull sensor data
 
 First, we will pull the data for sensors on TH 610 from March 3 to March 16, `r sensor_year`.  
@@ -56,13 +58,14 @@ sensor_config <- pull_configuration() %>%
   )
 
 date_range <- seq(
-  as.Date(paste0(sensor_year, "/03/03")), 
+  as.Date(paste0(sensor_year, "/03/03")),
   as.Date(paste0(sensor_year, "/03/16")),
-  by = "days")
+  by = "days"
+)
 
 plan(future::multisession)
 
-tic() 
+tic()
 sensor_data <- future_map(
   sensor_config$detector_name,
   .f = function(det_name) {
@@ -72,7 +75,6 @@ sensor_data <- future_map(
   }
 )
 toc()
-
 ```
 
 ## Clean data
@@ -80,11 +82,11 @@ toc()
 The following data cleaning steps and checks are taken in `scrub_sensor()`
 
 - Data is complete for all sensors (2,880 observations per sensor)
-- Make volume and occupancy values `NA` if
-    - vehicle volume >= 20 vehicles, or 2,300 vehicles per hour
-    - occupancy >= 1,800 scans, or 216,000 scans per hour [^ 60 scans per second \* 60 secs per min \* 60 mins per hour = 216,000 scans per hour]
-- The percentage of `NA` values is calculated for occupancy and volume. If the `NA` percentage is greater than a 10%, the values are replaced with `NA`
-    - If volume or occupancy are `NA`, speed is changed to `NA`
+- Volume and occupancy values are marked `NA` if
+    - Vehicle volume >= 20 vehicles, or 2,300 vehicles per hour
+    - Occupancy >= 1,800 scans, or 216,000 scans per hour 
+- The percentage of `NA` values is then calculated for occupancy and volume. If the `NA` percentage is greater than a 10%, the values are replaced with `NA`
+- When calculating speed, if volume or occupancy are `NA`, speed is changed to `NA`
 
 Ongoing discussion on whether you can have valid occupancy with invalid volume, and vice versa. 
 
@@ -104,20 +106,20 @@ To avoid getting unreasonable speed values, we will set an occupancy percentage 
 
 ```{r agg-sensors}
 agg_ten <- purrr::map(clean_sensor_data,
-                      aggregate_sensor,
-                      config = sensor_config,
-                      interval_length = 10 / 60,
-                      occupancy_pct_threshold = 0.002,
-                      interpolate_missing = TRUE
+  aggregate_sensor,
+  config = sensor_config,
+  interval_length = 10 / 60,
+  occupancy_pct_threshold = 0.002,
+  interpolate_missing = TRUE
 ) %>%
   purrr::map_dfr(add_day_type)
 
 agg_hour <- purrr::map(clean_sensor_data,
-                       aggregate_sensor,
-                       config = sensor_config,
-                       interval_length = 1,
-                       occupancy_pct_threshold = 0.002,
-                       interpolate_missing = TRUE
+  aggregate_sensor,
+  config = sensor_config,
+  interval_length = 1,
+  occupancy_pct_threshold = 0.002,
+  interpolate_missing = TRUE
 ) %>%
   purrr::map_dfr(add_day_type)
 ```
@@ -218,11 +220,11 @@ plot_ten <- ggplot() +
     size = 3
   ) +
   scale_fill_viridis_c(stringr::str_wrap("Relative volume", 5),
-                       option = "magma", aesthetics = c("fill", "color")
+    option = "magma", aesthetics = c("fill", "color")
   ) +
   scale_y_continuous("Occupancy %",
-                     labels = scales::percent,
-                     limits = range(agg_ten$occupancy.pct)
+    labels = scales::percent,
+    limits = range(agg_ten$occupancy.pct)
   ) +
   scale_x_continuous("Speed (mph)", limits = range(agg_ten$speed)) +
   theme_minimal() +
@@ -273,13 +275,14 @@ One option for handling `NA` values is imputation. We can use the `{mice}` packa
 library(mice)
 tictoc::tic()
 
-rf_imp_day_type <- mice(agg_hour %>% 
-                          filter(!is.na(speed)),
-                        method = "rf",
-                        formulas = c(
-                          as.formula("speed ~ volume.sum + occupancy.sum + interval_bin + day_type")
-                        ),
-                        maxit = 5, m = 5, print = F
+rf_imp_day_type <- mice(
+  agg_hour %>%
+    filter(!is.na(speed)),
+  method = "rf",
+  formulas = c(
+    as.formula("speed ~ volume.sum + occupancy.sum + interval_bin + day_type")
+  ),
+  maxit = 5, m = 5, print = F
 )
 tictoc::toc()
 #> 98.71 sec elapsed
@@ -345,10 +348,10 @@ Next, we will look at a scatter plot of the imputed speed and hour, again, by we
 ```{r plot-speed-imputed}
 ggplot() +
   geom_jitter(
-    data = agg_hour_imputed %>% 
+    data = agg_hour_imputed %>%
       filter(speed != 0),
     mapping = aes(
-      x = interval_bin, 
+      x = interval_bin,
       y = speed,
       color = imp_n
     ),
@@ -397,11 +400,11 @@ $Time = \frac{Distance}{Speed}$
 time_test <- complete(rf_imp_day_type) %>%
   # sample_n(1000) %>%
   left_join(sensor_config_distance %>%
-              select(
-                detector_name,
-                distance,
-                r_node_s_limit
-              ), by = c("sensor" = "detector_name")) %>%
+    select(
+      detector_name,
+      distance,
+      r_node_s_limit
+    ), by = c("sensor" = "detector_name")) %>%
   mutate(
     travel_time_speed = dhours(distance / speed),
     travel_time_limit = dhours(distance / as.numeric(r_node_s_limit)),
@@ -450,9 +453,11 @@ ggplot() +
     x = "Hour",
     y = "Delay (minutes)",
     color = "Speed (mph)",
-    caption = stringr::str_wrap(paste0(
-      "Mainline sensors on T.H.610 corridor, March 3-16, ", sensor_year,
-      ". Random forest speed imputation at one hour interval. "),
+    caption = stringr::str_wrap(
+      paste0(
+        "Mainline sensors on T.H.610 corridor, March 3-16, ", sensor_year,
+        ". Random forest speed imputation at one hour interval. "
+      ),
       width = 60
     )
   ) +

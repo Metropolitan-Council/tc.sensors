@@ -12,17 +12,17 @@ testthat::test_that("Impossible values are replaced", {
       )
 
       ifelse(is.na(sensor_results$volume),
-             {
-               config_sample <- config %>%
-                 dplyr::sample_n(1)
+        {
+          config_sample <- config %>%
+            dplyr::sample_n(1)
 
-               sensor_results <- pull_sensor(
-                 sensor = config_sample$detector_name[[1]],
-                 pull_date = yesterday,
-                 fill_gaps = TRUE
-               )
-             },
-             NA
+          sensor_results <- pull_sensor(
+            sensor = config_sample$detector_name[[1]],
+            pull_date = yesterday,
+            fill_gaps = TRUE
+          )
+        },
+        NA
       )
 
       imp_rem <- replace_impossible(
@@ -35,8 +35,8 @@ testthat::test_that("Impossible values are replaced", {
 
       # test aggregation at 15 minutes----------------------------------------------
       agg <- aggregate_sensor(sensor_results,
-                              interval_length = 0.25,
-                              config = config_sample
+        interval_length = 0.25,
+        config = config_sample
       ) %>%
         replace_impossible(interval_length = 0.25)
 
@@ -47,8 +47,8 @@ testthat::test_that("Impossible values are replaced", {
 
       # test aggregation at 1 hour--------------------------------------------------
       agg_hour <- aggregate_sensor(sensor_results,
-                                   interval_length = 1,
-                                   config = config_sample
+        interval_length = 1,
+        config = config_sample
       ) %>%
         replace_impossible(interval_length = 1)
 
@@ -57,8 +57,8 @@ testthat::test_that("Impossible values are replaced", {
 
       # test aggregation at 24 hours------------------------------------------------
       agg_day <- aggregate_sensor(sensor_results,
-                                  interval_length = 24,
-                                  config = config_sample
+        interval_length = 24,
+        config = config_sample
       ) %>%
         replace_impossible(interval_length = 24)
 
@@ -68,7 +68,7 @@ testthat::test_that("Impossible values are replaced", {
 
       # test argument checks--------------------------------------------------------
       testthat::expect_error(replace_impossible(sensor_results,
-                                                interval_length = 48
+        interval_length = 48
       ))
 
       testthat::expect_error(
@@ -87,5 +87,6 @@ testthat::test_that("Impossible values are replaced", {
           interval_length = 24
         )
       )
-    })
+    }
+  )
 })

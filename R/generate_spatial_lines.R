@@ -62,11 +62,11 @@ generate_spatial_lines <- function(config) {
   config_coords <- as.data.table(config)[r_node_n_type == "Station", ][
     , corridor_category :=
       ifelse(corridor_route == "I-35" & r_node_lat > 45, "I35 north of cities",
-             ifelse(corridor_route == "I-35" & r_node_lat <= 45, "I35 south of cities",
-                    ifelse(corridor_route == "T.H.5" & r_node_lon < -93.3, "5 west of cities",
-                           ifelse(corridor_route == "T.H.5" & r_node_lon > -93.3, "5 east of cities", "Other")
-                    )
-             )
+        ifelse(corridor_route == "I-35" & r_node_lat <= 45, "I35 south of cities",
+          ifelse(corridor_route == "T.H.5" & r_node_lon < -93.3, "5 west of cities",
+            ifelse(corridor_route == "T.H.5" & r_node_lon > -93.3, "5 east of cities", "Other")
+          )
+        )
       )
   ][
     , corridor_id := paste(corridor_route, corridor_dir, corridor_category, sep = "_")
@@ -81,8 +81,8 @@ generate_spatial_lines <- function(config) {
     suppressMessages(sf::st_cast("LINESTRING", warn = FALSE)) %>%
     sf::st_set_crs(4326) %>%
     dplyr::mutate(length_miles = sf::st_length(geometry) %>%
-                    units::set_units("mile") %>%
-                    as.numeric())
+      units::set_units("mile") %>%
+      as.numeric())
 
   return(lines_sf)
 }

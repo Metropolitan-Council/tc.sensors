@@ -43,12 +43,14 @@ testthat::test_that("Aggregation functions as expected", {
         round(mean(agg_hour$volume.mean))
       )
 
-      testthat::expect_equal(sum(sensor_results$occupancy, na.rm = TRUE),
-                             sum(agg_hour$occupancy.sum, na.rm = TRUE))
+      testthat::expect_equal(
+        sum(sensor_results$occupancy, na.rm = TRUE),
+        sum(agg_hour$occupancy.sum, na.rm = TRUE)
+      )
 
       ifelse(!is.na(agg$speed),
         testthat::expect_true(round(mean(agg$speed, na.rm = TRUE)) -
-                                round(mean(agg_hour$speed, na.rm = TRUE)) < 3), NA
+          round(mean(agg_hour$speed, na.rm = TRUE)) < 3), NA
       )
       # test aggregation at 24 hours------------------------------------------------
       agg_day <- aggregate_sensor(sensor_results,

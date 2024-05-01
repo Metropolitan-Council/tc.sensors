@@ -99,7 +99,6 @@ pull_sensor <- function(sensor, pull_date,
       loop_date_sensor[, `:=`(hour = NA, min = NA)]
     }
   } else {
-
     # Add hour and minutes if either volume or occupancy (or both) are available
     loop_date_sensor[, `:=`(
       hour = rep(0:23, each = 120),

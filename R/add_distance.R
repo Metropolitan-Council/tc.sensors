@@ -67,15 +67,17 @@ add_distance <- function(config,
 
   # Conflate lanes so they have the same upstream detector; create index
   corridor_indexed <- unique(config_stations[
-    , .(corridor_route, corridor_dir, r_node_lat, r_node_lon)])[
-      , `:=`(corridor_index = seq_len(.N)),
-      keyby = .(corridor_route, corridor_dir)
+    , .(corridor_route, corridor_dir, r_node_lat, r_node_lon)
+  ])[
+    , `:=`(corridor_index = seq_len(.N)),
+    keyby = .(corridor_route, corridor_dir)
   ]
 
   # Create lagged index in order to connect lat/longs of upstream detector to detector of interest
   corridor_indexed_lagged <- data.table::setnames(
     copy(corridor_indexed)[
-      , `:=`(corridor_index = corridor_index - 1)],
+      , `:=`(corridor_index = corridor_index - 1)
+    ],
     c("r_node_lat", "r_node_lon"),
     c("r_node_lat_up", "r_node_lon_up")
   )

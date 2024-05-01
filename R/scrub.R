@@ -47,10 +47,11 @@ replace_impossible <- function(sensor_data,
 
     sensor_data[
       # if volume is gte 20 vehicles, make NA
-      , volume := ifelse(volume >= 20, NA, volume)][
-        # if occupancy is gte 1800 scans, make NA
-        , occupancy := ifelse(occupancy >= 1800, NA, occupancy)]
-
+      , volume := ifelse(volume >= 20, NA, volume)
+    ][
+      # if occupancy is gte 1800 scans, make NA
+      , occupancy := ifelse(occupancy >= 1800, NA, occupancy)
+    ]
   } else {
     if (interval_length > 24) {
       cli::cli_abort("Interval cannot exceed 24 hours.")
@@ -58,17 +59,23 @@ replace_impossible <- function(sensor_data,
 
     sensor_data[
       # if the total volume is gte 2,300 vehicles per hour, make NA
-      , volume.sum := ifelse(volume.sum >= (interval_length * 2300), NA, volume.sum)][
-        # if occupancy is gte 216,000 scans per hour, make NA
-        , occupancy.sum := ifelse(occupancy.sum >= (interval_length * 216000), NA, occupancy.sum)][
-          # if the percent of all volume.sums is gte 10, make NA
-          , volume.sum := ifelse(volume.pct.null >= 10, NA, volume.sum)][
-            # if the percent of all occupancy.sums is gte 10, make NA
-            , occupancy.sum := ifelse(occupancy.pct.null >= 10, NA, occupancy.sum)][
-              # if volume is NA, make speed NA
-              , speed := ifelse(is.na(volume.sum), NA, speed)][
-                # if occupancy is NA, make speed NA
-                , speed := ifelse(is.na(occupancy.sum), NA, speed)]
+      , volume.sum := ifelse(volume.sum >= (interval_length * 2300), NA, volume.sum)
+    ][
+      # if occupancy is gte 216,000 scans per hour, make NA
+      , occupancy.sum := ifelse(occupancy.sum >= (interval_length * 216000), NA, occupancy.sum)
+    ][
+      # if the percent of all volume.sums is gte 10, make NA
+      , volume.sum := ifelse(volume.pct.null >= 10, NA, volume.sum)
+    ][
+      # if the percent of all occupancy.sums is gte 10, make NA
+      , occupancy.sum := ifelse(occupancy.pct.null >= 10, NA, occupancy.sum)
+    ][
+      # if volume is NA, make speed NA
+      , speed := ifelse(is.na(volume.sum), NA, speed)
+    ][
+      # if occupancy is NA, make speed NA
+      , speed := ifelse(is.na(occupancy.sum), NA, speed)
+    ]
   }
 
   return(sensor_data)

@@ -26,6 +26,9 @@ add_day_type <- function(sensor_data) {
         holiday == TRUE ~ "Holiday",
         TRUE ~ day_type
       )
-      .(day_of_week, day_type, holiday, day_category)})][
-        , holiday := NULL]
+      .(day_of_week, day_type, holiday, day_category)
+    })
+  ][
+    , holiday := NULL
+  ]
 }

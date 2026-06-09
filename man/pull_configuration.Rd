@@ -20,7 +20,7 @@ for each sensor in MnDOT's metro district
 \itemize{
 \item \code{detector_name} character, the detector's unique identifier in numbers
 \item \code{detector_label} character, the detector's label including abbreviations of the roads associated with the roadway node.
-\item \code{detector_category} character, the detector lane type in code. \href{https://github.com/mnit-rtmc/iris/blob/5b3dcbbcd6d177b2a1d37576bdd06b7d33a6facd/src/us/mn/state/dot/tms/LaneType.java}{Source}
+\item \code{detector_category} character, the detector lane type in code. \href{https://github.com/mnit-rtmc/iris/blob/master/src/us/mn/state/dot/tms/LaneCode.java}{Source}
 \itemize{
 \item "" Mainline
 \item "A" Auxiliary, mainline auxiliary (ends within a mile)

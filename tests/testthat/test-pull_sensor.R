@@ -12,6 +12,8 @@ testthat::test_that("Test that data can be pulled from a random sensor id for ye
         fill_gaps = TRUE
       )
 
+      testthat::expect_false(all(is.na(sensor_results$volume)))
+      testthat::expect_false(all(is.na(sensor_results$occupancy)))
       testthat::expect_equal(class(sensor_results)[[1]], "data.table")
       testthat::expect_equal(dim(sensor_results)[[1]], 2880)
       testthat::expect_equal(dim(sensor_results)[[2]], 6)

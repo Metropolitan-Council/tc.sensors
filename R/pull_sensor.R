@@ -135,7 +135,7 @@ extension_pull <- function(ext, ext_name, sensor, pull_date, quiet = TRUE) {
     df_default <- tibble::enframe(
       jsonlite::fromJSON(
         txt = paste0(
-          "http://data.dot.state.mn.us/trafdat/metro/",
+          "https://data.dot.state.mn.us/trafdat/metro/",
           pull_year,
           "/",
           pull_year,

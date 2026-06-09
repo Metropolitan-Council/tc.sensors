@@ -17,7 +17,7 @@
 #'
 #' @export
 pull_sensor_ids <- function(.quiet = TRUE) {
-  url <- "http://data.dot.state.mn.us/iris_xml/metro_config.xml.gz"
+  url <- "https://data.dot.state.mn.us/iris_xml/metro_config.xml.gz"
   tmp <- tempfile()
   utils::download.file(url, tmp, quiet = .quiet)
   metro_config <- xml2::read_xml(gzfile(tmp))

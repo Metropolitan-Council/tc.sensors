@@ -13,7 +13,7 @@
 #'   for each sensor in MnDOT's metro district
 #'   - `detector_name` character, the detector's unique identifier in numbers
 #'   - `detector_label` character, the detector's label including abbreviations of the roads associated with the roadway node.
-#'   - `detector_category` character, the detector lane type in code. [Source](https://github.com/mnit-rtmc/iris/blob/5b3dcbbcd6d177b2a1d37576bdd06b7d33a6facd/src/us/mn/state/dot/tms/LaneType.java)
+#'   - `detector_category` character, the detector lane type in code. [Source](https://github.com/mnit-rtmc/iris/blob/master/src/us/mn/state/dot/tms/LaneCode.java)
 #'     - "" Mainline
 #'     - "A" Auxiliary, mainline auxiliary (ends within a mile)
 #'     - "B" Bypass, ramp meter bypass

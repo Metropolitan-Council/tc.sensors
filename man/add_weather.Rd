@@ -47,6 +47,15 @@ measures for a given ASOS station in Minnesota.
 For additional Minnesota station ID codes, see
 the \href{http://mesonet.agron.iastate.edu/sites/networks.php?network=MN_ASOS}{Mesonet station directory}.
 }
+\section{Deprecation}{
+
+\strong{This function is deprecated and will be removed in version 0.3.0.}
+
+The \code{add_weather()} function is no longer maintained. Users should
+implement their own weather data workflows using alternative data sources
+and packages.
+}
+
 \examples{
 \dontrun{
 

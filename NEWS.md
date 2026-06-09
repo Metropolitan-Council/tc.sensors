@@ -1,5 +1,17 @@
 # tc.sensors (development version)
 
+# tc.sensors 0.3.0
+
+## Deprecations
+
+* **BREAKING CHANGE**: `add_weather()` is now deprecated and will be removed in this version (0.3.0). This function is no longer maintained. Users should implement their own weather data workflows using alternative data sources and packages. (#deprecated)
+
+## Dependencies
+
+* Removed `curl` from Imports as it was only used by the deprecated `add_weather()` function.
+* Updated all package dependency versions to current releases.
+* Added minimum R version requirement: R >= 4.2.0.
+
 # tc.sensors 0.2.0.90001
 
 * Patch `pull_extension()` internal function. Remove port 8080 from URL. See [issue #13](https://github.com/Metropolitan-Council/tc.sensors/issues/13) and [PR #14](https://github.com/Metropolitan-Council/tc.sensors/pull/14).

@@ -11,6 +11,13 @@
 #' @param station character, ASOS station code. Default is `"MSP"` for the Minneapolis/St. Paul airport
 #' @param time_zone character, time zone code. Default is `"America%2FChicago"`.
 #'
+#' @section Deprecation:
+#'   **This function is deprecated and will be removed in version 0.3.0.**
+#'
+#'   The `add_weather()` function is no longer maintained. Users should
+#'   implement their own weather data workflows using alternative data sources
+#'   and packages.
+#'
 #' @details
 #'   For additional Minnesota station ID codes, see
 #'   the [Mesonet station directory](http://mesonet.agron.iastate.edu/sites/networks.php?network=MN_ASOS).
@@ -26,7 +33,6 @@
 #' @export
 #'
 #' @import data.table
-#' @importFrom curl nslookup
 #' @importFrom tis day
 #' @importFrom utils read.csv
 #' @importFrom cli cli_abort cli_alert
@@ -59,6 +65,10 @@ add_weather <- function(sensor_data,
                         interval_length = 1,
                         station = "MSP",
                         time_zone = "America%2FChicago") {
+  .Deprecated(
+    msg = "add_weather() is deprecated and will be removed in version 0.3.0. This function is no longer maintained."
+  )
+
   if (curl::nslookup("metrocouncil.org") == FALSE) {
     cli::cli_abort("You must be connected to the internet to access weather data")
   }

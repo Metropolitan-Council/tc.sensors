@@ -1,5 +1,8 @@
 testthat::skip_on_ci()
 
+# Note: add_weather() is deprecated as of v0.3.0 and will be removed in v0.3.0
+# Tests wrapped in suppressWarnings() to prevent deprecation warnings from failing tests
+
 testthat::test_that("Weather data functions as expected", {
   testthat::try_again(
     times = 5,
@@ -21,13 +24,13 @@ testthat::test_that("Weather data functions as expected", {
       )
 
       # test argument checks--------------------------------------------------------
-      testthat::expect_error(add_weather(agg_hour,
+      testthat::expect_error(suppressWarnings(add_weather(agg_hour,
         interval_length = 0.25
-      ))
+      )))
 
-      agg_hour_weather <- add_weather(agg_hour,
+      agg_hour_weather <- suppressWarnings(add_weather(agg_hour,
         interval_length = 1
-      )
+      ))
 
       testthat::expect_equal(dim(agg_hour_weather)[[1]], 24)
 
@@ -36,7 +39,7 @@ testthat::test_that("Weather data functions as expected", {
         interval_length = 24,
         config = config_sample
       ) %>%
-        add_weather(interval_length = 24)
+        suppressWarnings(add_weather(interval_length = 24))
 
       testthat::expect_equal(dim(agg_day_weather)[[1]], 1)
     }

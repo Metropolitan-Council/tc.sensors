@@ -1,6 +1,6 @@
 Type: Package
 Package: tc.sensors
-Title: Retrieve Loop Detector Data from the MnDOT JSON Feed
+Title: Retrieve Loop Detector Data from the MnDOT Mayfly API
 Version: 0.3.0
 Date: 2026-06-09
 Authors@R: c(
@@ -15,7 +15,7 @@ Authors@R: c(
   )
 Description: Process data collected from Minnesota Department of
     Transportation (MnDOT) loop detectors installed on the Minnesota
-    Freeway system. Data are published to a public JSON feed in 30-second
+    Freeway system. Data are published to Mayfly in 30-second
     interval measurements of occupancy and volume. Occupancy and volume
     data can be used to calculate speed and delay.
 License: MIT + file LICENSE
@@ -27,6 +27,7 @@ Imports:
     data.table (>= 1.18.4),
     dplyr (>= 1.2.1),
     geosphere (>= 1.6-8),
+    httr2 (>= 1.2.2),
     jsonlite (>= 2.0.0),
     magrittr (>= 2.0.5),
     purrr (>= 1.2.2),

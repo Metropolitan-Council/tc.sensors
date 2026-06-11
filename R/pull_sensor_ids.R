@@ -28,8 +28,8 @@ pull_sensor_ids <- function(pull_date = NULL, district = "metro", .quiet = TRUE)
   if (!is.null(pull_date)) {
     # Use provided date
     date_parsed <- parse_date_flexible(pull_date)
-    query_year <- format(date_parsed, "%Y")
-    query_date <- format(date_parsed, "%Y%m%d")
+    query_year <- date_parsed$year
+    query_date <- date_parsed$date_yyyymmdd
   } else {
     # Use the most recent available year and date
     years <- mayfly_get_years(district = district)

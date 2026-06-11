@@ -9,7 +9,7 @@
 #'    `"within_dir"` will return the data within the directory as a csv entitled
 #'    "Configuration of Metro Detectors YYYY-MM-DD".
 #'     `"in-memory"` will return the data in R, but requires assignment.
-#' @param .quiet logical, whether to hide messages. Default is `TRUE`
+#' @inheritParams mayfly_perform
 #'
 #' @return dataframe containing 20 variables, including detector_field and lat/lons,
 #'   for each sensor in MnDOT's metro district

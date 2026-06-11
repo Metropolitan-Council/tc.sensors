@@ -1,4 +1,4 @@
-#' @title Pull sensor vehicle length data
+#' @title Pull vehicle length data for a single sensor and date
 #'
 #' @description Fetch vehicle length data for a single date and sensor from the
 #'   Mayfly API. Use [pull_sensor_ids()] to obtain metro sensor IDs. Vehicle length

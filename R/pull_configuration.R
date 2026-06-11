@@ -2,7 +2,7 @@
 #'
 #' @description Read MnDOT sensor configuration data containing 20 variables related
 #'   to sensor configuration. Useful for mapping (contains lat/lons) and calculating
-#'   performance measures (contains detector_field). Data is sourced from the
+#'   performance measures (contains `detector_field`). Data is sourced from the
 #'   IRIS XML configuration endpoint.
 #'
 #' @param return_opt character, indicate how to return the data.
@@ -11,7 +11,7 @@
 #'     `"in-memory"` will return the data in R, but requires assignment.
 #' @inheritParams mayfly_perform
 #'
-#' @return dataframe containing 20 variables, including detector_field and lat/lons,
+#' @return dataframe containing 20 variables, including `detector_field` and lat/lons,
 #'   for each sensor in MnDOT's metro district
 #'   - `detector_name` character, the detector's unique identifier in numbers
 #'   - `detector_label` character, the detector's label including abbreviations of the roads associated with the roadway node.

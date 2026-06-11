@@ -54,7 +54,7 @@
 #' )
 #'
 #' # Use a different district
-#' loop_data <- pull_sensor(5474, "2018-10-14", district = "d1")
+#' loop_data <- pull_sensor(5474, "2024-10-14", district = "d1")
 #'
 #' # Mapping example
 #' date_range <- seq(as.Date("2019/01/01"), as.Date("2019/01/02"), by = "days")

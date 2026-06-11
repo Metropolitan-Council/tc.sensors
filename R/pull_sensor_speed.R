@@ -1,4 +1,4 @@
-#' @title Pull sensor speed data
+#' @title Pull measured sensor speed data
 #'
 #' @description Fetch measured speed data for a single date and sensor from the
 #'   Mayfly API. Use [pull_sensor_ids()] to obtain metro sensor IDs.

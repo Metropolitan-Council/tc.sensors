@@ -2,27 +2,56 @@
 % Please edit documentation in R/pull_sensor.R
 \name{extension_pull}
 \alias{extension_pull}
-\title{Pull extension}
+\title{Pull extension - generic sensor data retrieval}
 \usage{
-extension_pull(ext, ext_name, sensor, pull_date, quiet = TRUE)
+extension_pull(
+  endpoint,
+  column_name,
+  sensor,
+  pull_date,
+  district = "metro",
+  length_ft_min = NULL,
+  length_ft_max = NULL,
+  headway_sec_min = NULL,
+  headway_sec_max = NULL,
+  speed_mph_min = NULL,
+  speed_mph_max = NULL,
+  quiet = TRUE
+)
 }
 \arguments{
-\item{ext}{string, either \code{"v"} for volume or \code{"c"} for occupancy}
+\item{endpoint}{string, Mayfly API endpoint: "counts", "occupancy", "speed",
+"espeed", "headway", or "length"}
 
-\item{ext_name}{string, either \code{"volume"} or \code{"occupancy"}}
+\item{column_name}{string, name for the returned data column}
 
 \item{sensor}{character, the sensor ID.
 See \code{\link[=pull_sensor_ids]{pull_sensor_ids()}} to obtain metro sensor IDs.}
 
 \item{pull_date}{character, the date of data to pull.
-Needs to be in \code{"YYYY-MM-DD"} format.}
+Accepts either \code{"YYYY-MM-DD"} or \code{"YYYYMMDD"} format.}
+
+\item{district}{character, MnDOT district code. Default is "metro".
+Use \code{\link[=mayfly_get_districts]{mayfly_get_districts()}} to see available districts.}
+
+\item{length_ft_min}{numeric, minimum vehicle length in feet for filtering. Optional. Default is \code{NULL.}}
+
+\item{length_ft_max}{numeric, maximum vehicle length in feet for filtering (non-inclusive). Optional. Default is \code{NULL.}}
+
+\item{headway_sec_min}{numeric, minimum headway in seconds for filtering. Optional. Default is \code{NULL.}}
+
+\item{headway_sec_max}{numeric, maximum headway in seconds for filtering (non-inclusive). Optional. Default is \code{NULL.}}
+
+\item{speed_mph_min}{numeric, minimum speed in mph for filtering. Optional. Default is \code{NULL.}}
+
+\item{speed_mph_max}{numeric, maximum speed in mph for filtering (non-inclusive). Optional. Default is \code{NULL.}}
 
 \item{quiet}{logical, whether to hide messages. Default is \code{TRUE}}
 }
 \value{
-a tibble
+a data.table
 }
 \description{
-Pull extension
+Pull extension - generic sensor data retrieval
 }
 \keyword{internal}

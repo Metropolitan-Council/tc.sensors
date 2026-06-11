@@ -10,14 +10,14 @@ maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www
 
 <!-- badges: end -->
 
-# tc.sensors <img src="man/figures/logo.png" align="right" height="300" />
+# <img src="man/figures/logo.png" align="right" height="200" alt="tc.sensors logo" />
 
 ## Overview
 
 A package for pulling data for Minnesota Department of Transportation
 (MnDOT) loop detectors installed on the Minnesota Freeway system in
 30-second interval measurements of occupancy and volume, data which are
-pushed daily to a public JSON feed.
+pushed daily via the Mayfly API.
 
 ## Installation
 
@@ -60,23 +60,24 @@ Definitions come from MnDOT Data Extract
   - `Density > 43: Lost Capacity: Flow - 1800`
   - `Density >= 43: Lost Capacity: 1800 - Flow`
 
-## Associated repositories and projects
+## Associated materials and projects
 
-- **[loop-sensor-trends](https://github.com/Metropolitan-Council/loop-sensor-trends)**
+- [loop-sensor-trends](https://github.com/Metropolitan-Council/loop-sensor-trends)
   Data analysis and interactive R Shiny app for examining changes in
   regional traffic levels in response to the COVID-19 pandemic.\
-- **[Twin-Cities-Loop-Detectors](https://github.com/sullivannicole/Twin-Cities-Loop-Detectors)**
-  A pre-cursor to `{tc.sensors}`. Contains extensive documentation and
-  code samples that will be integrated into this package.\
+  <!-- - [Twin-Cities-Loop-Detectors](https://github.com/sullivannicole/Twin-Cities-Loop-Detectors) A pre-cursor to `{tc.sensors}`. Contains extensive documentation and code samples that will be integrated into this package.   -->
 - [iris](https://github.com/mnit-rtmc/iris) MNIT/MnDOT repo for
-  intelligent roadway information system (IRIS)
+  intelligent roadway information system (IRIS).
+- [Mayfly API reference](https://data.dot.state.mn.us/mayfly/) The API
+  through which MnDOT pushes loop detector data.
 
 ## Contributors
 
 **Maintainer** Liz Roten (<liz.roten@metc.state.mn.us>)
 
 [@ashleyasmus](https://github.com/ashleyasmus),
-[@eroten](https://github.com/eroten), and
+[@eroten](https://github.com/eroten),
+[@SeanZhangMC](https://github.com/SeanZhangMC), and
 [@sullivannicole](https://github.com/sullivannicole).
 
 <a href="https://metrocouncil.org" target="_blank"><img src="man/figures/main-logo.png" style="margin-left: 50%;margin-right: 50%;">

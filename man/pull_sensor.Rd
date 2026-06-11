@@ -4,19 +4,46 @@
 \alias{pull_sensor}
 \title{Pull sensor volume and occupancy}
 \usage{
-pull_sensor(sensor, pull_date, fill_gaps = TRUE, .quiet = TRUE)
+pull_sensor(
+  sensor,
+  pull_date,
+  fill_gaps = TRUE,
+  length_ft_min = NULL,
+  length_ft_max = NULL,
+  headway_sec_min = NULL,
+  headway_sec_max = NULL,
+  speed_mph_min = NULL,
+  speed_mph_max = NULL,
+  district = "metro",
+  .quiet = TRUE
+)
 }
 \arguments{
 \item{sensor}{character, the sensor ID.
 See \code{\link[=pull_sensor_ids]{pull_sensor_ids()}} to obtain metro sensor IDs.}
 
 \item{pull_date}{character, the date of data to pull.
-Needs to be in \code{"YYYY-MM-DD"} format.}
+Accepts either \code{"YYYY-MM-DD"} or \code{"YYYYMMDD"} format.}
 
 \item{fill_gaps}{logical, whether to fill gaps in the time series with \code{NA}
 values. Default is \code{TRUE}}
 
-\item{.quiet}{logical, whether to hide messages. Default is \code{TRUE}}
+\item{length_ft_min}{numeric, minimum vehicle length in feet for filtering. Optional. Default is \code{NULL.}}
+
+\item{length_ft_max}{numeric, maximum vehicle length in feet for filtering (non-inclusive). Optional. Default is \code{NULL.}}
+
+\item{headway_sec_min}{numeric, minimum headway in seconds for filtering. Optional. Default is \code{NULL.}}
+
+\item{headway_sec_max}{numeric, maximum headway in seconds for filtering (non-inclusive). Optional. Default is \code{NULL.}}
+
+\item{speed_mph_min}{numeric, minimum speed in mph for filtering. Optional. Default is \code{NULL.}}
+
+\item{speed_mph_max}{numeric, maximum speed in mph for filtering (non-inclusive). Optional. Default is \code{NULL.}}
+
+\item{district}{character, MnDOT district code. Default is "metro".
+Use \code{\link[=mayfly_get_districts]{mayfly_get_districts()}} to see available districts.}
+
+\item{.quiet}{logical, whether to suppress error messages. Default TRUE}
 }
 \value{
 data frame containing variables volume, occupancy, sensor, date, time.
@@ -32,10 +59,6 @@ Use \code{\link[=pull_sensor_ids]{pull_sensor_ids()}} to obtain metro sensor IDs
 \if{html}{\out{<div class="sourceCode">}}\preformatted{A complete year's worth of data for volume or occupancy for one sensor
  usually results in a file that is around ~30-31KB.
 
-Approximate time to pull one sensor's and one extension's
- ("v" or "c" for volume or occupancy, respectively) data across
-  a year on a Mac is 1.33 minutes.
-
 Also note that if you assign `pull_sensor()`'s output, the result is returned in-memory,
 and there must be sufficient space in-memory to do so.
 }\if{html}{\out{</div>}}
@@ -47,11 +70,29 @@ and there must be sufficient space in-memory to do so.
 It is unknown how a loop could be monitoring volume and not occupancy.
 }\if{html}{\out{</div>}}
 }
+
+\subsection{Filtering}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{The length, headway, and speed filtering parameters allow filtering of
+vehicle observations. This can be useful for vehicle classification
+(e.g., filtering by length to separate cars from trucks) or identifying
+specific traffic patterns. Filters apply to both volume and occupancy data.
+}\if{html}{\out{</div>}}
+}
 }
 \examples{
 \dontrun{
 # Simple example
 loop_data <- pull_sensor(5474, "2018-10-14")
+
+# With filtering - passenger cars only (7-19 feet)
+cars_only <- pull_sensor(5474, "2018-10-14",
+  length_ft_min = 7,
+  length_ft_max = 19
+)
+
+# Use a different district
+loop_data <- pull_sensor(5474, "2024-10-14", district = "d1")
 
 # Mapping example
 date_range <- seq(as.Date("2019/01/01"), as.Date("2019/01/02"), by = "days")
@@ -75,6 +116,10 @@ loops_full <- rbindlist(loop_data)
 \seealso{
 Other loop sensor functions: 
 \code{\link{pull_configuration}()},
-\code{\link{pull_sensor_ids}()}
+\code{\link{pull_sensor_espeed}()},
+\code{\link{pull_sensor_headway}()},
+\code{\link{pull_sensor_ids}()},
+\code{\link{pull_sensor_length}()},
+\code{\link{pull_sensor_speed}()}
 }
 \concept{loop sensor functions}

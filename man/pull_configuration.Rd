@@ -12,10 +12,10 @@ pull_configuration(return_opt = "in_memory", .quiet = TRUE)
 "Configuration of Metro Detectors YYYY-MM-DD".
 \code{"in-memory"} will return the data in R, but requires assignment.}
 
-\item{.quiet}{logical, whether to hide messages. Default is \code{TRUE}}
+\item{.quiet}{logical, whether to suppress error messages. Default TRUE}
 }
 \value{
-dataframe containing 20 variables, including detector_field and lat/lons,
+dataframe containing 20 variables, including \code{detector_field} and lat/lons,
 for each sensor in MnDOT's metro district
 \itemize{
 \item \code{detector_name} character, the detector's unique identifier in numbers
@@ -59,11 +59,14 @@ for each sensor in MnDOT's metro district
 }
 }
 \description{
-Read MnDOT JSON feed and wrangle into a tidy dataframe containing 20 variables related to sensor configuration.
-Useful for mapping (contains lat/lons) and calculating performance measures (contains detector_field).
+Read MnDOT sensor configuration data containing 20 variables related
+to sensor configuration. Useful for mapping (contains lat/lons) and calculating
+performance measures (contains \code{detector_field}). Data is sourced from the
+IRIS XML configuration endpoint.
 }
 \details{
-Additional documentation on the IRIS system can be found on MNIT \href{https://mnit-rtmc.github.io/iris/index.html}{documentation page}.
+Additional documentation on the IRIS system can be found on MNIT
+\href{https://mnit-rtmc.github.io/iris/index.html}{documentation page}.
 }
 \examples{
 \dontrun{
@@ -75,6 +78,10 @@ pull_configuration("within_dir") # No assignment necessary
 \seealso{
 Other loop sensor functions: 
 \code{\link{pull_sensor}()},
-\code{\link{pull_sensor_ids}()}
+\code{\link{pull_sensor_espeed}()},
+\code{\link{pull_sensor_headway}()},
+\code{\link{pull_sensor_ids}()},
+\code{\link{pull_sensor_length}()},
+\code{\link{pull_sensor_speed}()}
 }
 \concept{loop sensor functions}

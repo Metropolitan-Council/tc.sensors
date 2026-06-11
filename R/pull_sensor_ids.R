@@ -1,27 +1,50 @@
-#' @title Function to pull all sensor IDs in the Twin Cities metro
+#' @title Function to pull all sensor IDs for a district
 #'
-#' @description Create a tidy dataframe containing sensor IDs for MnDOT metro district, mainly to be used with pull_sensor
+#' @description Create a tidy dataframe containing sensor IDs for a MnDOT district,
+#'   mainly to be used with [pull_sensor()]. Data is fetched from the Mayfly API.
 #'
+#' @inheritParams mayfly_request
 #' @inheritParams pull_configuration
-#' @return dataframe containing variable "detector"
+#' @return data.table containing variable "detector"
 #'
 #' @family loop sensor functions
 #' @examples
 #' \dontrun{
-#' sensors <- sensor_pull()
+#' sensors <- pull_sensor_ids()
+#' # Get sensors for a different district
+#' sensors_d1 <- pull_sensor_ids(district = "d1")
 #' }
-#' @importFrom xml2 read_xml xml_find_all xml_attr
-#' @importFrom dplyr transmute
-#' @importFrom tibble enframe
-#' @importFrom utils download.file
+#' @import data.table
 #'
 #' @export
-pull_sensor_ids <- function(.quiet = TRUE) {
-  url <- "https://data.dot.state.mn.us/iris_xml/metro_config.xml.gz"
-  tmp <- tempfile()
-  utils::download.file(url, tmp, quiet = .quiet)
-  metro_config <- xml2::read_xml(gzfile(tmp))
+pull_sensor_ids <- function(district = "metro", .quiet = TRUE) {
+  # Mayfly /detectors requires year and date params.
+  # Use the most recent available year and date.
+  years <- mayfly_get_years(district = district)
+  if (is.null(years) || length(years) == 0) {
+    cli::cli_abort("Unable to fetch available years from Mayfly API")
+  }
+  latest_year <- max(years)
 
-  tibble::enframe(trimws(xml2::xml_attr(xml2::xml_find_all(metro_config, "//detector"), "name"))) %>%
-    dplyr::transmute(detector = value)
+  dates <- mayfly_get_dates(district = district, year = latest_year)
+  if (is.null(dates) || length(dates) == 0) {
+    cli::cli_abort("Unable to fetch available dates from Mayfly API for {latest_year}")
+  }
+  latest_date <- max(dates)
+
+  # Query Mayfly API for detector list
+  req <- mayfly_request(
+    endpoint = "detectors",
+    district = district,
+    year = latest_year,
+    date = latest_date
+  )
+  detectors <- mayfly_perform(req, .quiet = .quiet)
+
+  if (is.null(detectors) || length(detectors) == 0) {
+    cli::cli_abort("Unable to fetch detector list from Mayfly API")
+  }
+
+  # Return as data.table matching old format
+  data.table::data.table(detector = detectors)
 }

@@ -1,6 +1,24 @@
-# tc.sensors (development version)
-
 # tc.sensors 0.3.0
+
+MnDOT has retired trafdat and migrated to Mayfly, an API. This version of tc.sensors implements a new process using `{httr2}`.  
+
+## New Features
+
+* **NEW** data functions
+  * `pull_sensor_headway()` retrieves headway (time between vehicles in seconds) data from the Mayfly API. Useful for analyzing traffic flow patterns and vehicle spacing.
+  * `pull_sensor_speed()` retrieves measured speed
+  * `pull_sensor_length()` retrieves vehicle length data in feet, enabling vehicle classification (motorcycles, passenger cars, trucks).
+  * `pull_sensor_espeed()` retrieves estimated speed data calculated using free-flow speed and traffic conditions.
+  * All new functions support filtering by vehicle characteristics (speed, length, headway) for refined traffic analysis.
+
+## Improvements
+
+* All `pull_sensor_*()` functions now return `data.table` objects for improved performance and consistency.
+* Enhanced Mayfly API integration with updated query filtering functionality.
+* New `parse_date_flexible()` utility for more flexible date input formatting.
+* Comprehensive testing suite additions for sensor data pulls and date validation.
+* Updated pipe utility for better compatibility.
+* Extensive documentation improvements and code styling updates.
 
 ## Deprecations
 
@@ -9,6 +27,7 @@
 ## Dependencies
 
 * Removed `curl` from Imports as it was only used by the deprecated `add_weather()` function.
+* Add httr2
 * Updated all package dependency versions to current releases.
 * Added minimum R version requirement: R >= 4.2.0.
 

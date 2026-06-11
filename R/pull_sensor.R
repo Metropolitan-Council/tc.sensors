@@ -110,49 +110,70 @@ pull_sensor <- function(sensor, pull_date,
 }
 
 
-
-#' Pull extension
+#' Pull extension - generic sensor data retrieval
 #'
-#' @param ext string, either `"v"` for volume or `"c"` for occupancy
-#' @param ext_name string, either `"volume"` or `"occupancy"`
+#' @param endpoint string, Mayfly API endpoint: "counts", "occupancy", "speed",
+#'   "espeed", "headway", or "length"
+#' @param column_name string, name for the returned data column
 #' @param quiet logical, whether to hide messages. Default is `TRUE`
 #' @inheritParams pull_sensor
 #' @keywords internal
 #'
-#' @return a tibble
+#' @return a data.table
 #'
 #' @export
-extension_pull <- function(ext, ext_name, sensor, pull_date, quiet = TRUE) {
-  # browser()
+extension_pull <- function(endpoint, column_name, sensor, pull_date,
+                           district = "metro",
+                           length_ft_min = NULL,
+                           length_ft_max = NULL,
+                           headway_sec_min = NULL,
+                           headway_sec_max = NULL,
+                           speed_mph_min = NULL,
+                           speed_mph_max = NULL,
+                           quiet = TRUE) {
+  # Validate date is available before making request
+  # Parse date flexibly
+  date_parsed <- parse_date_flexible(pull_date)
 
-  pull_year <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%Y")
-  pull_month <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%m")
-  pull_day <- format.Date(as.Date(pull_date, format = "%Y-%m-%d"), "%d")
+  validate_date_available(date_parsed$date_standard, district = district, .quiet = quiet)
 
-  df_default <- tibble::as_tibble(NA)
+  # Convert date components
+  pull_year <- date_parsed$year
+  date_yyyymmdd <- date_parsed$date_yyyymmdd
 
-  try(
-    df_default <- tibble::enframe(
-      jsonlite::fromJSON(
-        txt = paste0(
-          "https://data.dot.state.mn.us/trafdat/metro/",
-          pull_year,
-          "/",
-          pull_year,
-          pull_month,
-          pull_day,
-          "/",
-          sensor,
-          ".",
-          ext,
-          "30.json"
-        )
-      )
-    ) %>%
-      dplyr::select(value),
-    silent = quiet
+  # Build request
+  req <- mayfly_request(
+    endpoint = endpoint,
+    district = district,
+    year = pull_year,
+    date = date_yyyymmdd,
+    detector = sensor
   )
-  names(df_default) <- ext_name
+
+  # Add query parameters if filtering
+  filter_params <- list()
+  if (!is.null(length_ft_min)) filter_params$length_ft_min <- length_ft_min
+  if (!is.null(length_ft_max)) filter_params$length_ft_max <- length_ft_max
+  if (!is.null(headway_sec_min)) filter_params$headway_sec_min <- headway_sec_min
+  if (!is.null(headway_sec_max)) filter_params$headway_sec_max <- headway_sec_max
+  if (!is.null(speed_mph_min)) filter_params$speed_mph_min <- speed_mph_min
+  if (!is.null(speed_mph_max)) filter_params$speed_mph_max <- speed_mph_max
+
+  if (length(filter_params) > 0) {
+    req <- httr2::req_url_query(req, !!!filter_params)
+  }
+
+  # Perform request
+  data <- mayfly_perform(req, .quiet = quiet)
+
+  # Convert to data.table with single column
+  if (is.null(data) || length(data) == 0) {
+    df_default <- data.table::data.table(value = NA)
+  } else {
+    df_default <- data.table::data.table(value = data)
+  }
+
+  names(df_default) <- column_name
 
   return(df_default)
 }

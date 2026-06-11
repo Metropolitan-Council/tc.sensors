@@ -1,7 +1,9 @@
 #' @title Pull metro sensor configuration
 #'
-#' @description Read MnDOT JSON feed and wrangle into a tidy dataframe containing 20 variables related to sensor configuration.
-#'   Useful for mapping (contains lat/lons) and calculating performance measures (contains detector_field).
+#' @description Read MnDOT sensor configuration data containing 20 variables related
+#'   to sensor configuration. Useful for mapping (contains lat/lons) and calculating
+#'   performance measures (contains detector_field). Data is sourced from the
+#'   IRIS XML configuration endpoint.
 #'
 #' @param return_opt character, indicate how to return the data.
 #'    `"within_dir"` will return the data within the directory as a csv entitled
@@ -48,7 +50,9 @@
 #'   - `corridor_dir` character, the corridor route direction. One of "EB", "NB", "SB", or "WB"
 #'   - `date`date, the date the configuration was accessed
 #'
-#' @details Additional documentation on the IRIS system can be found on MNIT [documentation page](https://mnit-rtmc.github.io/iris/index.html).
+#' @details
+#'   Additional documentation on the IRIS system can be found on MNIT
+#'   [documentation page](https://mnit-rtmc.github.io/iris/index.html).
 #'
 #'
 #' @family loop sensor functions
@@ -72,6 +76,7 @@ pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
   url <- "https://data.dot.state.mn.us/iris_xml/metro_config.xml.gz"
   tmp <- tempfile()
   utils::download.file(url, tmp, quiet = .quiet)
+
   metro_config <- xml2::read_xml(gzfile(tmp))
 
   # ------------------

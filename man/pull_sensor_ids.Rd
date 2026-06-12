@@ -2,27 +2,44 @@
 % Please edit documentation in R/pull_sensor_ids.R
 \name{pull_sensor_ids}
 \alias{pull_sensor_ids}
-\title{Function to pull all sensor IDs in the Twin Cities metro}
+\title{Function to pull all sensor IDs for a district}
 \usage{
-pull_sensor_ids(.quiet = TRUE)
+pull_sensor_ids(pull_date = NULL, district = "metro", .quiet = TRUE)
 }
 \arguments{
-\item{.quiet}{logical, whether to hide messages. Default is \code{TRUE}}
+\item{pull_date}{character, the date to query for available sensors.
+Accepts either \code{"YYYY-MM-DD"} or \code{"YYYYMMDD"} format.
+If \code{NULL} (default), uses the most recent available date.}
+
+\item{district}{character, MnDOT district code. Default is "metro".
+Use \code{\link[=mayfly_get_districts]{mayfly_get_districts()}} to see available districts.}
+
+\item{.quiet}{logical, whether to suppress error messages. Default TRUE}
 }
 \value{
-dataframe containing variable "detector"
+data.table containing variable "detector"
 }
 \description{
-Create a tidy dataframe containing sensor IDs for MnDOT metro district, mainly to be used with pull_sensor
+Create a tidy dataframe containing sensor IDs for a MnDOT district,
+mainly to be used with \code{\link[=pull_sensor]{pull_sensor()}}. Data is fetched from the Mayfly API.
 }
 \examples{
 \dontrun{
-sensors <- sensor_pull()
+library(tc.sensors)
+sensors <- pull_sensor_ids()
+# Get sensors for a different district
+sensors_d1 <- pull_sensor_ids(district = "d6")
+# Get sensors for a specific date
+sensors_date <- pull_sensor_ids(pull_date = "2020-01-15")
 }
 }
 \seealso{
 Other loop sensor functions: 
 \code{\link{pull_configuration}()},
-\code{\link{pull_sensor}()}
+\code{\link{pull_sensor}()},
+\code{\link{pull_sensor_espeed}()},
+\code{\link{pull_sensor_headway}()},
+\code{\link{pull_sensor_length}()},
+\code{\link{pull_sensor_speed}()}
 }
 \concept{loop sensor functions}

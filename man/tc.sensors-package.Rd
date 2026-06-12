@@ -4,11 +4,11 @@
 \name{tc.sensors-package}
 \alias{tc.sensors}
 \alias{tc.sensors-package}
-\title{tc.sensors: Retrieve Loop Detector Data from the MnDOT JSON Feed}
+\title{tc.sensors: Retrieve Loop Detector Data from the MnDOT Mayfly API}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Process data collected from Minnesota Department of Transportation (MnDOT) loop detectors installed on the Minnesota Freeway system. Data are published to a public JSON feed in 30-second interval measurements of occupancy and volume. Occupancy and volume data can be used to calculate speed and delay.
+Process data collected from Minnesota Department of Transportation (MnDOT) loop detectors installed on the Minnesota Freeway system. Data are published to Mayfly in 30-second interval measurements of occupancy and volume. Occupancy and volume data can be used to calculate speed and delay.
 }
 \seealso{
 Useful links:

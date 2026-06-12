@@ -11,6 +11,9 @@ testthat::test_that("Impossible values are replaced", {
         fill_gaps = TRUE
       )
 
+      testthat::expect_false(all(is.na(sensor_results$volume)))
+      testthat::expect_false(all(is.na(sensor_results$occupancy)))
+
       ifelse(is.na(sensor_results$volume),
         {
           config_sample <- config %>%

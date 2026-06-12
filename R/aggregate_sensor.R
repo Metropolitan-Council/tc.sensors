@@ -119,6 +119,7 @@ aggregate_sensor <- function(sensor_data,
   # 3600 * 60 = 216,000 scans per hour
   interval_scans <- interval_length * 216000
   field_length <- as.numeric(config[, "detector_field"][[1]])
+
   # convert field length from feet to miles
   field_length_miles <- field_length %>%
     units::as_units("feet") %>%

@@ -16,3 +16,6 @@
 ^vignettes/data_cache$
 ^vignettes/compare_congestion_metrics_cache$
 ^data-raw$
+^\.vscode$
+^README\.html$
+^Configuration of Metro Detectors .*

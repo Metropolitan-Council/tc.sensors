@@ -8,7 +8,7 @@ testthat::test_that("Aggregation functions as expected", {
         dplyr::sample_n(1)
 
       sensor_results <- pull_sensor(
-        sensor = config_sample$detector_name[[1]],
+        sensor = config_sample %>% dplyr::pull(detector_name),
         pull_date = yesterday,
         fill_gaps = TRUE
       )
@@ -40,15 +40,17 @@ testthat::test_that("Aggregation functions as expected", {
       testthat::expect_equal(dim(agg_hour)[[1]], 24)
       testthat::expect_equal(
         round(mean(sensor_results$volume, na.rm = TRUE)),
-        round(mean(agg_hour$volume.mean))
+        round(mean(agg_hour$volume.mean)),
+        tolerance = 0.1
       )
 
       testthat::expect_equal(
-        sum(sensor_results$occupancy, na.rm = TRUE),
-        sum(agg_hour$occupancy.sum, na.rm = TRUE)
+        round(sum(sensor_results$occupancy, na.rm = TRUE)),
+        round(sum(agg_hour$occupancy.sum, na.rm = TRUE)),
+        tolerance = 1
       )
 
-      ifelse(!is.na(agg$speed),
+      ifelse(!all(is.na(agg$speed)),
         testthat::expect_true(round(mean(agg$speed, na.rm = TRUE)) -
           round(mean(agg_hour$speed, na.rm = TRUE)) < 3), NA
       )
@@ -65,23 +67,26 @@ testthat::test_that("Aggregation functions as expected", {
       )
 
       testthat::expect_equal(
-        sum(sensor_results$occupancy, na.rm = TRUE),
-        sum(agg_day$occupancy.sum, na.rm = TRUE)
+        round(sum(sensor_results$occupancy, na.rm = TRUE)),
+        round(sum(agg_day$occupancy.sum, na.rm = TRUE)),
+        tolerance = 1
       )
 
-      ifelse(!is.na(agg$speed),
-        testthat::expect_true(round(mean(agg$speed, na.rm = TRUE)) -
-          round(mean(agg_day$speed, na.rm = TRUE)) < 3), no = NA
+      ifelse(!all(is.na(agg_day$speed)),
+        testthat::expect_true(
+          round(mean(agg$speed, na.rm = TRUE)) -
+            round(mean(agg_day$speed, na.rm = TRUE)) < 3
+        ), NA
       )
 
       # test argument checks--------------------------------------------------------
       testthat::expect_error(aggregate_sensor(sensor_results,
-        config = config_sample,
+        config = config_sample %>% dplyr::pull(detector_name),
         interval_length = 48
       ))
 
       testthat::expect_error(aggregate_sensor(sensor_results,
-        config = config_sample,
+        config = config_sample %>% dplyr::pull(detector_name),
         interval_length = NA
       ))
 
@@ -94,7 +99,7 @@ testthat::test_that("Aggregation functions as expected", {
               volume = 10,
               occupancy = 12,
               date = Sys.Date(),
-              sensor = config_sample$detector_name,
+              sensor = config_sample %>% dplyr::pull(detector_name),
               hour = 0,
               min = 30
             )

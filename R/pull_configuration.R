@@ -1,19 +1,21 @@
 #' @title Pull metro sensor configuration
 #'
-#' @description Read MnDOT JSON feed and wrangle into a tidy dataframe containing 20 variables related to sensor configuration.
-#'   Useful for mapping (contains lat/lons) and calculating performance measures (contains detector_field).
+#' @description Read MnDOT sensor configuration data containing 20 variables related
+#'   to sensor configuration. Useful for mapping (contains lat/lons) and calculating
+#'   performance measures (contains `detector_field`). Data is sourced from the
+#'   IRIS XML configuration endpoint.
 #'
 #' @param return_opt character, indicate how to return the data.
 #'    `"within_dir"` will return the data within the directory as a csv entitled
 #'    "Configuration of Metro Detectors YYYY-MM-DD".
 #'     `"in-memory"` will return the data in R, but requires assignment.
-#' @param .quiet logical, whether to hide messages. Default is `TRUE`
+#' @inheritParams mayfly_perform
 #'
-#' @return dataframe containing 20 variables, including detector_field and lat/lons,
+#' @return dataframe containing 20 variables, including `detector_field` and lat/lons,
 #'   for each sensor in MnDOT's metro district
 #'   - `detector_name` character, the detector's unique identifier in numbers
 #'   - `detector_label` character, the detector's label including abbreviations of the roads associated with the roadway node.
-#'   - `detector_category` character, the detector lane type in code. [Source](https://github.com/mnit-rtmc/iris/blob/5b3dcbbcd6d177b2a1d37576bdd06b7d33a6facd/src/us/mn/state/dot/tms/LaneType.java)
+#'   - `detector_category` character, the detector lane type in code. [Source](https://github.com/mnit-rtmc/iris/blob/master/src/us/mn/state/dot/tms/LaneCode.java)
 #'     - "" Mainline
 #'     - "A" Auxiliary, mainline auxiliary (ends within a mile)
 #'     - "B" Bypass, ramp meter bypass
@@ -48,13 +50,16 @@
 #'   - `corridor_dir` character, the corridor route direction. One of "EB", "NB", "SB", or "WB"
 #'   - `date`date, the date the configuration was accessed
 #'
-#' @details Additional documentation on the IRIS system can be found on MNIT [documentation page](https://mnit-rtmc.github.io/iris/index.html).
+#' @details
+#'   Additional documentation on the IRIS system can be found on MNIT
+#'   [documentation page](https://mnit-rtmc.github.io/iris/index.html).
 #'
 #'
 #' @family loop sensor functions
 #'
 #' @examples
 #' \dontrun{
+#' library(tc.sensors)
 #' config <- pull_configuration("in-memory") # Assign to an object
 #' pull_configuration("within_dir") # No assignment necessary
 #' }
@@ -69,9 +74,10 @@
 #'
 #' @export
 pull_configuration <- function(return_opt = "in_memory", .quiet = TRUE) {
-  url <- "http://data.dot.state.mn.us/iris_xml/metro_config.xml.gz"
+  url <- "https://data.dot.state.mn.us/iris_xml/metro_config.xml.gz"
   tmp <- tempfile()
   utils::download.file(url, tmp, quiet = .quiet)
+
   metro_config <- xml2::read_xml(gzfile(tmp))
 
   # ------------------

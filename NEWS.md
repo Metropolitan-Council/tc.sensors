@@ -23,6 +23,7 @@ MnDOT has retired trafdat and migrated to Mayfly, an API. This version of tc.sen
 ## Deprecations
 
 * **BREAKING CHANGE**: `add_weather()` has been removed in 0.3.0. This function is no longer maintained; users should implement their own weather data workflows using alternative data sources and packages. (#deprecated)
+
 ## Dependencies
 
 * Removed `curl` from Imports as it was only used by the deprecated `add_weather()` function.

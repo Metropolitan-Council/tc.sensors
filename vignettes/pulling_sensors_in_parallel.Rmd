@@ -24,7 +24,7 @@ sensor_ids <- pull_sensor_ids()
 tic()
 
 # set up parallel processing
-future::plan(multisession, workers = parallel::detectCores() - 1)
+future::plan(multisession, workers = max(1, parallel::detectCores() - 1))
 
 # define date range
 date_range <- seq(

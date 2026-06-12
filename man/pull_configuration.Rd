@@ -70,6 +70,7 @@ Additional documentation on the IRIS system can be found on MNIT
 }
 \examples{
 \dontrun{
+library(tc.sensors)
 config <- pull_configuration("in-memory") # Assign to an object
 pull_configuration("within_dir") # No assignment necessary
 }

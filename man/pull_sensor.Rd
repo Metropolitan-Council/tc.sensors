@@ -83,33 +83,29 @@ specific traffic patterns. Filters apply to both volume and occupancy data.
 \examples{
 \dontrun{
 # Simple example
-loop_data <- pull_sensor(5474, "2018-10-14")
+library(tc.sensors)
+library(purrr)
+library(data.table)
+loop_data <- pull_sensor(5474, "2025-10-14")
 
 # With filtering - passenger cars only (7-19 feet)
-cars_only <- pull_sensor(5474, "2018-10-14",
+library(tc.sensors)
+cars_only <- pull_sensor(5474, "2025-10-14",
   length_ft_min = 7,
   length_ft_max = 19
 )
 
-# Use a different district
-loop_data <- pull_sensor(5474, "2024-10-14", district = "d1")
-
 # Mapping example
-date_range <- seq(as.Date("2019/01/01"), as.Date("2019/01/02"), by = "days")
-loop_data <- pmap(list(8564, date_range), pull_sensor)
+date_range <- seq(as.Date("2024/01/01"), as.Date("2024/01/02"), by = "days")
+loop_data <- map(date_range, ~ pull_sensor(8564, .x))
 loops_full <- rbindlist(loop_data)
 
-# Parallel mapping example
-## takes longer if only pulling 1-2 days because libraries are copied to each core
-library(parallel)
-cl <- makeCluster(detectCores() - 1) # Leaving one core unused
-params <- list(8564, date_range)
+# Parallel mapping example with furrr
+library(furrr)
+plan(multisession, workers = parallel::detectCores() - 1)
 
-clusterSetRNGStream(cl, 1)
-loop_data <- params \%>\%
-  lift(clusterMap, cl = cl)(fun = pull_sensor)
-stopCluster(cl)
-
+date_range <- seq(as.Date("2024/01/01"), as.Date("2024/01/02"), by = "days")
+loop_data <- future_map(date_range, ~ pull_sensor(8564, .x))
 loops_full <- rbindlist(loop_data)
 }
 }

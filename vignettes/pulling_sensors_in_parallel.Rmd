@@ -7,14 +7,12 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-## Pull data for select sensors for all 2019  
+## Pull data for select sensors for all 2024  
 
 Functions in this package are designed to pull data for a single sensor on a single date. To get data spanning multiple sensors and dates efficiently, we can use vector and parallel processing to simultaneously access data.
 
 ```{r, eval = FALSE}
 library(tc.sensors)
-library(dplyr)
-library(magrittr)
 library(furrr)
 library(tictoc)
 
@@ -26,11 +24,12 @@ sensor_ids <- pull_sensor_ids()
 tic()
 
 # set up parallel processing
-future::plan(multisession)
+future::plan(multisession, workers = parallel::detectCores() - 1)
 
 # define date range
-date_range <- seq(as.Date("2019/01/01"),
-  as.Date("2019/12/31"),
+date_range <- seq(
+  as.Date("2024/01/01"),
+  as.Date("2024/12/31"),
   by = "days"
 )
 

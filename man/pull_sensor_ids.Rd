@@ -25,6 +25,7 @@ mainly to be used with \code{\link[=pull_sensor]{pull_sensor()}}. Data is fetche
 }
 \examples{
 \dontrun{
+library(tc.sensors)
 sensors <- pull_sensor_ids()
 # Get sensors for a different district
 sensors_d1 <- pull_sensor_ids(district = "d6")

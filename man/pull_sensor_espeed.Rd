@@ -65,15 +65,14 @@ analysis or identifying specific traffic patterns.
 }
 \examples{
 \dontrun{
+library(tc.sensors)
 # Simple example
-espeed_data <- pull_sensor_espeed(5474, "2018-10-14")
+espeed_data <- pull_sensor_espeed(5474, "2025-10-14")
 
 # With filtering - passenger cars at typical speeds
-filtered_data <- pull_sensor_espeed(5474, "2018-10-14",
+filtered_data <- pull_sensor_espeed(5474, "2025-10-14",
   length_ft_min = 10,
-  length_ft_max = 20,
-  speed_mph_min = 30,
-  speed_mph_max = 70
+  length_ft_max = 20
 )
 }
 

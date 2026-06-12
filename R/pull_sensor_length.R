@@ -26,17 +26,18 @@
 #'
 #' @examples
 #' \dontrun{
+#' library(tc.sensors)
 #' # Simple example
-#' length_data <- pull_sensor_length(5474, "2018-10-14")
+#' length_data <- pull_sensor_length(5474, "2025-10-14")
 #'
 #' # Vehicle classification - passenger cars only
-#' cars_only <- pull_sensor_length(5474, "2018-10-14",
+#' cars_only <- pull_sensor_length(5474, "2025-10-14",
 #'   length_ft_min = 7,
 #'   length_ft_max = 19
 #' )
 #'
 #' # Large trucks traveling at highway speeds
-#' trucks_highway <- pull_sensor_length(5474, "2018-10-14",
+#' trucks_highway <- pull_sensor_length(5474, "2025-10-14",
 #'   length_ft_min = 24,
 #'   speed_mph_min = 55,
 #'   speed_mph_max = 75

@@ -18,3 +18,4 @@
 ^data-raw$
 ^\.vscode$
 ^README\.html$
+^Configuration of Metro *$

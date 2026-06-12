@@ -13,6 +13,7 @@
 #' @family loop sensor functions
 #' @examples
 #' \dontrun{
+#' library(tc.sensors)
 #' sensors <- pull_sensor_ids()
 #' # Get sensors for a different district
 #' sensors_d1 <- pull_sensor_ids(district = "d6")
@@ -39,6 +40,7 @@ pull_sensor_ids <- function(pull_date = NULL, district = "metro", .quiet = TRUE)
     query_year <- max(years)
 
     dates <- mayfly_get_dates(district = district, year = query_year)
+
     if (is.null(dates) || length(dates) == 0) {
       cli::cli_abort("Unable to fetch available dates from Mayfly API for {query_year}")
     }

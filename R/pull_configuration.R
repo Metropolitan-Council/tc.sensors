@@ -59,6 +59,7 @@
 #'
 #' @examples
 #' \dontrun{
+#' library(tc.sensors)
 #' config <- pull_configuration("in-memory") # Assign to an object
 #' pull_configuration("within_dir") # No assignment necessary
 #' }

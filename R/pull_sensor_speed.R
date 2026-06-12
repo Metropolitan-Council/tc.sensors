@@ -17,11 +17,12 @@
 #'
 #' @examples
 #' \dontrun{
+#' library(tc.sensors)
 #' # Simple example
-#' speed_data <- pull_sensor_speed(5474, "2018-10-14")
+#' speed_data <- pull_sensor_speed(5474, "2025-10-14")
 #'
 #' # Passenger cars traveling at highway speeds
-#' highway_cars <- pull_sensor_speed(5474, "2018-10-14",
+#' highway_cars <- pull_sensor_speed(5474, "2025-10-14",
 #'   speed_mph_min = 55,
 #'   speed_mph_max = 75,
 #'   length_ft_min = 10,

@@ -18,11 +18,12 @@
 #'
 #' @examples
 #' \dontrun{
+#' library(tc.sensors)
 #' # Simple example
-#' headway_data <- pull_sensor_headway(6206, "2018-10-14")
+#' headway_data <- pull_sensor_headway(6206, "2025-10-14")
 #'
 #' # With filtering - passenger cars with 2-10 second headway
-#' filtered_data <- pull_sensor_headway(6206, "2018-10-14",
+#' filtered_data <- pull_sensor_headway(6206, "2025-10-14",
 #'   headway_sec_min = 2,
 #'   headway_sec_max = 10,
 #'   length_ft_min = 10,

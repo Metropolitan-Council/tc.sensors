@@ -1,81 +1,40 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/404.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/articles/calculate_speed_delay.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/articles/pulling_sensors_in_parallel.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/articles/tc.sensors.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/index.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/add_day_type.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/add_distance.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/add_weather.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/aggregate_sensor.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/attr_clean.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/attr_to_df.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/extension_pull.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/generate_spatial_lines.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/pull_configuration.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/pull_sensor.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/pull_sensor_ids.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/replace_impossible.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/scrub_sensor.html</loc>
-  </url>
-  <url>
-    <loc>https://github.com/Metropolitan-Council/tc.sensors/reference/tc.sensors-package.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/404.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/LICENSE-text.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/LICENSE.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/articles/calculate_speed_delay.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/articles/index.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/articles/pulling_sensors_in_parallel.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/articles/tc.sensors.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/authors.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/index.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/news/index.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/add_day_type.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/add_distance.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/aggregate_sensor.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/attr_clean.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/attr_to_df.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/extension_pull.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/generate_spatial_lines.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/index.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/mayfly_get_corridors.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/mayfly_get_dates.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/mayfly_get_districts.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/mayfly_get_years.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/mayfly_perform.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/mayfly_request.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/parse_date_flexible.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/pipe.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/pull_configuration.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/pull_sensor.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/pull_sensor_espeed.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/pull_sensor_headway.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/pull_sensor_ids.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/pull_sensor_length.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/pull_sensor_speed.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/replace_impossible.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/scrub_sensor.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/tc.sensors-package.html</loc></url>
+<url><loc>https://github.com/Metropolitan-Council/tc.sensors/reference/validate_date_available.html</loc></url>
 </urlset>
+

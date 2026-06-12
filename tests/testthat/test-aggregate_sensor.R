@@ -81,12 +81,12 @@ testthat::test_that("Aggregation functions as expected", {
 
       # test argument checks--------------------------------------------------------
       testthat::expect_error(aggregate_sensor(sensor_results,
-        config = config_sample,
+        config = config_sample %>% dplyr::pull(detector_name),
         interval_length = 48
       ))
 
       testthat::expect_error(aggregate_sensor(sensor_results,
-        config = config_sample,
+        config = config_sample %>% dplyr::pull(detector_name),
         interval_length = NA
       ))
 
@@ -99,7 +99,7 @@ testthat::test_that("Aggregation functions as expected", {
               volume = 10,
               occupancy = 12,
               date = Sys.Date(),
-              sensor = config_sample,
+              sensor = config_sample %>% dplyr::pull(detector_name),
               hour = 0,
               min = 30
             )
